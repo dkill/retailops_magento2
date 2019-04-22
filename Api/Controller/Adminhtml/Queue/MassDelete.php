@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 16.56
- */
 
 namespace RetailOps\Api\Controller\Adminhtml\Queue;
 

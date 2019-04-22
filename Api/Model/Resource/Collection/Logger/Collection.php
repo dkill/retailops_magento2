@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 13.03
- */
 
 namespace RetailOps\Api\Model\Resource\Collection\Logger;
 

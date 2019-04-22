@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 17.4.16
- * Time: 20.49
- */
 
 namespace RetailOps\Api\Controller\Adminhtml\Log;
 

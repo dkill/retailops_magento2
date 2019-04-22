@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 21.10.16
- * Time: 9.33
- */
 
 namespace RetailOps\Api\Model;
 
@@ -23,6 +17,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
      * @var Product\CollectionFactory
      */
     protected $productCollectionFactory;
+    
     /**
      * @var Resource\RoRicsLinkUpc
      */

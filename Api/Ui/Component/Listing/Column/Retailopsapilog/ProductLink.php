@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 3.11.16
- * Time: 19.11
- */
 
 namespace RetailOps\Api\Ui\Component\Listing\Column\Retailopsapilog;
 

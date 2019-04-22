@@ -1,12 +1,7 @@
 <?php
+
 namespace RetailOps\Api\Model;
 
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.10.16
- * Time: 14.16
- */
 use \Magento\Framework\Model\AbstractModel;
 use \RetailOps\Api\Api\Data\InventoryHistoryInterface;
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.11.16
- * Time: 0.03
- */
 
 namespace RetailOps\Api\Test\Integration\Model\Map;
 

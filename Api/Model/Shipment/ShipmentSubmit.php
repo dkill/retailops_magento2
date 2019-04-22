@@ -1,20 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.10.16
- * Time: 12.17
- */
 
 namespace RetailOps\Api\Model\Shipment;
 
+use \RetailOps\Api\Model\Api\Traits\Filter;
+
 class ShipmentSubmit
 {
-    use \RetailOps\Api\Model\Api\Traits\Filter;
     /**
      * @var \RetailOps\Api\Api\Shipment\ShipmentInterface
      */
     protected $shipment;
+
     /**
      * @var \RetailOps\Api\Service\OrderCheck
      */
@@ -43,8 +39,7 @@ class ShipmentSubmit
      * @var \Magento\Sales\Api\OrderManagementInterface
      */
     protected $orderManager;
-
-
+    
     /**
      * ShipmentSubmit constructor.
      * @param \RetailOps\Api\Api\Shipment\ShipmentInterface $shipment

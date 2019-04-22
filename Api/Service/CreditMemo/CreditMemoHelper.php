@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.11.16
- * Time: 15.10
- */
 
 namespace RetailOps\Api\Service\CreditMemo;
 

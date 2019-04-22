@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.11.16
- * Time: 14.21
- */
 
 namespace RetailOps\Api\Service\Order\Map;
 

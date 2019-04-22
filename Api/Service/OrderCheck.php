@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.10.16
- * Time: 12.40
- */
 
 namespace RetailOps\Api\Service;
 

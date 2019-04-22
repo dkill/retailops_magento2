@@ -1,23 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 11.22
- */
 
 namespace RetailOps\Api\Model\Api\Queue;
 
 use RetailOps\Api\Api\Queue\QueueInterface;
 use RetailOps\Api\Model\QueueInterface as Queue;
+use RetailOps\Api\Model\Api\Traits\FullFilter;
 
 class Cancel implements QueueInterface
 {
-    use \RetailOps\Api\Model\Api\Traits\FullFilter;
-
     protected $response;
     protected $status = 'success';
     protected $events = [];
+
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
      */

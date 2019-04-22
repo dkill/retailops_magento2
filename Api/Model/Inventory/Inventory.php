@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 8.9.16
- * Time: 17.59
- */
 
 namespace RetailOps\Api\Model\Inventory;
 
@@ -15,7 +9,6 @@ class Inventory
 {
     const FROM = 'retailops';
     const SKU = 'upc';
-
 
     /**
      * @var \RetailOps\Api\Api\InventoryHistoryInterface
@@ -81,9 +74,7 @@ class Inventory
      * @var \RetailOps\Api\Service\CalculateInventory
      */
     protected $_calculateInventory;
-
-
-
+    
     /**
      * @param $inventory []
      */

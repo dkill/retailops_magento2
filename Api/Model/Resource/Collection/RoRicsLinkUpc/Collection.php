@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 21.10.16
- * Time: 10.04
- */
 
 namespace RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc;
 

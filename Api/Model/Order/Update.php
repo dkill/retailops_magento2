@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 11.56
- */
 
 namespace RetailOps\Api\Model\Order;
 

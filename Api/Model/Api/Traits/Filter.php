@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 23.9.16
- * Time: 12.36
- */
 
 namespace RetailOps\Api\Model\Api\Traits;
 

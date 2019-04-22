@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 18.32
- */
 
 namespace RetailOps\Api\Observers;
 
