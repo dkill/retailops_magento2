@@ -12,10 +12,15 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Api\SearchResultsInterfaceFactory;
 
+/**
+ * Queue repository class.
+ *
+ */
 class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
 {
     protected $objectFactory;
     protected $collectionFactory;
+    
     public function __construct(
         QueueFactory $objectFactory,
         CollectionFactory $collectionFactory,
@@ -25,7 +30,7 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
         $this->collectionFactory    = $collectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
     }
-    
+
     public function save(QueueInterface $object)
     {
         try {
@@ -35,7 +40,6 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
         }
         return $object;
     }
-
 
     public function getById($id)
     {
@@ -106,7 +110,7 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
     public function deleteByOrderInc($orderInc)
     {
         $collection = $this->collectionFactory->create();
-        $collection->addFieldToFilter(QueueInterface::ORDER_Id, $orderInc);
+        $collection->addFieldToFilter(QueueInterface::ORDER_ID, $orderInc);
         foreach ($collection as $item) {
             $item->delete();
         }

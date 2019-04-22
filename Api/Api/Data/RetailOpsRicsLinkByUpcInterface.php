@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Data;
 
+/**
+ * Interface RetailOpsRicsLinkByUpcInterface
+ *
+ */
 interface RetailOpsRicsLinkByUpcInterface
 {
     const ID = 'entity_id';

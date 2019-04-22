@@ -1,6 +1,9 @@
 <?php
 namespace RetailOps\Api\Ui\Component\Listing\Column\Retailopsapilog;
 
+/**
+ * Page actions class
+ */
 class PageActions extends \Magento\Ui\Component\Listing\Columns\Column
 {
     public function prepareDataSource(array $dataSource)

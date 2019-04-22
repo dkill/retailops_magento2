@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Order\Map;
 
+/**
+ * Calculate amount interface
+ *
+ */
 interface CalculateAmountInterface
 {
     /**

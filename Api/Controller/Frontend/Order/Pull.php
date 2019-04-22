@@ -5,6 +5,10 @@ namespace RetailOps\Api\Controller\Frontend\Order;
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Pull controller action class.
+ *
+ */
 class Pull extends RetailOps
 {
     const SERVICENAME = 'order';
@@ -12,10 +16,12 @@ class Pull extends RetailOps
     const MIN_COUNT_ORDERS_PER_REQUEST = 1;
     const ENABLE = 'retailops/RetailOps_feed/order_pull';
     const COUNT_ORDERS_PER_REQUEST = 'retailops/RetailOps/order_count';
+
     /**
      * @var string
      */
     protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+
     /**
      * @var \\RetailOps\Model\Pull\OrderFactory
      */
@@ -39,7 +45,7 @@ class Pull extends RetailOps
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
@@ -74,6 +80,6 @@ class Pull extends RetailOps
     ) {
         $this->orderFactory = $orderFactory;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');
+        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }

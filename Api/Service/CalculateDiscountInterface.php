@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Calculate discount interface
+ *
+ */
 interface CalculateDiscountInterface
 {
     /**

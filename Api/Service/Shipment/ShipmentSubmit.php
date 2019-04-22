@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service\Shipment;
 
+/**
+ * Submit shipment service class.
+ *
+ */
 class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
 {
     /**

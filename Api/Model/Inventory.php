@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Model;
 
+/**
+ * Inventory class.
+ *
+ */
 class Inventory implements \RetailOps\Api\Api\InventoryInterface
 {
     protected $sku;

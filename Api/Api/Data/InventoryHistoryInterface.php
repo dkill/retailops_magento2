@@ -3,8 +3,8 @@
 namespace RetailOps\Api\Api\Data;
 
 /**
- * Interface InventoryHistoryInterface
- * @package RetailOps\Api\Api\Data
+ * Inventory history interface
+ *
  */
 interface InventoryHistoryInterface
 {

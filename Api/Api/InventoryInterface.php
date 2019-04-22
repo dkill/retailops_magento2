@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api;
 
+/**
+ * Inventory interface
+ *
+ */
 interface InventoryInterface
 {
     /**

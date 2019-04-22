@@ -4,6 +4,10 @@ namespace RetailOps\Api\Model\Order;
 
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * Cancel order class.
+ *
+ */
 class Cancel
 {
     const QUEUE = 'retailops/RetailOps_advanced/cancel_queue';
@@ -20,7 +24,7 @@ class Cancel
     public function cancelOrder($postData)
     {
         if ($postData['order']) {
-            $scopeConfig = ObjectManager::getInstance()->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $scopeConfig = ObjectManager::getInstance()->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::QUEUE)) {
                 $response = $this->cancelOrder->cancel($postData['order']);
             } else {

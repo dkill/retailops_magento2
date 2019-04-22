@@ -5,6 +5,10 @@ namespace RetailOps\Api\Service;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Invoice helper class.
+ *
+ */
 class InvoiceHelper
 {
     public static $captureOnlinePayment = [
@@ -45,7 +49,6 @@ class InvoiceHelper
                  'Create for RetailOps'
              );
 
-
             $invoice->register();
             $invoice->getOrder()->setIsInProcess(true);
             return $this->saveInvoice($invoice);
@@ -66,8 +69,6 @@ class InvoiceHelper
         return false;
     }
 
-
-
     /**
      * InvoiceHelper constructor.
      * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
@@ -83,7 +84,7 @@ class InvoiceHelper
     public function saveInvoice(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $transactionSave = ObjectManager::getInstance()->create(
-            'Magento\Framework\DB\Transaction'
+            \Magento\Framework\DB\Transaction::class
         )->addObject(
             $invoice
         )->addObject(

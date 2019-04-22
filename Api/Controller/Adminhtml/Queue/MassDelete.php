@@ -2,11 +2,15 @@
 
 namespace RetailOps\Api\Controller\Adminhtml\Queue;
 
+/**
+ * Queue mass delete controller class action.
+ *
+ */
 class MassDelete extends \RetailOps\Api\Controller\Adminhtml\Queue
 {
     public function execute()
     {
-        $collection = $this->_objectManager->create('RetailOps\Api\Model\ResourceModel\Queue\Collection');
+        $collection = $this->_objectManager->create(\RetailOps\Api\Model\ResourceModel\Queue\Collection::class);
         $collection = $this->massFilter->getCollection($collection);
         $collectionSize = $collection->getSize();
 

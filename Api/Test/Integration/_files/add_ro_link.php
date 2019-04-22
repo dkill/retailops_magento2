@@ -3,11 +3,11 @@ $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 /**
  * @var RetailOps\Api\Model\RoRicsLinkUpcRepository $repository
  */
-$repository = $objectManager->create('RetailOps\Api\Model\RoRicsLinkUpcRepository');
+$repository = $objectManager->create(\RetailOps\Api\Model\RoRicsLinkUpcRepository::class);
 /**
  * @var RetailOps\Api\Model\RoRicsLinkUpcFactory $factoryLink
  */
-$factoryLink = $objectManager->create('RetailOps\Api\Model\RoRicsLinkUpcFactory');
+$factoryLink = $objectManager->create(\RetailOps\Api\Model\RoRicsLinkUpcFactory::class);
 $data = [
     [
     'rics_integration_id' => '73ffaff9-03a0-40c4-8f3f-c0f5145f23e3',

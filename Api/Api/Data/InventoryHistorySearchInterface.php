@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Data;
 
+/**
+ * Inventory history search interface.
+ *
+ */
 interface InventoryHistorySearchInterface
 {
     /**

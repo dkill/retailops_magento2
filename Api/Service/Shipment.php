@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Shipment class.
+ *
+ */
 abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
 {
     /**
@@ -131,7 +135,8 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
         }
         foreach ($packageItems as $item) {
             if (isset($this->shippmentItems['items'][$item['channel_item_refnum']])) {
-                $quantity = (float)$this->shippmentItems['items'][$item['channel_item_refnum']] + (float)$item['quantity'];
+                $quantity =
+                    (float)$this->shippmentItems['items'][$item['channel_item_refnum']] + (float)$item['quantity'];
                 $this->shippmentItems['items'][$item['channel_item_refnum']] =
                     $this->calcQuantity($item['channel_item_refnum'], $quantity);
             } else {
@@ -177,7 +182,6 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
         $this->sendEmail($shipment);
     }
 
-
     /**
      * Save shipment and order in one transaction
      *
@@ -188,7 +192,7 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
     {
         $shipment->getOrder()->setIsInProcess(true);
         $transaction = \Magento\Framework\App\ObjectManager::getInstance()->create(
-            'Magento\Framework\DB\Transaction'
+            \Magento\Framework\DB\Transaction::class
         );
         $transaction->addObject(
             $shipment

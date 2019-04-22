@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Shipment;
 
+/**
+ * Shipment interface
+ *
+ */
 interface ShipmentInterface
 {
     /**
@@ -21,8 +25,7 @@ interface ShipmentInterface
      * @return void
      */
     public function setShipmentsItems(array $packageItems = []);
-
-
+    
     /**
      * @param array $postData
      * @return void

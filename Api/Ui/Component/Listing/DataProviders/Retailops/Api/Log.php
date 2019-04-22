@@ -1,6 +1,10 @@
 <?php
 namespace RetailOps\Api\Ui\Component\Listing\DataProviders\Retailops\Api;
 
+/**
+ * RetailOps Api log class.
+ *
+ */
 class Log extends \Magento\Ui\DataProvider\AbstractDataProvider
 {
 
@@ -8,7 +12,7 @@ class Log extends \Magento\Ui\DataProvider\AbstractDataProvider
         $name,
         $primaryFieldName,
         $requestFieldName,
-        \RetailOps\Api\Model\Resource\Collection\InventoryHistory\CollectionFactory $collectionFactory,
+        \RetailOps\Api\Model\ResourceModel\Collection\InventoryHistory\CollectionFactory $collectionFactory,
         array $meta = [],
         array $data = []
     ) {

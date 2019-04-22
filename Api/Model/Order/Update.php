@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Model\Order;
 
+/**
+ * Order update class.
+ *
+ */
 class Update
 {
     protected $updateOrder;

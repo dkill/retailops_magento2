@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Controller\Adminhtml\Queue;
 
+/**
+ * Queue cancel controller class action.
+ *
+ */
 class Cancel extends \RetailOps\Api\Controller\Adminhtml\Queue
 {
     public function execute()

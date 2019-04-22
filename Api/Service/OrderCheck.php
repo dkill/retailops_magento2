@@ -2,7 +2,11 @@
 
 namespace RetailOps\Api\Service;
 
-class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
+/**
+ * Order check class.
+ *
+ */
+class OrderCheck implements \RetailOps\Api\Api\Services\Order\CheckInterface
 {
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface

@@ -5,10 +5,15 @@ namespace RetailOps\Api\Controller\Frontend\Order;
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Acknowledge controller action class.
+ *
+ */
 class Acknowledge extends RetailOps
 {
     const SERVICENAME = 'order_acknowledge';
     const ENABLE = 'retailops/RetailOps_feed/order_acknowledge';
+
     /**
      * @var string
      */
@@ -34,11 +39,19 @@ class Acknowledge extends RetailOps
      */
     protected $status = 200;
 
+    public function __construct(
+        \RetailOps\Api\Model\AcknowledgeFactory $orderFactory,
+        \Magento\Framework\App\Action\Context $context
+    ) {
+        $this->orderFactory = $orderFactory;
+        parent::__construct($context);
+        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
+    }
 
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
@@ -57,14 +70,5 @@ class Acknowledge extends RetailOps
             $this->getResponse()->setStatusCode($this->status);
             parent::execute();
         }
-    }
-
-    public function __construct(
-        \RetailOps\Api\Model\AcknowledgeFactory $orderFactory,
-        \Magento\Framework\App\Action\Context $context
-    ) {
-        $this->orderFactory = $orderFactory;
-        parent::__construct($context);
-        $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');
     }
 }

@@ -5,6 +5,10 @@ namespace RetailOps\Api\Service\CreditMemo;
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface;
 
+/**
+ * Credit memo helper class.
+ *
+ */
 class CreditMemoHelper implements CreditMemoHelperInterface
 {
     use \RetailOps\Api\Model\Api\Traits\FullFilter;
@@ -69,7 +73,9 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
         $qtyCreditMemo = $value - $delta;
         if ($qtyCreditMemo < 0 || $orderItemForCalc->getQtyOrdered() < $qtyCreditMemo) {
-            throw new \LogicException('Qty of creditmemo more than quantity of invoice, item:'.$orderItemForCalc->getId());
+            throw new \LogicException(
+                'Qty of creditmemo more than quantity of invoice, item:'.$orderItemForCalc->getId()
+            );
         }
         return $qtyCreditMemo;
     }
@@ -128,22 +134,15 @@ class CreditMemoHelper implements CreditMemoHelperInterface
             }
 
             /**
-             *@var  \Magento\Sales\Api\CreditmemoManagementInterface $creditmemoManagement
+             * @var \Magento\Sales\Api\CreditmemoManagementInterface $creditmemoManagement
              */
             $creditmemoManagement = $this->_objectManager->create(
-                'Magento\Sales\Api\CreditmemoManagementInterface'
+                \Magento\Sales\Api\CreditmemoManagementInterface::class
             );
             /**
              * $creditmemo, offline/online, send_email
              */
             $creditmemoManagement->refund($creditmemo, $this->isOfflineRefund($order), 0);
-
-            /**
-             * for now it commented
-             */
-            if (false) {
-                $this->creditmemoSender->send($creditmemo);
-            }
         }
     }
 
@@ -165,8 +164,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
         return null;
     }
-
-
+    
     /**
      * @param $order
      * @param $items

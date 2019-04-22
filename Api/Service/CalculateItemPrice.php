@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Calculate item price class.
+ *
+ */
 class CalculateItemPrice implements CalculateItemPriceInterface
 {
     public function calculate(\Magento\Sales\Api\Data\OrderItemInterface $item):float

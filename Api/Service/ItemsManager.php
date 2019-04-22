@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Items manager class.
+ *
+ */
 class ItemsManager implements \RetailOps\Api\Api\ItemsManagerInterface
 {
     /**

@@ -4,11 +4,15 @@ namespace RetailOps\Api\Test\Integration\Model;
 
 use Magento\TestFramework\Helper\Bootstrap;
 
+/**
+ * Ro Rics UPC link repository test class.
+ *
+ */
 class RoRicsLinkUpcRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        Bootstrap::getObjectManager()->get('Magento\Framework\App\AreaList')
+        Bootstrap::getObjectManager()->get(\Magento\Framework\App\AreaList::class)
             ->getArea('adminhtml')
             ->load(\Magento\Framework\App\Area::PART_CONFIG);
     }
@@ -22,7 +26,7 @@ class RoRicsLinkUpcRepositoryTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \RetailOps\Api\Model\RoRicsLinkUpcRepository $repository
          */
-        $repository = $objectManager->create('RetailOps\Api\Model\RoRicsLinkUpcRepository');
+        $repository = $objectManager->create(\RetailOps\Api\Model\RoRicsLinkUpcRepository::class);
         $upcs = [
             '91209558430',
             '91209558433',

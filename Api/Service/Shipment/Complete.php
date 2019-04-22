@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service\Shipment;
 
+/**
+ * Complete shipment class.
+ *
+ */
 class Complete extends \RetailOps\Api\Service\Shipment
 {
     const COMPLETE = 'complete';

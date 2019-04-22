@@ -5,6 +5,10 @@ namespace RetailOps\Api\Model;
 use \Magento\Framework\Model\AbstractModel;
 use RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface;
 
+/**
+ * Ro Rics link UPC class.
+ *
+ */
 class RoRicsLinkUpc extends AbstractModel implements RetailOpsRicsLinkByUpcInterface
 {
     public function getRicsIntegrationId()
@@ -51,6 +55,6 @@ class RoRicsLinkUpc extends AbstractModel implements RetailOpsRicsLinkByUpcInter
 
     protected function _construct()
     {
-        parent::_init('\RetailOps\Api\Model\Resource\RoRicsLinkUpc');
+        parent::_init(\RetailOps\Api\Model\ResourceModel\RoRicsLinkUpc::class);
     }
 }

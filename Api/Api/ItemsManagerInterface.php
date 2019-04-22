@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api;
 
+/**
+ * Items manager interface
+ *
+ */
 interface ItemsManagerInterface
 {
     /**
@@ -22,8 +26,7 @@ interface ItemsManagerInterface
      * @return array
      */
     public function getCancelItems();
-
-
+    
     /**
      * @return array
      */

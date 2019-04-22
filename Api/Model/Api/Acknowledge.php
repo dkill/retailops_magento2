@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Model\Api;
 
+/**
+ * Acknowlegde class.
+ *
+ */
 class Acknowledge
 {
     const ACK_STATUS = 1;

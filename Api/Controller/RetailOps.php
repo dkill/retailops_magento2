@@ -4,10 +4,13 @@ namespace RetailOps\Api\Controller;
 
 use Magento\Framework\App\RequestInterface;
 
+/**
+ * Abstract RetailOps controller class.
+ *
+ */
 abstract class RetailOps extends \Magento\Framework\App\Action\Action
 {
     const BEFOREPULL = 'retailops_before_pull_';
-
 
     /**
      * @var string
@@ -49,8 +52,7 @@ abstract class RetailOps extends \Magento\Framework\App\Action\Action
      * @var array
      */
     protected $association = [];
-
-
+    
     public function dispatch(RequestInterface $request)
     {
         $this->setParams($request);

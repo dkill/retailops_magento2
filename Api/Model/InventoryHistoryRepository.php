@@ -6,6 +6,10 @@ use Magento\Framework\Exception\LocalizedException;
 use RetailOps\Api\Api\InventoryHistoryInterface;
 use RetailOps\Api\Api\Data\InventoryHistoryInterface as InventoryHistoryDataInterface;
 
+/**
+ * Inventory history repository.
+ *
+ */
 class InventoryHistoryRepository implements InventoryHistoryInterface
 {
     use \RetailOps\Api\Model\Api\Traits\SearchResult;
@@ -71,8 +75,8 @@ class InventoryHistoryRepository implements InventoryHistoryInterface
     }
 
     public function __construct(
-        \RetailOps\Api\Model\Resource\InventoryHistory $resource,
-        \RetailOps\Api\Model\Resource\Collection\InventoryHistory\CollectionFactory $collectionFactory,
+        \RetailOps\Api\Model\ResourceModel\InventoryHistory $resource,
+        \RetailOps\Api\Model\ResourceModel\Collection\InventoryHistory\CollectionFactory $collectionFactory,
         \RetailOps\Api\Model\InventoryHistoryFactory $inventoryHistoryFactory,
         \RetailOps\Api\Api\Data\InventoryHistorySearchInterfaceFactory $searchResult
     ) {

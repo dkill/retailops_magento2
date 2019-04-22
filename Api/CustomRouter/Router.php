@@ -4,9 +4,14 @@ namespace RetailOps\Api\CustomRouter;
 
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * RetailOps router class.
+ *
+ */
 class Router implements \Magento\Framework\App\RouterInterface
 {
     const MODULE_ENABLE = 'retailops/RetailOps/turn_on';
+
     protected static $map =
         [
             'inventory_push_v1' => 'Inventory',
@@ -17,6 +22,7 @@ class Router implements \Magento\Framework\App\RouterInterface
             'order_shipment_submit_v1' => 'Order\\Shipment'
 
         ];
+
     /**
      * @var \Magento\Framework\App\ActionFactory
      */

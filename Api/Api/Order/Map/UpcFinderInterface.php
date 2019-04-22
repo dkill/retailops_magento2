@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Order\Map;
 
+/**
+ * UPC finder interface
+ *
+ */
 interface UpcFinderInterface
 {
     /**

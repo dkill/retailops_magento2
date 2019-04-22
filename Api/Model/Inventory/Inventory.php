@@ -5,6 +5,9 @@ namespace RetailOps\Api\Model\Inventory;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Indexer\CacheContext;
 
+/**
+ * Inventory class.
+ */
 class Inventory
 {
     const FROM = 'retailops';
@@ -74,7 +77,7 @@ class Inventory
      * @var \RetailOps\Api\Service\CalculateInventory
      */
     protected $_calculateInventory;
-    
+
     /**
      * @param $inventory []
      */
@@ -115,13 +118,19 @@ class Inventory
             $inventoryHistory->setFrom(self::FROM);
             $inventoryHistory->setReserveCount($inventoryObjects[$item->getData('upc')]->getReserveCount());
             $inventoryHistory->setRealCount($inventoryObjects[$item->getData('upc')]->getRealCount());
-            if ($qty <= 0 and $productsRetailOps[$item->getData('upc')] > 0) {
-                $productsForRefreshCache[$item->getId()] = ['stock' => $stock, 'inventory' => $productsRetailOps[$item->getData('upc')]];
+            if ($qty <= 0 && $productsRetailOps[$item->getData('upc')] > 0) {
+                $productsForRefreshCache[$item->getId()] = [
+                    'stock' => $stock,
+                    'inventory' => $productsRetailOps[$item->getData('upc')]
+                ];
                 $this->logger->debug('cleanCache:', [$item->getId()]);
             }
 
-            if ($qty > 0 and $productsRetailOps[$item->getData('upc')] <= 0) {
-                $productsForRefreshCache[$item->getId()] = ['stock' => $stock, 'inventory' => $productsRetailOps[$item->getData('upc')]];
+            if ($qty > 0 && $productsRetailOps[$item->getData('upc')] <= 0) {
+                $productsForRefreshCache[$item->getId()] = [
+                    'stock' => $stock,
+                    'inventory' => $productsRetailOps[$item->getData('upc')]
+                ];
                 $this->logger->debug('cleanCache:', [$item->getId()]);
             }
             if ($qty > $productsRetailOps[$item->getData('upc')]) {

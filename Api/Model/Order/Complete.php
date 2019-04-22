@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Model\Order;
 
+/**
+ * Complete order class.
+ *
+ */
 class Complete
 {
     protected $completeOrder;

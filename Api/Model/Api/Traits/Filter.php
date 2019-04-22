@@ -79,7 +79,7 @@ trait Filter
      */
     public function setOrderIdByIncrementId($orders)
     {
-        $resource = ObjectManager::getInstance()->get('Magento\Framework\App\ResourceConnection');
+        $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
         $connection = $resource->getConnection();
         $existsOrders = [];
         $template = 'increment_id IN (%s)';
@@ -89,7 +89,6 @@ trait Filter
         $where = sprintf($template, $bind);
         $select = $connection->select()->from('sales_order', ['entity_id', 'increment_id'])
             ->where($where);
-
 
         $result = $connection->fetchAll($select, []);
         if (count($result)) {

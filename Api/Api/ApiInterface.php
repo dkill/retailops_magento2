@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api;
 
+/**
+ * API interface
+ *
+ */
 interface ApiInterface
 {
     /**

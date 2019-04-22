@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Calculate order discount class.
+ *
+ */
 class CalculateOrderDiscount implements CalculateDiscountInterface
 {
     /**

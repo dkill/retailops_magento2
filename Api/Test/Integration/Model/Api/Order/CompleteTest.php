@@ -4,9 +4,14 @@ namespace RetailOps\Api\Test\Integration\Model\Api\Order;
 
 use Magento\TestFramework\Helper\Bootstrap;
 
+/**
+ * Complete test class.
+ *
+ */
 class CompleteTest extends \PHPUnit_Framework_TestCase
 {
     const INCREMENT_1 = '100000001';
+
     protected $postData = [
         'channel_order_refnum' => 'xxxxxxxxxxxx',
         'grand_total' => 'xxxxxx',
@@ -16,7 +21,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     ];
     protected function setUp()
     {
-        Bootstrap::getObjectManager()->get('Magento\Framework\App\AreaList')
+        Bootstrap::getObjectManager()->get(\Magento\Framework\App\AreaList::class)
             ->getArea('adminhtml')
             ->load(\Magento\Framework\App\Area::PART_CONFIG);
     }
@@ -28,7 +33,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataAllShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -37,7 +42,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         foreach ($order->getItems() as $item) {
@@ -56,7 +61,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataAllShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -65,7 +70,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         foreach ($order->getItems() as $item) {
@@ -83,12 +88,12 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataAllShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderSubmit = $objectManager->create('RetailOps\Api\Model\Shipment\ShipmentSubmit');
+        $orderSubmit = $objectManager->create(\RetailOps\Api\Model\Shipment\ShipmentSubmit::class);
         /**
          * @var \RetailOps\Api\Model\Shipment\ShipmentSubmit $orderSubmit
          */
         $orderSubmit->updateOrder($this->postData);
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -97,7 +102,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         foreach ($order->getItems() as $item) {
@@ -115,12 +120,12 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataTwoShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderSubmit = $objectManager->create('RetailOps\Api\Model\Shipment\ShipmentSubmit');
+        $orderSubmit = $objectManager->create(\RetailOps\Api\Model\Shipment\ShipmentSubmit::class);
         /**
          * @var \RetailOps\Api\Model\Shipment\ShipmentSubmit $orderSubmit
          */
         $orderSubmit->updateOrder($this->postData);
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -129,7 +134,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         foreach ($order->getItems() as $item) {
@@ -147,7 +152,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataOneRefund();
         $objectManager = Bootstrap::getObjectManager();
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -156,7 +161,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         foreach ($order->getItems() as $item) {
@@ -175,7 +180,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataOneShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
+        $orderComplete = $objectManager->create(\RetailOps\Api\Model\Api\Order\Complete::class);
         /**
          * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
@@ -184,7 +189,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $this->assertEquals('complete', $order->getStatus());
         $items = $order->getItems();
@@ -199,7 +204,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $postData = [];
         $objectManager = Bootstrap::getObjectManager();
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $postData['channel_order_refnum'] = $order->getIncrementId();
         $postData['grand_total'] = $order->getBaseGrandTotal();
@@ -232,11 +237,12 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $postData['shipments'][] = $package;
         $this->postData = $postData;
     }
+
     protected function setPostDataOneShipment()
     {
         $postData = [];
         $objectManager = Bootstrap::getObjectManager();
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $postData['channel_order_refnum'] = $order->getIncrementId();
         $postData['grand_total'] = $order->getBaseGrandTotal();
@@ -273,7 +279,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $postData = [];
         $objectManager = Bootstrap::getObjectManager();
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $postData['channel_order_refnum'] = $order->getIncrementId();
         $postData['grand_total'] = $order->getBaseGrandTotal();
@@ -311,7 +317,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     {
         $postData = [];
         $objectManager = Bootstrap::getObjectManager();
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $postData['channel_order_refnum'] = $order->getIncrementId();
         $postData['grand_total'] = $order->getBaseGrandTotal();

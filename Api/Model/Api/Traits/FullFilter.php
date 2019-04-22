@@ -4,6 +4,10 @@ namespace RetailOps\Api\Model\Api\Traits;
 
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * Full filter trait.
+ *
+ */
 trait FullFilter
 {
     /**
@@ -20,6 +24,7 @@ trait FullFilter
      * @var \Magento\Framework\Api\Search\FilterGroup
      */
     protected $filterGroup;
+
     /**
      * @param array $filters
      * @return mixed
@@ -29,7 +34,7 @@ trait FullFilter
         /**
          * @var  \Magento\Framework\Api\Search\FilterGroup
          */
-        $filterGroup = ObjectManager::getInstance()->create('\Magento\Framework\Api\Search\FilterGroup');
+        $filterGroup = ObjectManager::getInstance()->create(\Magento\Framework\Api\Search\FilterGroup::class);
         $filterGroup->setFilters($filters);
         return $filterGroup;
     }
@@ -42,7 +47,7 @@ trait FullFilter
      */
     public function createFilter($field, $operator, $value)
     {
-        $filter = ObjectManager::getInstance()->create('\Magento\Framework\Api\Filter');
+        $filter = ObjectManager::getInstance()->create(\Magento\Framework\Api\Filter::class);
         $filter->setField($field)
             ->setConditionType($operator)
             ->setValue($value);
@@ -61,7 +66,7 @@ trait FullFilter
 
     private function addFilterGroups()
     {
-        $this->searchCriteria = ObjectManager::getInstance()->create('\Magento\Framework\Api\SearchCriteria');
+        $this->searchCriteria = ObjectManager::getInstance()->create(\Magento\Framework\Api\SearchCriteria::class);
         $groups = [];
 
         if (($filters = $this->getFilters()) && count($filters)) {
@@ -76,7 +81,7 @@ trait FullFilter
     private function createSortOrder($field, $direction)
     {
         // Create a sort order
-        $sortOrder = ObjectManager::getInstance()->create('\Magento\Framework\Api\SortOrder');
+        $sortOrder = ObjectManager::getInstance()->create(\Magento\Framework\Api\SortOrder::class);
         $sortOrder->setField($field)
             ->setDirection($direction);
 
@@ -100,7 +105,7 @@ trait FullFilter
      */
     public function setOrderIdByIncrementId($orders)
     {
-        $resource = ObjectManager::getInstance()->get('Magento\Framework\App\ResourceConnection');
+        $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
         $connection = $resource->getConnection();
         $existsOrders = [];
         $template = 'increment_id IN (%s)';
@@ -111,12 +116,11 @@ trait FullFilter
         $select = $connection->select()->from('sales_order', ['entity_id', 'increment_id'])
             ->where($where);
 
-
         $result = $connection->fetchAll($select, []);
         if (count($result)) {
             foreach ($result as $row) {
                 foreach ($orders as $key => $order) {
-                    if ((string)$key === (string)$row['increment_id']) {
+                    if ((string)$key === (string)$rowApi/Model/Api/Traits/Filter['increment_id']) {
                         $existsOrders[$row['entity_id']] = $order;
                     }
                 }

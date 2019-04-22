@@ -6,6 +6,10 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 
+/**
+ * Product link class
+ *
+ */
 class ProductLink extends \Magento\Ui\Component\Listing\Columns\Column
 {
     /**

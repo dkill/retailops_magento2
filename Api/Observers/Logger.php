@@ -4,6 +4,10 @@ namespace RetailOps\Api\Observers;
 
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * Logger observer class.
+ *
+ */
 class Logger implements \Magento\Framework\Event\ObserverInterface
 {
     const LOG_STATUS = 'retailops/RetailOps/enable_log';

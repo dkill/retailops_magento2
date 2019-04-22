@@ -1,16 +1,21 @@
 <?php
 namespace RetailOps\Api\Model;
 
-use RetailOps\Api\Model\QueueInterface;
+use \RetailOps\Api\Model\QueueInterface;
+use \Magento\Framework\DataObject\IdentityInterface;
 
-class Queue extends \Magento\Framework\Model\AbstractModel implements QueueInterface, \Magento\Framework\DataObject\IdentityInterface
+/**
+ * Queue class.
+ *
+ */
+class Queue extends \Magento\Framework\Model\AbstractModel implements QueueInterface, IdentityInterface
 {
     const CACHE_TAG = 'retailops_api_queue';
     protected $_idFieldName = self::ID;
 
     protected function _construct()
     {
-        $this->_init('RetailOps\Api\Model\ResourceModel\Queue');
+        $this->_init(\RetailOps\Api\Model\ResourceModel\Queue::class);
     }
 
     public function getIdentities()
@@ -63,12 +68,12 @@ class Queue extends \Magento\Framework\Model\AbstractModel implements QueueInter
 
     public function setOrderId($orderInc)
     {
-        return parent::setData(self::ORDER_Id, $orderInc);
+        return parent::setData(self::ORDER_ID, $orderInc);
     }
 
     public function getOrderId()
     {
-        return parent::getData(self::ORDER_Id);
+        return parent::getData(self::ORDER_ID);
     }
 
     /**

@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Controller\Adminhtml;
 
+/**
+ * Abstract queue controller class.
+ *
+ */
 abstract class Queue extends \Magento\Backend\App\Action
 {
     /**

@@ -4,6 +4,10 @@ namespace RetailOps\Api\Service\Order\Map;
 
 use RetailOps\Api\Api\Order\Map\CalculateAmountInterface;
 
+/**
+ * Calculate amount order map class.
+ *
+ */
 class CalculateAmout implements CalculateAmountInterface
 {
     /**
@@ -16,7 +20,9 @@ class CalculateAmout implements CalculateAmountInterface
                             -(float)$order->getBaseShippingCanceled()
                             -(float)$order->getBaseShippingRefunded();
         if ($shippingAmount < 0) {
-            throw  new \LogicException('Shipping amount is:'.$shippingAmount.', but amt cannot be negative, order:'.$order->getId());
+            throw  new \LogicException(
+                'Shipping amount is:'.$shippingAmount.', but amt cannot be negative, order:'.$order->getId()
+            );
         }
         return $shippingAmount;
     }

@@ -5,10 +5,14 @@ use Magento\Framework\Exception\AuthenticationException;
 use \Magento\Framework\ObjectManagerInterface;
 use \RetailOps\Api\Model\Api\Map\Order as OrderMap;
 use \Magento\Sales\Model\Order as MagentoOrder;
+use \RetailOps\Api\Model\Api\Traits\Filter;
 
+/**
+ * Order pull class.
+ *
+ */
 class Order
 {
-    use \RetailOps\Api\Model\Api\Traits\Filter;
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
      */
@@ -18,10 +22,12 @@ class Order
      * @var int
      */
     protected $currentPage;
+
     /**
      * @var \Magento\Framework\Api\SearchCriteria
      */
     protected $searchCriteria;
+
     /**
      * @var ObjectManagerInterface
      */
@@ -47,7 +53,7 @@ class Order
      */
     protected $filterGroup;
 
-    public function getOrders($pageToken, $maxcount = 1, $data)
+    public function getOrders($pageToken, $maxcount = 1, $data = [])
     {
         $this->setFilters($pageToken, $maxcount, $data);
         // Create the order repo and get a list of orders matching our criteria
@@ -55,24 +61,21 @@ class Order
         $this->countPages = $result->getLastPageNumber();
         $orderItems = $this->RetailOrderMaps->getOrders($result->getItems());
         if ($this->getNextPageToken()) {
-            //only for test, after test uncommit next line
-//            $orders['next_page_token'] = $this->getNextPageToken();
+            $orders['next_page_token'] = $this->getNextPageToken();
         }
         $orders['orders'] = $orderItems;
         return $orders;
     }
 
-
     protected function getNextPageToken()
     {
         if ($this->countPages > $this->currentPage) {
-            $service = $this->ObjectManager->get('\\RetailOps\Api\Service\NumberPageToken');
+            $service = $this->ObjectManager->get(\RetailOps\Api\Service\NumberPageToken::class);
             $pageNumberToken = $service->encode($this->currentPage+1);
             return $pageNumberToken;
         }
         return null;
     }
-
 
     protected function setFilters($pageToken, $maxcount, $data)
     {
@@ -85,7 +88,11 @@ class Order
 
     private function setData($pageToken, $maxcount, $data)
     {
-            $filter = $this->createFilter('retailops_send_status', 'in', [OrderMap::ORDER_NO_SEND_STATUS, OrderMap::ORDER_PULL_STATUS]);
+            $filter = $this->createFilter(
+                'retailops_send_status',
+                'in',
+                [OrderMap::ORDER_NO_SEND_STATUS, OrderMap::ORDER_PULL_STATUS]
+            );
             $this->addFilter('retail_status', $filter);
             $page = $this->getCurrentPage($pageToken);
             $this->searchCriteria->setPageSize($maxcount);
@@ -126,7 +133,6 @@ class Order
     {
         return $this->filters;
     }
-
 
     private function addFilterGroups()
     {
@@ -177,12 +183,12 @@ class Order
             if ($pageToken === 'string') {
                 return $page;
             }
-            $service = $this->ObjectManager->get('\\RetailOps\Api\Service\NumberPageToken');
+            $service = $this->ObjectManager->get(\RetailOps\Api\Service\NumberPageToken::class);
             $pageNumber = $service->decode($pageToken);
             if (is_numeric($pageNumber)) {
                 $page = (int)$pageNumber;
             } else {
-                $logger = $this->ObjectManager->get('Psr\Log\LoggerInterface');
+                $logger = $this->ObjectManager->get(\Psr\Log\LoggerInterface::class);
                 $logger->addCritical($pageToken. ' is invalid');
                 throw new \Magento\Framework\Exception\AuthenticationException(__('Page token are invalid'));
             }
@@ -200,13 +206,12 @@ class Order
     private function createSortOrder($field, $direction)
     {
         // Create a sort order
-        $sortOrder = $this->ObjectManager->create('\Magento\Framework\Api\SortOrder');
+        $sortOrder = $this->ObjectManager->create(\Magento\Framework\Api\SortOrder::class);
         $sortOrder->setField($field)
             ->setDirection($direction);
 
         return [$sortOrder];
     }
-
 
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $OrderRepository,
@@ -218,7 +223,7 @@ class Order
         $this->OrderRepository = $OrderRepository;
         $this->ObjectManager = $objectManager;
         $this->RetailOrderMaps = $RetailOrderMaps;
-        $this->searchCriteria = $this->ObjectManager->create('\Magento\Framework\Api\SearchCriteria');
+        $this->searchCriteria = $this->ObjectManager->create(\Magento\Framework\Api\SearchCriteria::class);
         $this->filter = $filter;
         $this->filterGroup = $filterGroupFactory;
     }

@@ -5,9 +5,12 @@ namespace RetailOps\Api\Model\Api\Map;
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Model\Api\Map\Order as OrderMap;
 
+/**
+ * Map order class.
+ *
+ */
 class Order
 {
-
     const CONFIGURABLE = 'configurable';
     const AUTH_STATUS = 'processing';
     //order pull to
@@ -92,7 +95,7 @@ class Order
         $prepareOrder['ship_service_code'] = $order->getShippingMethod();
         //add gift message if available
         if ($order->getGiftMessageAvailable()) {
-            $giftHelper = ObjectManager::getInstance()->get('Magento\GiftMessage\Helper\Message');
+            $giftHelper = ObjectManager::getInstance()->get(\Magento\GiftMessage\Helper\Message::class);
             $message = $giftHelper->getGiftMessage($order->getGiftMessageId());
             $prepareOrder['gift_message'] = $message;
         }
@@ -258,7 +261,6 @@ class Order
         }
         return $payments;
     }
-
 
     /**
      * @param  \Magento\Sales\Model\Order $order

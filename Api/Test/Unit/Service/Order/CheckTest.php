@@ -4,6 +4,10 @@ namespace RetailOps\Api\Test\Unit\Service\Order;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
 
+/**
+ * Test check class.
+ *
+ */
 class CheckTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -39,10 +43,11 @@ class CheckTest extends \PHPUnit_Framework_TestCase
      * @var \RetailOps\Api\Service\OrderCheck
      */
     protected $model;
+
     public function setUp()
     {
         $this->objectManagerHelper = new ObjectManagerHelper($this);
-        $this->orderMockRight = $this->getMockBuilder('Magento\Sales\Model\Order')
+        $this->orderMockRight = $this->getMockBuilder(\Magento\Sales\Model\Order::class)
                                 ->disableOriginalConstructor()
                                 ->getMock();
         $this->orderMockRight->expects($this->any())
@@ -62,7 +67,7 @@ class CheckTest extends \PHPUnit_Framework_TestCase
             ->method('getCanShipPartiallyItem')
             ->willReturn(true);
 
-        $this->orderMockWrong = $this->getMockBuilder('\Magento\Sales\Model\Order')
+        $this->orderMockWrong = $this->getMockBuilder(\Magento\Sales\Model\Order::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->orderMockWrong->expects($this->any())
@@ -81,7 +86,7 @@ class CheckTest extends \PHPUnit_Framework_TestCase
             ->method('getCanShipPartiallyItem')
             ->willReturn(false);
 
-        $this->item1 = $this->getMockBuilder('\Magento\Sales\Model\Order\Item')
+        $this->item1 = $this->getMockBuilder(\Magento\Sales\Model\Order\Item::class)
                             ->disableOriginalConstructor()
                             ->getMock();
         $this->item1->expects($this->any())
@@ -98,7 +103,7 @@ class CheckTest extends \PHPUnit_Framework_TestCase
             ->method('getQtyToShip')
             ->willReturn(10);
 
-        $this->item2 = $this->getMockBuilder('\Magento\Sales\Model\Order\Item')
+        $this->item2 = $this->getMockBuilder(\Magento\Sales\Model\Order\Item::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->item2->expects($this->any())
@@ -124,7 +129,7 @@ class CheckTest extends \PHPUnit_Framework_TestCase
         $this->orderMockWrong->expects($this->any())
             ->method('getItems')
             ->willReturn([]);
-        $this->model = $this->objectManagerHelper->getObject('\RetailOps\Api\Service\OrderCheck');
+        $this->model = $this->objectManagerHelper->getObject(\RetailOps\Api\Service\OrderCheck::class);
     }
 
     public function testCanInvoice()
@@ -145,7 +150,6 @@ class CheckTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->model->hasItem(3, $this->orderMockRight));
         $this->assertFalse($this->model->hasItem(2, $this->orderMockWrong));
     }
-
 
     public function testItemCanShipment()
     {

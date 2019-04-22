@@ -4,11 +4,16 @@ namespace RetailOps\Api\Controller\Frontend\Order;
 
 use \RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Shipment controller class action.
+ *
+ */
 class Shipment extends RetailOps
 {
     const SERVICENAME = 'shipment_submit';
     const COUNT_ORDERS_PER_REQUEST = 50;
     const ENABLE = 'retailops/RetailOps_feed/order_shipment_submit';
+
     /**
      * @var string
      */
@@ -42,7 +47,7 @@ class Shipment extends RetailOps
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }

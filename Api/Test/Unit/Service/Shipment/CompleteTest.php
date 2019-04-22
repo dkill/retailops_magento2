@@ -2,11 +2,17 @@
 
 namespace RetailOps\Api\Test\Unit\Service\Shipment;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use \Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader;
 
+/**
+ * Complete test class
+ *
+ */
 class CompleteTest extends \PHPUnit_Framework_TestCase
 {
     const PATH = '/app/code/RetailOps/Api/Test/Unit/Service/Shipment';
+
     /**
      * @var \Magento\Shipping\Model\Config | \PHPUnit_Framework_MockObject_MockObject
      */
@@ -35,16 +41,16 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->objectManagerHelper = new ObjectManagerHelper($this);
-        $this->shippingConfigMock = $this->getMockBuilder('\\Magento\Shipping\Model\Config')
+        $this->shippingConfigMock = $this->getMockBuilder(\Magento\Shipping\Model\Config::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
-        $upsMock = $this->getMockBuilder('\\Magento\Ups\Model\Carrier')
+        $upsMock = $this->getMockBuilder(\Magento\Ups\Model\Carrier::class)
         ->disableOriginalConstructor()
         ->getMock();
         $upsMock->expects($this->any())
             ->method('getConfigData')
             ->willReturn('ups');
-        $uspsMock = $this->getMockBuilder('\\Magento\Usps\Model\Carrier')
+        $uspsMock = $this->getMockBuilder(\Magento\Usps\Model\Carrier::class)
         ->disableOriginalConstructor()
         ->getMock();
         $uspsMock->expects($this->any())
@@ -58,14 +64,14 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $this->shippingConfigMock->expects($this->any())
                                  ->method('getAllCarriers')
                                  ->willReturn($allCarriers);
-        $this->shipmentLoaderMock = $this->getMockBuilder('\Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader')
+        $this->shipmentLoaderMock = $this->getMockBuilder(ShipmentLoader::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
-        $this->shipmentSenderMock = $this->getMockBuilder('\Magento\Sales\Model\Order\Email\Sender\ShipmentSender')
+        $this->shipmentSenderMock = $this->getMockBuilder(\Magento\Sales\Model\Order\Email\Sender\ShipmentSender::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
         $this->model = $this->objectManagerHelper->getObject(
-            'RetailOps\Api\Service\Shipment\Complete',
+            \RetailOps\Api\Service\Shipment\Complete::class,
             [
             'shippingConfig' => $this->shippingConfigMock,
             'shipmentLoader' => $this->shipmentLoaderMock,

@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Model\Api\Order;
 
+/**
+ * Return order class.
+ *
+ */
 class OrderReturn
 {
     /**

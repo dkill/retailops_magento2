@@ -4,6 +4,10 @@ namespace RetailOps\Api\Model\Api\Order;
 
 use \RetailOps\Api\Model\Api\Traits\Filter;
 
+/**
+ * Complete order class.
+ *
+ */
 class Complete
 {
     const COMPLETE = 'complete';
@@ -106,12 +110,16 @@ class Complete
         $needCreditMemoItems = $this->itemsManager->removeCancelItems($this->getOrder($orderId), $unShipmentItems);
         $this->createCreditMemoIfNeed($this->getOrder($orderId), $needCreditMemoItems);
 
-        if (array_key_exists('items', $this->shipment->getShippmentItems()) && count($this->shipment->getShippmentItems()['items'])) {
+        if (array_key_exists('items', $this->shipment->getShippmentItems()) &&
+            count($this->shipment->getShippmentItems()['items'])
+        ) {
             //remove items, that already had invoice
-            $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems($this->getOrder($orderId), $this->shipment->getShippmentItems()['items']);
+            $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems(
+                $this->getOrder($orderId),
+                $this->shipment->getShippmentItems()['items']
+            );
             $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
             $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
-
         }
 
         //all available items cancel
@@ -137,7 +145,7 @@ class Complete
         $this->order = $order;
         return $this->order;
     }
-    
+
     public function createCreditMemoIfNeed(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
     {
         if (count($items) > 0) {

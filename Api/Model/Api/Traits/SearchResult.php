@@ -2,8 +2,9 @@
 
 namespace RetailOps\Api\Model\Api\Traits;
 
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use \Magento\Framework\Api\Search\FilterGroup;
+use \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use \Magento\Framework\Api\SearchCriteriaInterface;
 
 trait SearchResult
 {
@@ -29,8 +30,11 @@ trait SearchResult
         }
     }
 
-    protected function prepareSearchData(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria, $searchData, AbstractCollection $collection)
-    {
+    protected function prepareSearchData(
+        SearchCriteriaInterface $searchCriteria,
+        $searchData,
+        AbstractCollection $collection
+    ) {
         $searchData->setSearchCriteria($searchCriteria);
         foreach ($searchCriteria->getFilterGroups() as $group) {
             $this->addFilterGroupToCollection($group, $collection);

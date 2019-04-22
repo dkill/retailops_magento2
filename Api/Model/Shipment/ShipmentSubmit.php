@@ -4,6 +4,10 @@ namespace RetailOps\Api\Model\Shipment;
 
 use \RetailOps\Api\Model\Api\Traits\Filter;
 
+/**
+ * Shipment submit class.
+ *
+ */
 class ShipmentSubmit
 {
     /**
@@ -39,7 +43,7 @@ class ShipmentSubmit
      * @var \Magento\Sales\Api\OrderManagementInterface
      */
     protected $orderManager;
-    
+
     /**
      * ShipmentSubmit constructor.
      * @param \RetailOps\Api\Api\Shipment\ShipmentInterface $shipment
@@ -73,9 +77,15 @@ class ShipmentSubmit
                 $postData['shipments'][] = $postData['shipment'];
                 unset($postData['shipment']);
             }
-            if (array_key_exists('items', $this->shipment->getShippmentItems()) && count($this->shipment->getShippmentItems()['items'])) {
+            
+            if (array_key_exists('items', $this->shipment->getShippmentItems()) &&
+                count($this->shipment->getShippmentItems()['items'])
+            ) {
                 //remove items, that already had invoice
-                $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems($order, $this->shipment->getShippmentItems()['items']);
+                $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems(
+                    $order,
+                    $this->shipment->getShippmentItems()['items']
+                );
                 $this->itemsManager->canInvoiceItems($order, $needInvoiceItems);
                 $this->invoiceHelper->createInvoice($order, $needInvoiceItems);
 

@@ -4,6 +4,10 @@ namespace RetailOps\Api\Service;
 
 use \Magento\Sales\Model\Order as MagentoOrder;
 
+/**
+ * Calculate inventory class
+ *
+ */
 class CalculateInventory
 {
     const QUANTITY = 'quantity_available';
@@ -146,10 +150,19 @@ class CalculateInventory
         SUM(main_table.qty_refunded),
         SUM(soi.qty_refunded))) AS sum_ordered')]
         );
-        $collection->getSelect()->where('so.retailops_send_status=?', \RetailOps\Api\Model\Api\Map\Order::ORDER_NO_SEND_STATUS);
+        $collection->getSelect()->where(
+            'so.retailops_send_status=?',
+            \RetailOps\Api\Model\Api\Map\Order::ORDER_NO_SEND_STATUS
+        );
         $collection->getSelect()->where('cpev.value in (?)', $upcs);
-        $collection->getSelect()->where('so.state NOT IN (?)', [MagentoOrder::STATE_CANCELED, MagentoOrder::STATE_CLOSED]);
-        $collection->getSelect()->where('main_table.product_type=?', \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE);
+        $collection->getSelect()->where(
+            'so.state NOT IN (?)',
+            [MagentoOrder::STATE_CANCELED, MagentoOrder::STATE_CLOSED]
+        );
+        $collection->getSelect()->where(
+            'main_table.product_type=?',
+            \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+        );
         $collection->getSelect()->where('cpev.value IS NOT NULL');
         $collection->getSelect()->group('cpev.value');
         $collection->load();

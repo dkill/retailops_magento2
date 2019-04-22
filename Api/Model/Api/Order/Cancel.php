@@ -1,12 +1,15 @@
 <?php
 
-
 namespace RetailOps\Api\Model\Api\Order;
 
+use \RetailOps\Api\Model\Api\Traits\Filter;
+
+/**
+ * Cancel order class.
+ *
+ */
 class Cancel
 {
-    use \RetailOps\Api\Model\Api\Traits\Filter;
-
     /**
      * @var \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface
      */
@@ -14,8 +17,9 @@ class Cancel
     protected $response;
     protected $status = 'success';
     protected $events = [];
+
     /**
-     * @var \\RetailOps\Api\Model\Order\Status\History
+     * @var \RetailOps\Api\Model\Order\Status\History
      */
     protected $historyRetail;
 

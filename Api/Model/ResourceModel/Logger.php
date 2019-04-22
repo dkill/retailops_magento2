@@ -1,7 +1,11 @@
 <?php
 
-namespace RetailOps\Api\Model\Resource;
+namespace RetailOps\Api\Model\ResourceModel;
 
+/**
+ * Logger resource model class.
+ *
+ */
 class Logger extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

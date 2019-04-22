@@ -7,8 +7,9 @@ interface QueueInterface
     const MESSAGE = 'message';
     const ACTIVE = 'is_active';
     const QUEUE_TYPE = 'queue_type';
-    const ORDER_Id = 'order_increment_id';
+    const ORDER_ID = 'order_increment_id';
     const CANCEL_TYPE = 1;
+    
     /**
      * @param string $message
      * @return $this

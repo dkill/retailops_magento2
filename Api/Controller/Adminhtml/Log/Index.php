@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Controller\Adminhtml\Log;
 
+/**
+ * Log index controller action class.
+ *
+ */
 class Index extends \RetailOps\Api\Controller\Adminhtml\Log
 {
     public function execute()

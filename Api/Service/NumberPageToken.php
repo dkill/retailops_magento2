@@ -2,9 +2,31 @@
 
 namespace RetailOps\Api\Service;
 
+use \Magento\Framework\Serialize\SerializerInterface;
+use \Magento\Framework\Exception\SerializationException;
+
+/**
+ * Number page token class.
+ *
+ */
 class NumberPageToken
 {
-    const SALT= 'ENJW8mS2KaJoNB5E5CoSAAu0xARgsR1bdzFWpEn+poYw45q+73az5kYi';
+    const SALT = 'ENJW8mS2KaJoNB5E5CoSAAu0xARgsR1bdzFWpEn+poYw45q+73az5kYi';
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * NumberPageToken constructor.
+     *
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
 
     public function encode($param)
     {
@@ -20,23 +42,23 @@ class NumberPageToken
     {
         $array['page'] = $param;
         $array['key'] = self::SALT;
-        $string = serialize($array);
+        $string = $this->serializer->serialize($array);
         return base64_encode($string);
     }
 
     protected function getParamByCode($code)
     {
         $string = base64_decode($code);
-        $array = unserialize($string);
+        $array = $this->serializer->unserialize($string);
         if (!is_array($array)) {
-            throw new \Exception(__('wrong pageNumberToken'));
+            throw new SerializationException(__('wrong pageNumberToken'));
         }
         if (isset($array['key']) && $array['key'] === self::SALT) {
             if (isset($array['page']) && is_numeric($array['page'])) {
                 return (int)$array['page'];
             }
-            throw new \Exception(__('wrong pageNumberToken'));
+            throw new SerializationException(__('wrong pageNumberToken'));
         }
-        throw new \Exception(__('wrong pageNumberToken'));
+        throw new SerializationException(__('wrong pageNumberToken'));
     }
 }

@@ -4,9 +4,14 @@ namespace RetailOps\Api\Test\Integration\Model\Shipment;
 
 use Magento\TestFramework\Helper\Bootstrap;
 
+/**
+ * Shipmet submit test class.
+ *
+ */
 class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
 {
     const INCREMENT_1 = '100000001';
+
     protected $postData = [
         'channel_order_refnum' => 'xxxxxxxxxxxx',
         'grand_total' => 'xxxxxx',
@@ -16,7 +21,7 @@ class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
     ];
     protected function setUp()
     {
-        Bootstrap::getObjectManager()->get('Magento\Framework\App\AreaList')
+        Bootstrap::getObjectManager()->get(\Magento\Framework\App\AreaList::class)
             ->getArea('adminhtml')
             ->load(\Magento\Framework\App\Area::PART_CONFIG);
     }
@@ -30,12 +35,12 @@ class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
     {
         $this->setPostDataAllShipment();
         $objectManager = Bootstrap::getObjectManager();
-        $orderSubmit = $objectManager->create('RetailOps\Api\Model\Shipment\ShipmentSubmit');
+        $orderSubmit = $objectManager->create(\RetailOps\Api\Model\Shipment\ShipmentSubmit::class);
         /**
          * @var \RetailOps\Api\Model\Shipment\ShipmentSubmit $orderSubmit
          */
         $orderSubmit->updateOrder($this->postData);
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         foreach ($order->getItems() as $item) {
             $this->assertEquals($item->getQtyOrdered(), $item->getQtyInvoiced());
@@ -47,7 +52,7 @@ class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
     {
         $postData = [];
         $objectManager = Bootstrap::getObjectManager();
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $postData['channel_order_refnum'] = $order->getIncrementId();
         $postData['grand_total'] = $order->getBaseGrandTotal();

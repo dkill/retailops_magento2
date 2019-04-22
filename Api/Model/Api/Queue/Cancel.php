@@ -6,6 +6,10 @@ use RetailOps\Api\Api\Queue\QueueInterface;
 use RetailOps\Api\Model\QueueInterface as Queue;
 use RetailOps\Api\Model\Api\Traits\FullFilter;
 
+/**
+ * Queue cancel class.
+ *
+ */
 class Cancel implements QueueInterface
 {
     protected $response;
@@ -50,8 +54,7 @@ class Cancel implements QueueInterface
     {
         return $this->queueRepository->getById($id);
     }
-
-
+    
     public function cancel($data)
     {
         $orderId = $this->getOrderIdByIncrement($data['channel_order_refnum']);

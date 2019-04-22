@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Services\CreditMemo;
 
+/**
+ * Credit memo helper interface.
+ *
+ */
 interface CreditMemoHelperInterface
 {
     /**

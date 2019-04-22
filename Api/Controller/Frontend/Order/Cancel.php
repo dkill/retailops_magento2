@@ -5,10 +5,15 @@ namespace RetailOps\Api\Controller\Frontend\Order;
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Cancel controller action class.
+ *
+ */
 class Cancel extends RetailOps
 {
     const SERVICENAME = 'order_cancel';
     const ENABLE = 'retailops/RetailOps_feed/order_cancel';
+
     /**
      * @var string
      */
@@ -16,7 +21,7 @@ class Cancel extends RetailOps
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
@@ -43,6 +48,6 @@ class Cancel extends RetailOps
     ) {
         $this->orderFactory = $orderFactory;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');
+        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }

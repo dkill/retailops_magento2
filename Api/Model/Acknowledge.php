@@ -2,13 +2,17 @@
 
 namespace RetailOps\Api\Model;
 
+/**
+ * Acknowlegde class.
+ *
+ */
 class Acknowledge
 {
     /**
      * @var Api\Acknowledge
      */
     protected $acknowledge;
-    
+
     /**
      * @param array $postData
      * @return array

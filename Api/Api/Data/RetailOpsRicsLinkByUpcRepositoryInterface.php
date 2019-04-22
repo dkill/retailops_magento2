@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Data;
 
+/**
+ * Interface RetailOpsRicsLinkByUpcRepositoryInterface
+ *
+ */
 interface RetailOpsRicsLinkByUpcRepositoryInterface
 {
     /**

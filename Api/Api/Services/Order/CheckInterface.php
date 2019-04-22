@@ -3,10 +3,10 @@
 namespace RetailOps\Api\Api\Services\Order;
 
 /**
- * Interface Check
- * @package RetailOps\Api\Api\Services\Order
+ * Order check interface
+ *
  */
-interface Check
+interface CheckInterface
 {
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order

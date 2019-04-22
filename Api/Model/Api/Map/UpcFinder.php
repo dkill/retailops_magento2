@@ -5,12 +5,17 @@ namespace RetailOps\Api\Model\Api\Map;
 use \RetailOps\Api\Api\Order\Map\UpcFinderInterface;
 use \RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcRepositoryInterface;
 
+/**
+ * UPC finder class.
+ *
+ */
 class UpcFinder implements UpcFinderInterface
 {
     /**
      * @var RetailOpsRicsLinkByUpcRepositoryInterface
      */
     protected $repository;
+    
     /**
      * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
      * @param \Magento\Catalog\Api\Data\ProductInterface|null $product

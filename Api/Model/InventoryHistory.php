@@ -5,6 +5,10 @@ namespace RetailOps\Api\Model;
 use \Magento\Framework\Model\AbstractModel;
 use \RetailOps\Api\Api\Data\InventoryHistoryInterface;
 
+/**
+ * Inventory history class.
+ *
+ */
 class InventoryHistory extends AbstractModel implements InventoryHistoryInterface
 {
     public function getProductId()
@@ -67,7 +71,7 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
      */
     protected function _construct()
     {
-        $this->_init('RetailOps\Api\Model\Resource\InventoryHistory');
+        $this->_init(\RetailOps\Api\Model\ResourceModel\InventoryHistory::class);
     }
 
     public function setRealCount($realCount)

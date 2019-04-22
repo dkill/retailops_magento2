@@ -7,6 +7,9 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
 
+/**
+ * Upgrade schema class
+ */
 class UpgradeSchema implements UpgradeSchemaInterface
 {
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -132,8 +135,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         if ($installer->getConnection()->isTableExists($installer->getTable('retailops_rics_retailops_link_upc'))) {
             return;
-//            $installer->getConnection()->dropTable($installer->getTable('retailops_rics_retailops_link_upc'));
         }
+        
         $table = $installer->getConnection()
                            ->newTable($installer->getTable('retailops_rics_retailops_link_upc'))
                           ->addColumn(

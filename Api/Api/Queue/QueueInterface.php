@@ -2,6 +2,10 @@
 
 namespace RetailOps\Api\Api\Queue;
 
+/**
+ * Queue interface
+ *
+ */
 interface QueueInterface
 {
     /**

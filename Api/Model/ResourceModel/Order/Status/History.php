@@ -1,7 +1,11 @@
 <?php
 
-namespace RetailOps\Api\Model\Resource\Order\Status;
+namespace RetailOps\Api\Model\ResourceModel\Order\Status;
 
+/**
+ * Order status history resource model class.
+ *
+ */
 class History extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

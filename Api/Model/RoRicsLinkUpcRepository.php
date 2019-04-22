@@ -3,9 +3,13 @@
 namespace RetailOps\Api\Model;
 
 use RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcRepositoryInterface;
-use \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\CollectionFactory;
+use \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\CollectionFactory;
 use \RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface as RoRiLink;
 
+/**
+ * Ro Rics link upc repository class.
+ *
+ */
 class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterface
 {
     /**
@@ -17,7 +21,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
      * @var Product\CollectionFactory
      */
     protected $productCollectionFactory;
-    
+
     /**
      * @var Resource\RoRicsLinkUpc
      */
@@ -39,7 +43,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
      */
     public function __construct(
         CollectionFactory $collection,
-        \RetailOps\Api\Model\Resource\RoRicsLinkUpc $resource,
+        \RetailOps\Api\Model\ResourceModel\RoRicsLinkUpc $resource,
         \RetailOps\Api\Model\RoRicsLinkUpcFactory $roRicsLinkFactory,
         \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
         \RetailOps\Api\Logger\Logger $logger
@@ -117,7 +121,6 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
         return $upcsInStore;
     }
 
-
     /**
      * @param string $upcValue
      */
@@ -136,7 +139,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     {
         $collection = $this->collectionFactory->create();
         /**
-         * @var \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\Collection $collection
+         * @var \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\Collection $collection
          */
         $collection->getSelect()
             ->joinLeft(['rrrlu2' => $this->resource->getMainTable()], 'rrrlu2.'.
@@ -158,7 +161,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     {
         $collection = $this->collectionFactory->create();
         /**
-         * @var \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\Collection $collection
+         * @var \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\Collection $collection
          */
         $collection->getSelect()
             ->joinLeft(['rrrlu2' => $this->resource->getMainTable()], 'rrrlu2.'.
