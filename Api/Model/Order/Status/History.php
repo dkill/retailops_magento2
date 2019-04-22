@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Order\Status;
 
-
 class History extends \Magento\Framework\Model\AbstractModel
 {
     protected function _construct()

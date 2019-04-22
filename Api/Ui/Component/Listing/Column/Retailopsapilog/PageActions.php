@@ -9,19 +9,19 @@ class PageActions extends \Magento\Ui\Component\Listing\Columns\Column
             foreach ($dataSource["data"]["items"] as & $item) {
                 $name = $this->getData("name");
                 $id = "X";
-                if(isset($item["id"]))
-                {
+                if (isset($item["id"])) {
                     $id = $item["id"];
                 }
                 $item[$name]["view"] = [
                     "href"=>$this->getContext()->getUrl(
-                        "adminhtml/retailops_api_log/viewlog",["id"=>$id]),
+                        "adminhtml/retailops_api_log/viewlog",
+                        ["id"=>$id]
+                    ),
                     "label"=>__("Edit")
                 ];
             }
         }
 
         return $dataSource;
-    }    
-    
+    }
 }

@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Services\Order;
 
-
 /**
  * Interface Check
  * @package RetailOps\Api\Api\Services\Order
@@ -19,7 +18,7 @@ interface Check
      * @param \Magento\Sales\Api\Data\OrderInterface $order
      * @return boolean
      */
-    public function canInvoice( \Magento\Sales\Model\Order $order );
+    public function canInvoice(\Magento\Sales\Model\Order $order);
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order

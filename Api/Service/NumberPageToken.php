@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Service;
 
-
 class NumberPageToken
 {
     const SALT= 'ENJW8mS2KaJoNB5E5CoSAAu0xARgsR1bdzFWpEn+poYw45q+73az5kYi';
@@ -46,6 +45,4 @@ class NumberPageToken
         }
         throw new \Exception(__('wrong pageNumberToken'));
     }
-
-
 }

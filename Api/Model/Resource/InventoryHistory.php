@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Resource;
 
-
 class InventoryHistory extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

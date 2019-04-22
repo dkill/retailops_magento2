@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Data;
 
-
 interface RetailOpsRicsLinkByUpcInterface
 {
     const ID = 'entity_id';
@@ -53,5 +52,4 @@ interface RetailOpsRicsLinkByUpcInterface
      * @return string|null
      */
     public function setRoUpc(bool $flag);
-
 }

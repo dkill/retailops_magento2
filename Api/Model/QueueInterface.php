@@ -1,6 +1,7 @@
 <?php
 namespace RetailOps\Api\Model;
-interface QueueInterface 
+
+interface QueueInterface
 {
     const ID = 'retailops_api_queue_id';
     const MESSAGE = 'message';

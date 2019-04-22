@@ -10,6 +10,7 @@ namespace RetailOps\Api\Model\Api\Traits;
 
 use Magento\Framework\Api\Search\FilterGroup;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
 trait SearchResult
 {
     /**
@@ -57,5 +58,4 @@ trait SearchResult
         $searchData->setItems($collection->getItems());
         return $searchData;
     }
-
 }

@@ -8,8 +8,7 @@
 
 namespace RetailOps\Api\Model;
 
-
-class Logger  extends \Magento\Framework\Model\AbstractModel
+class Logger extends \Magento\Framework\Model\AbstractModel
 {
     protected function _construct()
     {

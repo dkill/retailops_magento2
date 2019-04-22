@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Order;
 
-
 class Update
 {
     protected $updateOrder;
@@ -20,10 +19,9 @@ class Update
 
     public function updateOrder($postData)
     {
-        if($postData['rmas'] === null && $postData['order'] === null ) {
-            throw new \LogicException( __('Don\'t have rmas or order for updates') );
+        if ($postData['rmas'] === null && $postData['order'] === null) {
+            throw new \LogicException(__('Don\'t have rmas or order for updates'));
         }
         $this->updateOrder->updateOrder($postData);
-
     }
 }

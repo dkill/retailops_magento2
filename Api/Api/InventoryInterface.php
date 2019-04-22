@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api;
 
-
 interface InventoryInterface
 {
     /**
@@ -22,7 +21,6 @@ interface InventoryInterface
      * @return null
      */
     public function setCount($count);
-
 
     /**
      * @return string|null|integer
@@ -56,5 +54,4 @@ interface InventoryInterface
      * @return mixed
      */
     public function getReserveCount();
-
 }

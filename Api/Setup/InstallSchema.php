@@ -1,5 +1,6 @@
 <?php
 namespace RetailOps\Api\Setup;
+
 /**
  * Created by PhpStorm.
  * User: galillei

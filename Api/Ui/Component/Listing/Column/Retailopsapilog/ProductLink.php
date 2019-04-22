@@ -46,7 +46,8 @@ class ProductLink extends \Magento\Ui\Component\Listing\Columns\Column
      *
      * @return $this
      */
-    protected function _prepareItem(array & $item) {
+    protected function _prepareItem(array & $item)
+    {
         $itemsAction = $this->getData('itemsAction');
         $indexField = $this->getData('config/indexField');
         $indexFieldName = $this->getData('config/indexFieldName');

@@ -2,7 +2,6 @@
 
 namespace RetailOps\Api\Controller\Adminhtml\Log;
 
-
 class Grid extends \RetailOps\Api\Controller\Adminhtml\Log
 {
     public function execute()

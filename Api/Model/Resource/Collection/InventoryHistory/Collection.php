@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Resource\Collection\InventoryHistory;
 
-
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     protected function _construct()

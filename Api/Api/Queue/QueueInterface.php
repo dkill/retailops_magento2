@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Queue;
 
-
 interface QueueInterface
 {
     /**
@@ -21,5 +20,4 @@ interface QueueInterface
      * @return mixed
      */
     public function getFromQueue($id);
-
 }

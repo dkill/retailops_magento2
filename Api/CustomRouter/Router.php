@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 8.9.16
- * Time: 11.11
- */
 
 namespace RetailOps\Api\CustomRouter;
-
-
 
 use Magento\Framework\App\ObjectManager;
 
@@ -57,7 +49,9 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
-        $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+        $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()->get(
+            \Magento\Framework\App\Config\ScopeConfigInterface::class
+        );
         if (!$scopeConfig->getValue(self::MODULE_ENABLE)) {
             return null;
         }
@@ -66,11 +60,13 @@ class Router implements \Magento\Framework\App\RouterInterface
         }
         $identifier = trim($request->getPathInfo(), '/');
         $path = explode('/', $identifier);
-        if (count($path) !== 2)
+        if (count($path) !== 2) {
             return null;
+        }
 
-        if ($path[0] !== 'retailops')
+        if ($path[0] !== 'retailops') {
             return null;
+        }
         if (isset(self::$map[$path[1]])) {
             $controller = self::$map[$path[1]];
             $content = file_get_contents('php://input');
@@ -83,6 +79,5 @@ class Router implements \Magento\Framework\App\RouterInterface
             );
         }
         return null;
-
     }
 }

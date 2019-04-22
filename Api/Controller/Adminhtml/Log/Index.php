@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Controller\Adminhtml\Log;
 
-
 class Index extends \RetailOps\Api\Controller\Adminhtml\Log
 {
     public function execute()

@@ -20,7 +20,7 @@ class RoRicsLinkUpcRepositoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *@magentoDataFixture ../../../../app/code/RetailOps/Api/Test/Integration/_files/add_ro_link.php
+     * @magentoDataFixture ../../../../app/code/RetailOps/Api/Test/Integration/_files/add_ro_link.php
      */
     public function testGetAllROUpcsByUpcs()
     {
@@ -37,6 +37,5 @@ class RoRicsLinkUpcRepositoryTest extends \PHPUnit_Framework_TestCase
         ];
         $newUpcs = $repository->getAllROUpcsByUpcs($upcs);
         $this->assertEquals(4, $newUpcs->count());
-
     }
 }

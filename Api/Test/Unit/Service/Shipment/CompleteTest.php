@@ -9,6 +9,7 @@
 namespace RetailOps\Api\Test\Unit\Service\Shipment;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+
 class CompleteTest extends \PHPUnit_Framework_TestCase
 {
     const PATH = '/app/code/RetailOps/Api/Test/Unit/Service/Shipment';
@@ -98,44 +99,42 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
 
     public function testCalcQuantity()
     {
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>1]);
-        $this->assertEquals(1,$this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->assertEquals(2,$this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>10]);
-        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 8]));
-        $this->assertEquals(8, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 8]));
-
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>1]);
+        $this->assertEquals(1, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->assertEquals(2, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>10]);
+        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 8]));
+        $this->assertEquals(8, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 8]));
     }
 
     public function testSetTrackingAndShipmentItems()
     {
         $postData = \file_get_contents($this->getPath('orderCompleteUnShipment.json'));
         $postData = json_decode($postData, true);
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>1]);
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>1]);
         $this->model->setTrackingAndShipmentItems($postData['order']);
         $tracking = $this->model->getTracking();
         $this->assertEquals(1, count($tracking));
-        $this->assertEquals('ups',$tracking[0]['carrier_code']);
+        $this->assertEquals('ups', $tracking[0]['carrier_code']);
         $shipmentsItems = $this->model->getShippmentItems();
         $this->assertEquals(1, count($shipmentsItems));
-        $this->assertEquals(1,$shipmentsItems['items']['150']);
+        $this->assertEquals(1, $shipmentsItems['items']['150']);
 
         //fails test
         $postData = \file_get_contents($this->getPath('orderCompleteEmptyUnShipment.json'));
         $postData = json_decode($postData, true);
         //reset values
-        $this->setPropertyValue($this->model,'unShippmentItems', []);
-        $this->setPropertyValue($this->model,'shippmentItems', []);
+        $this->setPropertyValue($this->model, 'unShippmentItems', []);
+        $this->setPropertyValue($this->model, 'shippmentItems', []);
         //reset values
         $this->model->setTrackingAndShipmentItems($postData['order']);
         $tracking = $this->model->getTracking();
         $this->assertEquals(2, count($tracking));
-        $this->assertEquals('custom',$tracking[1]['carrier_code']);
+        $this->assertEquals('custom', $tracking[1]['carrier_code']);
         $shipmentsItems = $this->model->getShippmentItems();
         $this->assertEquals(2, count($shipmentsItems['items']));
-        $this->assertEquals(3,$shipmentsItems['items']["62"]);
-
+        $this->assertEquals(3, $shipmentsItems['items']["62"]);
     }
 
     protected function getDataFromMethod($object, $methodName, $args)
@@ -157,9 +156,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $reflection = new \ReflectionClass($object);
         $reflection_property = $reflection->getProperty($propertyName);
         $reflection_property->setAccessible(true);
-        $reflection_property->setValue($object,$value);
+        $reflection_property->setValue($object, $value);
         return $object;
     }
-
-
 }

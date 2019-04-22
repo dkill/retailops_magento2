@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Order\Map;
 
-
 interface CalculateAmountInterface
 {
     /**

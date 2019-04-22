@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Services\CreditMemo;
 
-
 interface CreditMemoHelperInterface
 {
     /**

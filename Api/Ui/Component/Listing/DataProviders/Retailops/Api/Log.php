@@ -2,7 +2,8 @@
 namespace RetailOps\Api\Ui\Component\Listing\DataProviders\Retailops\Api;
 
 class Log extends \Magento\Ui\DataProvider\AbstractDataProvider
-{    
+{
+
     public function __construct(
         $name,
         $primaryFieldName,

@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Data;
 
-
 interface InventoryHistorySearchInterface
 {
     /**

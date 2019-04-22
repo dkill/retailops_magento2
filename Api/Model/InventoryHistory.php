@@ -1,5 +1,6 @@
 <?php
 namespace RetailOps\Api\Model;
+
 /**
  * Created by PhpStorm.
  * User: galillei
@@ -43,7 +44,7 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
 
     public function setInventoryAdd($inventory)
     {
-       return parent::setData(self::INVENTORY_ADD, $inventory);
+        return parent::setData(self::INVENTORY_ADD, $inventory);
     }
 
     public function setProductId($productId)
@@ -93,5 +94,4 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
     {
         return parent::getData(self::RESERVE_COUNT);
     }
-
 }

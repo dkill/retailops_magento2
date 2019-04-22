@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Order;
 
-
 class OrderReturn
 {
     /**

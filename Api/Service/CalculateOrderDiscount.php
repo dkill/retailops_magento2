@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Service;
 
-
 class CalculateOrderDiscount implements CalculateDiscountInterface
 {
     /**

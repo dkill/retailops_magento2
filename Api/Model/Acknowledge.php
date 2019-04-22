@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model;
 
-
 class Acknowledge
 {
     /**
@@ -32,5 +31,4 @@ class Acknowledge
     {
         $this->acknowledge = $acknowledge;
     }
-
 }

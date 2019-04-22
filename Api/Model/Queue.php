@@ -2,6 +2,7 @@
 namespace RetailOps\Api\Model;
 
 use RetailOps\Api\Model\QueueInterface;
+
 class Queue extends \Magento\Framework\Model\AbstractModel implements QueueInterface, \Magento\Framework\DataObject\IdentityInterface
 {
     const CACHE_TAG = 'retailops_api_queue';

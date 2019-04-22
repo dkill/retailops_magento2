@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model;
 
-
 use Magento\Framework\Exception\LocalizedException;
 use RetailOps\Api\Api\InventoryHistoryInterface;
 use RetailOps\Api\Api\Data\InventoryHistoryInterface as InventoryHistoryDataInterface;
@@ -40,7 +39,7 @@ class InventoryHistoryRepository implements InventoryHistoryInterface
     {
         $inventoryHistory = $this->inventoryHistoryFactory->create();
         $inventoryHistory = $this->resource->load($inventoryHistory, $historyId);
-        if(!$inventoryHistory->getId()) {
+        if (!$inventoryHistory->getId()) {
             throw new LocalizedException(__('no this id in database'));
         }
         return $inventoryHistory;
@@ -82,14 +81,10 @@ class InventoryHistoryRepository implements InventoryHistoryInterface
         \RetailOps\Api\Model\Resource\Collection\InventoryHistory\CollectionFactory $collectionFactory,
         \RetailOps\Api\Model\InventoryHistoryFactory $inventoryHistoryFactory,
         \RetailOps\Api\Api\Data\InventoryHistorySearchInterfaceFactory $searchResult
-    )
-    {
+    ) {
         $this->resource = $resource;
         $this->collectionFactory = $collectionFactory;
         $this->inventoryHistoryFactory = $inventoryHistoryFactory;
         $this->searchResultFactory = $searchResult;
-
     }
-
-
 }

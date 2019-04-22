@@ -2,8 +2,10 @@
 namespace RetailOps\Api\Ui\Component\Listing\DataProviders\Queue\Cancel;
 
 use \RetailOps\Api\Model\QueueInterface;
+
 class Grid extends \Magento\Ui\DataProvider\AbstractDataProvider
-{    
+{
+
     public function __construct(
         $name,
         $primaryFieldName,

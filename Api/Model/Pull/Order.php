@@ -65,8 +65,7 @@ class Order
 
     protected function getNextPageToken()
     {
-        if($this->countPages > $this->currentPage)
-        {
+        if ($this->countPages > $this->currentPage) {
             $service = $this->ObjectManager->get('\\RetailOps\Api\Service\NumberPageToken');
             $pageNumberToken = $service->encode($this->currentPage+1);
             return $pageNumberToken;
@@ -75,7 +74,7 @@ class Order
     }
 
 
-    protected function setFilters($pageToken, $maxcount,$data)
+    protected function setFilters($pageToken, $maxcount, $data)
     {
         $this->setData($pageToken, $maxcount, $data);
         $this->addOrderStatuses();
@@ -87,19 +86,17 @@ class Order
     private function setData($pageToken, $maxcount, $data)
     {
             $filter = $this->createFilter('retailops_send_status', 'in', [OrderMap::ORDER_NO_SEND_STATUS, OrderMap::ORDER_PULL_STATUS]);
-            $this->addFilter('retail_status',$filter);
+            $this->addFilter('retail_status', $filter);
             $page = $this->getCurrentPage($pageToken);
             $this->searchCriteria->setPageSize($maxcount);
             $this->searchCriteria->setCurrentPage($page);
             $this->currentPage = $page;
-
     }
 
     private function addOrderStatuses()
     {
         $this->addExludeStatuses();
         $this->addIncludeStatuses();
-
     }
 
     private function addExludeStatuses()
@@ -116,11 +113,11 @@ class Order
 
     private function addInvoiceExlude()
     {
-        $filter = $this->createFilter('base_total_invoiced','gt', 0);
-        $this->addFilter('order_should_invoiced',$filter);
+        $filter = $this->createFilter('base_total_invoiced', 'gt', 0);
+        $this->addFilter('order_should_invoiced', $filter);
     }
 
-    protected function addFilter( $name, \Magento\Framework\Api\Filter $filter)
+    protected function addFilter($name, \Magento\Framework\Api\Filter $filter)
     {
         $this->filters[$name] = $this->createFilterGroups([$filter]);
     }
@@ -136,9 +133,9 @@ class Order
         $groups = [];
 
         if (($filters = $this->getFilters()) && count($filters)) {
-                foreach($filters as $key=>$filter){
-                    $groups[] = $filter;
-                }
+            foreach ($filters as $key => $filter) {
+                $groups[] = $filter;
+            }
         }
             $this->searchCriteria->setFilterGroups($groups)
                 ->setSortOrders($this->createSortOrder('created_at', 'asc'));
@@ -149,7 +146,7 @@ class Order
         if (isset($data['specific_orders'])) {
             $orders_id =  $this->getIdOrders($data['specific_orders']);
             $this->resetFilters();
-            $filter = $this->createFilter('entity_id','in', array_keys($orders_id));
+            $filter = $this->createFilter('entity_id', 'in', array_keys($orders_id));
             $this->addFilter('specificOrder', $filter);
         }
     }
@@ -173,18 +170,18 @@ class Order
         return $this->setOrderIdByIncrementId($orders_id);
     }
 
-    protected function getCurrentPage($pageToken=null)
+    protected function getCurrentPage($pageToken = null)
     {
         $page = 1;
-        if($pageToken) {
+        if ($pageToken) {
             if ($pageToken === 'string') {
                 return $page;
             }
             $service = $this->ObjectManager->get('\\RetailOps\Api\Service\NumberPageToken');
             $pageNumber = $service->decode($pageToken);
-            if (is_numeric($pageNumber)){
+            if (is_numeric($pageNumber)) {
                 $page = (int)$pageNumber;
-            }else {
+            } else {
                 $logger = $this->ObjectManager->get('Psr\Log\LoggerInterface');
                 $logger->addCritical($pageToken. ' is invalid');
                 throw new \Magento\Framework\Exception\AuthenticationException(__('Page token are invalid'));
@@ -207,23 +204,22 @@ class Order
         $sortOrder->setField($field)
             ->setDirection($direction);
 
-        return array($sortOrder);
+        return [$sortOrder];
     }
 
 
-    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $OrderRepository,
-                                ObjectManagerInterface $objectManager,
-                                \RetailOps\Api\Model\Api\Map\Order $RetailOrderMaps,
-                                \Magento\Framework\Api\FilterFactory $filter,
-                                \Magento\Framework\Api\Search\FilterGroupFactory $filterGroupFactory)
-    {
+    public function __construct(
+        \Magento\Sales\Api\OrderRepositoryInterface $OrderRepository,
+        ObjectManagerInterface $objectManager,
+        \RetailOps\Api\Model\Api\Map\Order $RetailOrderMaps,
+        \Magento\Framework\Api\FilterFactory $filter,
+        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroupFactory
+    ) {
         $this->OrderRepository = $OrderRepository;
         $this->ObjectManager = $objectManager;
         $this->RetailOrderMaps = $RetailOrderMaps;
         $this->searchCriteria = $this->ObjectManager->create('\Magento\Framework\Api\SearchCriteria');
         $this->filter = $filter;
         $this->filterGroup = $filterGroupFactory;
-
     }
-
 }

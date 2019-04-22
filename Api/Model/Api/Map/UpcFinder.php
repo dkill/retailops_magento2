@@ -22,16 +22,17 @@ class UpcFinder implements UpcFinderInterface
      * @param \Magento\Catalog\Api\Data\ProductInterface|null $product
      * @return string
      */
-    public function getUpc(\Magento\Sales\Api\Data\OrderItemInterface $orderItem,
-                           \Magento\Catalog\Api\Data\ProductInterface $product = null)
-    {
-        if($product !== null) {
+    public function getUpc(
+        \Magento\Sales\Api\Data\OrderItemInterface $orderItem,
+        \Magento\Catalog\Api\Data\ProductInterface $product = null
+    ) {
+        if ($product !== null) {
             $upcValue = $product->getUpc();
-        }else {
+        } else {
             $upcValue = $this->getUpcBySku($orderItem);
         }
         $upc = $this->repository->getRoUpc($upcValue);
-        if($upc->getId()) {
+        if ($upc->getId()) {
             return (string)$upc->getUpc();
         }
         return $upcValue;
@@ -44,7 +45,7 @@ class UpcFinder implements UpcFinderInterface
      */
     public function getUpcBySku(\Magento\Sales\Api\Data\OrderItemInterface $orderItem)
     {
-        return ltrim($orderItem->getSku(),'\S\s');
+        return ltrim($orderItem->getSku(), '\S\s');
     }
 
     public function __construct(RetailOpsRicsLinkByUpcRepositoryInterface $linkByUpcRepository)
@@ -56,5 +57,4 @@ class UpcFinder implements UpcFinderInterface
     {
         $this->repository->setRoUpc($upc);
     }
-
 }

@@ -28,24 +28,23 @@ class OrderReturnTest extends \PHPUnit_Framework_TestCase
      */
     public function testReturnData()
     {
-    $this->setPostDataAllReturn();
-    $objectManager = Bootstrap::getObjectManager();
-    $orderReturn = $objectManager->create('RetailOps\Api\Model\Api\Order\OrderReturn');
+        $this->setPostDataAllReturn();
+        $objectManager = Bootstrap::getObjectManager();
+        $orderReturn = $objectManager->create('RetailOps\Api\Model\Api\Order\OrderReturn');
     /**
      * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
      */
-    $orderReturn->returnData($this->postData);
+        $orderReturn->returnData($this->postData);
 
     /**
      * @var \Magento\Sales\Model\Order $order
      */
-    $order = $objectManager->get('Magento\Sales\Model\Order');
-    $order->loadByIncrementId(self::INCREMENT_1);
-    $this->assertEquals('canceled', $order->getStatus());
-    foreach ($order->getItems() as $item)
-    {
+        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order->loadByIncrementId(self::INCREMENT_1);
+        $this->assertEquals('canceled', $order->getStatus());
+        foreach ($order->getItems() as $item) {
             $this->assertEquals($item->getQtyOrdered(), $item->getQtyCanceled());
-    }
+        }
     }
 
     /**
@@ -113,5 +112,4 @@ class OrderReturnTest extends \PHPUnit_Framework_TestCase
         $postData['order']['shipments'][] = $package;
         $this->postData = $postData;
     }
-
 }

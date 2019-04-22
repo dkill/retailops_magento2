@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Config;
 
-
 class InventoryType implements \Magento\Framework\Option\ArrayInterface
 {
     protected $statuses = [

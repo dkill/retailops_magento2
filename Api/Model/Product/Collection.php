@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Product;
 
-
 class Collection extends \Magento\Catalog\Model\ResourceModel\Collection\AbstractCollection
 {
     protected function _construct()

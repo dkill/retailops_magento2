@@ -123,5 +123,4 @@ abstract class RetailOps extends \Magento\Framework\App\Action\Action
     {
         return $this->channel_info;
     }
-
 }

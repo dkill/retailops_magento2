@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model;
 
-
 class Inventory implements \RetailOps\Api\Api\InventoryInterface
 {
     protected $sku;
@@ -58,5 +57,4 @@ class Inventory implements \RetailOps\Api\Api\InventoryInterface
     {
         return $this->count;
     }
-
 }

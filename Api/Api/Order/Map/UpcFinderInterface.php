@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Order\Map;
 
-
 interface UpcFinderInterface
 {
     /**
@@ -16,8 +15,10 @@ interface UpcFinderInterface
      * @param \Magento\Catalog\Api\Data\ProductInterface|null $product
      * @return string|null
      */
-    public function getUpc(\Magento\Sales\Api\Data\OrderItemInterface $orderItem,
-                           \Magento\Catalog\Api\Data\ProductInterface $product=null);
+    public function getUpc(
+        \Magento\Sales\Api\Data\OrderItemInterface $orderItem,
+        \Magento\Catalog\Api\Data\ProductInterface $product = null
+    );
 
     /**
      * @param \RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface $upc

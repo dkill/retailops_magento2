@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api\Data;
 
-
 /**
  * Interface InventoryHistoryInterface
  * @package RetailOps\Api\Api\Data
@@ -106,5 +105,4 @@ interface InventoryHistoryInterface
      * @return void
      */
     public function setOperator($operator);
-
 }

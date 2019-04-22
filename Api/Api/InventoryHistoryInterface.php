@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api;
 
-
 interface InventoryHistoryInterface
 {
     /**
@@ -43,5 +42,4 @@ interface InventoryHistoryInterface
      * @return $this
      */
     public function load($historyId);
-
 }

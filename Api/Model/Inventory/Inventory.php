@@ -11,7 +11,6 @@ namespace RetailOps\Api\Model\Inventory;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\Indexer\CacheContext;
 
-
 class Inventory
 {
     const FROM = 'retailops';
@@ -93,7 +92,7 @@ class Inventory
         $productsRetailOps = [];
         $inventoryObjects = [];
         array_walk($inventory, function (&$item) use (&$productsRetailOps, &$inventoryObjects) {
-            if ($item->getUPC()){
+            if ($item->getUPC()) {
                 $productsRetailOps[$item->getUPC()] = (float)$item->getCount();
                 $inventoryObjects[$item->getUPC()] = $item;
             }
@@ -170,18 +169,16 @@ class Inventory
     public function refreshChangeStockProducts($products)
     {
         $ids = [];
-        foreach ($products as $productId =>$items){
+        foreach ($products as $productId => $items) {
             $ids[] = $productId;
         }
         //fire event
-        if(count($ids)>0){
+        if (count($ids)>0) {
             $this->_eventManager->dispatch('sales_catalog_product_change_stock_status', ['products'=> $ids]);
             $cache = $this->getCacheContext();
             $cache->registerEntities(\Magento\Catalog\Model\Product::CACHE_TAG, $ids);
             $this->_eventManager->dispatch('clean_cache_by_tags', ['object' => $cache]);
         }
-
-
     }
 
     /**
@@ -194,19 +191,20 @@ class Inventory
      * @param \Magento\CatalFFogInventory\Model\Stock\StockItemRepository $stockItem
      * @param \RICSApi\Model\InventoryHistory $InventoryHistory
      */
-    public function __construct(\RetailOps\Api\Logger\Logger $logger,
-                                \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
-                                \Magento\CatalogInventory\Api\StockRegistryInterface $stock,
-                                \Magento\CatalogInventory\Model\ResourceModel\Stock $stockRepositories,
-                                \Magento\Store\Model\StoreManager $store,
-                                \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItem,
-                                \RetailOps\Api\Api\Data\InventoryHistoryInterfaceFactory $InventoryHistory,
-                                \RetailOps\Api\Api\InventoryHistoryInterface $inventoryHistoryRepository,
-                                \Magento\Framework\ObjectManagerInterface $objectManager,
-                                \Magento\Catalog\Model\ProductFactory $productFactory,
-                                \Magento\Framework\View\Element\Context $context,
-                                \RetailOps\Api\Service\CalculateInventory $calculateInventory)
-    {
+    public function __construct(
+        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stock,
+        \Magento\CatalogInventory\Model\ResourceModel\Stock $stockRepositories,
+        \Magento\Store\Model\StoreManager $store,
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItem,
+        \RetailOps\Api\Api\Data\InventoryHistoryInterfaceFactory $InventoryHistory,
+        \RetailOps\Api\Api\InventoryHistoryInterface $inventoryHistoryRepository,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
+        \Magento\Framework\View\Element\Context $context,
+        \RetailOps\Api\Service\CalculateInventory $calculateInventory
+    ) {
         $this->logger = $logger;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_stock = $stock;
@@ -234,8 +232,5 @@ class Inventory
     public function calculateInventory(array $inventories)
     {
         return $this->_calculateInventory->calculateInventory($inventories);
-
     }
-
-
 }

@@ -9,6 +9,7 @@
 namespace RetailOps\Api\Test\Unit\Service\Order;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+
 class CheckTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -130,7 +131,6 @@ class CheckTest extends \PHPUnit_Framework_TestCase
             ->method('getItems')
             ->willReturn([]);
         $this->model = $this->objectManagerHelper->getObject('\RetailOps\Api\Service\OrderCheck');
-
     }
 
     public function testCanInvoice()
@@ -147,7 +147,7 @@ class CheckTest extends \PHPUnit_Framework_TestCase
 
     public function testHasItem()
     {
-        $this->assertTrue($this->model->hasItem(1,$this->orderMockRight));
+        $this->assertTrue($this->model->hasItem(1, $this->orderMockRight));
         $this->assertFalse($this->model->hasItem(3, $this->orderMockRight));
         $this->assertFalse($this->model->hasItem(2, $this->orderMockWrong));
     }

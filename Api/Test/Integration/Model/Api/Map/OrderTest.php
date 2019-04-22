@@ -9,6 +9,7 @@
 namespace RetailOps\Api\Test\Integration\Model\Map;
 
 use Magento\TestFramework\Helper\Bootstrap;
+
 class OrderTest extends \PHPUnit_Framework_TestCase
 {
     const INCREMENT_1 = '100000001';
@@ -35,11 +36,10 @@ class OrderTest extends \PHPUnit_Framework_TestCase
         $order->loadByIncrementId(self::INCREMENT_1);
         $prepareOrder = $roOrder::prepareOrder($order, $roOrder);
         $this->assertEquals(15, $prepareOrder['currency_values']['shipping_amt']);
-
     }
 
     /**
-     *@magentoDataFixture Magento/Sales/_files/creditmemo.php
+     * @magentoDataFixture Magento/Sales/_files/creditmemo.php
      */
     public function testPrepareOrderRefund()
     {
@@ -55,7 +55,7 @@ class OrderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *@magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testPrepareOrderWithoutRefund()
     {

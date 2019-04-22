@@ -18,7 +18,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
-        if(version_compare($context->getVersion(),'0.0.2') < 0){
+        if (version_compare($context->getVersion(), '0.0.2') < 0) {
             $tableName = $setup->getTable('sales_order');
             $tableNameGrid = $setup->getTable('sales_order_grid');
             if ($setup->getConnection()->isTableExists($tableName)) {
@@ -62,20 +62,20 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 }
             }
         }
-        if (version_compare($context->getVersion(),'0.0.4') < 0 ) {
+        if (version_compare($context->getVersion(), '0.0.4') < 0) {
             $this->createOrderHistory($setup);
         }
-        if (version_compare($context->getVersion(), '0.1.0') < 0 ) {
+        if (version_compare($context->getVersion(), '0.1.0') < 0) {
             $this->createLoggerTable($setup);
         }
-        if(version_compare($context->getVersion(), '1.0.0')< 0) {
+        if (version_compare($context->getVersion(), '1.0.0')< 0) {
             $this->addUpcFinderTable($setup);
         }
-        if(version_compare($context->getVersion(), '1.0.1')<0) {
+        if (version_compare($context->getVersion(), '1.0.1')<0) {
             $this->addColumnsToInventoryHistory($setup);
         }
 
-        if(version_compare($context->getVersion(), '1.0.2')<0) {
+        if (version_compare($context->getVersion(), '1.0.2')<0) {
             $this->addQueueTable($setup);
         }
         $setup->endSetup();
@@ -143,12 +143,12 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $table = $installer->getConnection()
                            ->newTable($installer->getTable('retailops_rics_retailops_link_upc'))
                           ->addColumn(
-                            'entity_id',
-                            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                            255,
-                            ['identity'=>true,'nullable'=>false, 'primary' => true],
-                            'ID'
-            )
+                              'entity_id',
+                              \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                              255,
+                              ['identity'=>true,'nullable'=>false, 'primary' => true],
+                              'ID'
+                          )
                            ->addColumn(
                                'rics_integration_id',
                                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
@@ -160,23 +160,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
                               'upc',
                               \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                               '255',
-                               ['default'=> null],
+                              ['default'=> null],
                               'Upc\'s from rics'
                           )
                          ->addColumn(
                              'retail_ops_upc',
                              \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                              null,
-                            ['default' => null],
+                             ['default' => null],
                              'Upc which use in retail_ops system, boolean'
-                          )
+                         )
                         ->addColumn(
                             'created_at',
                             \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                             null,
                             ['default'=>\Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT, 'nullable' => false],
                             'Created At'
-                         )
+                        )
                        ->addColumn(
                            'update_at',
                            \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
@@ -185,40 +185,48 @@ class UpgradeSchema implements UpgradeSchemaInterface
                            'Update at'
                        )
                        ->addIndex(
-                           $installer->getIdxName('rics_integration_id', ['rics_integration_id', 'upc','retail_ops_upc'],
-                               \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE),
+                           $installer->getIdxName(
+                               'rics_integration_id',
+                               ['rics_integration_id', 'upc','retail_ops_upc'],
+                               \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+                           ),
                            ['rics_integration_id', 'upc','retail_ops_upc'],
                            ['type' =>  \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE]
                        )
                        ->addIndex(
-                            $installer->getIdxName('upc', ['upc'],
-                                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX),
-                            ['upc'],
+                           $installer->getIdxName(
+                               'upc',
+                               ['upc'],
+                               \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX
+                           ),
+                           ['upc'],
                            ['type'=>\Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX]
                        )
                        ->addIndex(
-                           $installer->getIdxName('rics_integration_id', ['rics_integration_id'],
+                           $installer->getIdxName(
+                               'rics_integration_id',
+                               ['rics_integration_id'],
                                \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX
                            ),
                            ['rics_integration_id'],
                            ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_INDEX]
-                           );
+                       );
             $installer->getConnection()->createTable($table);
     }
 
     protected function createLoggerTable($installer)
     {
-        if ( $installer->getConnection()->isTableExists($installer->getTable('retailops_order_status_history'))) {
+        if ($installer->getConnection()->isTableExists($installer->getTable('retailops_order_status_history'))) {
             $installer->getConnection()->dropTable($installer->getTable('retailops_order_status_history'));
         }
         $table = $installer->getConnection()
              ->newTable($installer->getTable('retailops_order_status_history'))
              ->addColumn(
-                'entity_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
-                null,
-                ['identity' => true, 'nullable' => false, 'primary' => true, 'unsigned' => true],
-                'ID'
+                 'entity_id',
+                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                 null,
+                 ['identity' => true, 'nullable' => false, 'primary' => true, 'unsigned' => true],
+                 'ID'
              )
             ->addColumn(
                 'request',
@@ -233,7 +241,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 '64k',
                 [],
                 'Logger response'
-
             )
             ->addColumn(
                 'status',
@@ -264,7 +271,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'Date create time'
             );
         $installer->getConnection()->createTable($table);
-
     }
 
     protected function createOrderHistory($installer)
@@ -299,8 +305,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 [],
                 'Status'
             )
-            ->addColumn('created_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP, null, array(
-            ), 'Created At')
+            ->addColumn('created_at', \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP, null, [
+            ], 'Created At')
             ->addIndex(
                 $installer->getIdxName(
                     $installer->getTable('retailops_order_status_history'),

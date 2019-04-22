@@ -11,7 +11,7 @@ namespace RetailOps\Api\Controller\Frontend\Order;
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
-class Acknowledge  extends RetailOps
+class Acknowledge extends RetailOps
 {
     const SERVICENAME = 'order_acknowledge';
     const ENABLE = 'retailops/RetailOps_feed/order_acknowledge';
@@ -43,34 +43,34 @@ class Acknowledge  extends RetailOps
 
     public function execute()
     {
-        try{
+        try {
             $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $postData = $this->getRequest()->getPost();
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->setOrderRefs($postData);
             $this->response = $response;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->logger->addCritical($e->getMessage());
             $this->response = (object)null;
             $this->status = 500;
             $this->error = $e;
             parent::execute();
-        }finally{
+        } finally {
             $this->getResponse()->representJson(json_encode($this->response));
             $this->getResponse()->setStatusCode($this->status);
             parent::execute();
         }
     }
 
-    public function __construct(\RetailOps\Api\Model\AcknowledgeFactory $orderFactory,
-                                \Magento\Framework\App\Action\Context $context )
-    {
+    public function __construct(
+        \RetailOps\Api\Model\AcknowledgeFactory $orderFactory,
+        \Magento\Framework\App\Action\Context $context
+    ) {
         $this->orderFactory = $orderFactory;
         parent::__construct($context);
         $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');
-
     }
 }

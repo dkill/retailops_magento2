@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Api;
 
-
 class Acknowledge
 {
     const ACK_STATUS = 1;
@@ -40,13 +39,13 @@ class Acknowledge
      * @param \\RetailOps\Api\Logger\Logger $logger
      * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
      */
-    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+    public function __construct(
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \RetailOps\Api\Logger\Logger $logger,
         \Magento\Framework\Api\SearchCriteria $searchCriteria,
         \Magento\Framework\Api\FilterFactory $filter,
         \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->logger = $logger;
         $this->searchCriteria = $searchCriteria;
@@ -73,7 +72,7 @@ class Acknowledge
                 foreach ($result as $order) {
                     if (isset($this->orderIds[$order->getId()])) {
                         $order->setData('retailops_send_status', self::ACK_STATUS);
-                        if ($this->orderIds[$order->getId()] !== 0 ) {
+                        if ($this->orderIds[$order->getId()] !== 0) {
                             $order->setData('retailops_order_id', $this->orderIds[$order->getId()]);
                         }
                         $order->save();
@@ -82,12 +81,17 @@ class Acknowledge
 
                 }
                 //if stay order_id, seems we don't have this orders in our system
-                if(count($this->orderIds)) {
-                    $this->setEvent('warning', null, __('Seems we don\'t have this orders'),
-                        'order_refnum', array_keys($this->orderIds));
+                if (count($this->orderIds)) {
+                    $this->setEvent(
+                        'warning',
+                        null,
+                        __('Seems we don\'t have this orders'),
+                        'order_refnum',
+                        array_keys($this->orderIds)
+                    );
                 }
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $event = [];
             $event['event_type'] = 'error';
             $event['code'] = $e->getCode();
@@ -101,8 +105,7 @@ class Acknowledge
             }
             $this->logger->addError('Error in acknowledge retailops', $event);
             $this->events = $event;
-        }
-        finally{
+        } finally {
             return count($this->events) ? $this->events : (object) null;
         }
     }
@@ -120,9 +123,9 @@ class Acknowledge
         $event['event_type'] = $eventType;
         $event['code'] = $code;
         $event['message'] = $message;
-        if($identifierType !== null && is_array($identifiers)) {
+        if ($identifierType !== null && is_array($identifiers)) {
             $event['associations'] = [];
-            foreach ( $identifiers as $identifier) {
+            foreach ($identifiers as $identifier) {
                 $event['associations'][] = [
                     'identifier_type' => $identifierType,
                     'identifier' => $identifier

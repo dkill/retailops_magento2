@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Api;
 
-
 interface ItemsManagerInterface
 {
     /**
@@ -35,5 +34,4 @@ interface ItemsManagerInterface
      * @return array
      */
     public function getNeedInvoiceItems();
-
 }

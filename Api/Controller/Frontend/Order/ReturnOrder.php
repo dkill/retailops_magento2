@@ -13,7 +13,7 @@ use \RetailOps\Api\Controller\RetailOps;
 
 class ReturnOrder extends RetailOps
 {
-    CONST ENABLE = 'retailops/RetailOps_feed/order_return';
+    const ENABLE = 'retailops/RetailOps_feed/order_return';
     /**
      * @var \RetailOps\Api\Model\Order\OrderReturn
      */
@@ -22,10 +22,10 @@ class ReturnOrder extends RetailOps
     protected $events;
 
     public function __construct(
-       \RetailOps\Api\Model\Order\OrderReturn $orderReturn,
-       \Magento\Framework\App\Action\Context $context,
-       \RetailOps\Api\Logger\Logger $logger)
-    {
+        \RetailOps\Api\Model\Order\OrderReturn $orderReturn,
+        \Magento\Framework\App\Action\Context $context,
+        \RetailOps\Api\Logger\Logger $logger
+    ) {
         $this->orderReturn = $orderReturn;
         parent::__construct($context);
         $this->logger = $logger;
@@ -35,7 +35,7 @@ class ReturnOrder extends RetailOps
     {
         try {
             $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $postData = (array)$this->getRequest()->getPost();
@@ -54,7 +54,7 @@ class ReturnOrder extends RetailOps
             $this->statusRetOps = 'error';
 
         } finally {
-            if(!array_key_exists('events', $this->response)) {
+            if (!array_key_exists('events', $this->response)) {
                 $this->response['events'] = [];
             }
 //            $this->response['status'] = $this->response['status'] ?? $this->statusRetOps;

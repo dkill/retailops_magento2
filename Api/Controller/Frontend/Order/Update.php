@@ -22,7 +22,7 @@ class Update extends RetailOps
     {
         try {
             $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $postData = $this->getRequest()->getPost();
@@ -63,9 +63,10 @@ class Update extends RetailOps
     }
 
 
-    public function __construct(\RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
-                                \Magento\Framework\App\Action\Context $context )
-    {
+    public function __construct(
+        \RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
+        \Magento\Framework\App\Action\Context $context
+    ) {
         $this->orderFactory = $orderFactory;
         parent::__construct($context);
         $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');

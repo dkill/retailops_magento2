@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Service;
 
-
 interface CalculateItemPriceInterface
 {
     public function calculate(\Magento\Sales\Api\Data\OrderItemInterface $item);

@@ -34,8 +34,7 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         /**
@@ -43,7 +42,7 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
          */
         $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        $this->assertEquals(0,count($creditMemoItems));
+        $this->assertEquals(0, count($creditMemoItems));
     }
 
     /**
@@ -60,8 +59,7 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         /**
@@ -69,8 +67,7 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
          */
         $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        foreach ($arrItems as $key => $quantity)
-        {
+        foreach ($arrItems as $key => $quantity) {
             $this->assertEquals((float)$quantity, $creditMemoItems[$key]);
         }
     }
@@ -90,15 +87,14 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         $rightMassive = [];
-        foreach ($items as $item){
-            if($item->getQtyInvoiced() > 0){
+        foreach ($items as $item) {
+            if ($item->getQtyInvoiced() > 0) {
                 $rightMassive[$item->getId()] = $item->getQtyInvoiced();
-            }else{
+            } else {
                 $rightMassive[$item->getId()] = 0;
             }
         }
@@ -108,8 +104,7 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
          */
         $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        foreach ($creditMemoItems as $key => $quantity)
-        {
+        foreach ($creditMemoItems as $key => $quantity) {
             $this->assertEquals((float)$quantity, $rightMassive[$key]);
         }
     }

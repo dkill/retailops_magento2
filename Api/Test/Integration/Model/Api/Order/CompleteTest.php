@@ -36,7 +36,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $objectManager = Bootstrap::getObjectManager();
         $orderComplete = $objectManager->create('RetailOps\Api\Model\Api\Order\Complete');
         /**
-         * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete 
+         * @var \RetailOps\Api\Model\Api\Order\Complete $orderComplete
          */
         $orderComplete->completeOrder($this->postData);
 
@@ -142,7 +142,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(2, $item->getQtyInvoiced()-$item->getQtyRefunded() -$item->getQtyCanceled());
             $this->assertEquals(2, $item->getQtyShipped());
         }
-        $this->assertEquals(1,$item->getQtyRefunded());
+        $this->assertEquals(1, $item->getQtyRefunded());
     }
 
     /**
@@ -237,7 +237,6 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $package["packages"] = $packageItems;
         $postData['shipments'][] = $package;
         $this->postData = $postData;
-
     }
     protected function setPostDataOneShipment()
     {
@@ -274,7 +273,6 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $package["packages"] = $packageItems;
         $postData['shipments'][] = $package;
         $this->postData = $postData;
-
     }
 
     protected function setPostDataTwoShipment()

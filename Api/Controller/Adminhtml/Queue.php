@@ -33,8 +33,7 @@ abstract class Queue extends \Magento\Backend\App\Action
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory,
         \Magento\Ui\Component\MassAction\Filter $massFilter
-    )
-    {
+    ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->resultForwardFactory = $resultForwardFactory;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();

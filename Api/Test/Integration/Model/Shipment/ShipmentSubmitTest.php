@@ -47,7 +47,6 @@ class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($item->getQtyOrdered(), $item->getQtyInvoiced());
             $this->assertEquals($item->getQtyOrdered(), $item->getQtyShipped());
         }
-
     }
 
     protected function setPostDataAllShipment()
@@ -86,7 +85,5 @@ class ShipmentSubmitTest extends \PHPUnit_Framework_TestCase
         $package["packages"] = $packageItems;
         $postData['shipment'] = $package;
         $this->postData = $postData;
-
     }
-
 }

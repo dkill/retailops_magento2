@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model\Api\Map;
 
-
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Model\Api\Map\Order as OrderMap;
 
@@ -85,7 +84,7 @@ class Order
      * @param Order $instance
      * @return mixed
      */
-    static public function prepareOrder( \Magento\Sales\Api\Data\OrderInterface $order, $instance)
+    public static function prepareOrder(\Magento\Sales\Api\Data\OrderInterface $order, $instance)
     {
         $prepareOrder = [];
         $prepareOrder['channel_order_refnum'] = $order->getIncrementId();
@@ -110,11 +109,12 @@ class Order
         return $instance->clearNullValues($prepareOrder);
     }
 
-    public function __construct(\RetailOps\Api\Api\Order\Map\UpcFinderInterface $upcFinder,
-                                \RetailOps\Api\Service\CalculateDiscountInterface $calculateDiscount,
-                                \RetailOps\Api\Service\CalculateItemPriceInterface $calculateItemPrice,
-                                \RetailOps\Api\Api\Order\Map\CalculateAmountInterface $calculateAmount)
-    {
+    public function __construct(
+        \RetailOps\Api\Api\Order\Map\UpcFinderInterface $upcFinder,
+        \RetailOps\Api\Service\CalculateDiscountInterface $calculateDiscount,
+        \RetailOps\Api\Service\CalculateItemPriceInterface $calculateItemPrice,
+        \RetailOps\Api\Api\Order\Map\CalculateAmountInterface $calculateAmount
+    ) {
         $this->upcFinder = $upcFinder;
         $this->calculateDiscount = $calculateDiscount;
         $this->calculateItemPrice = $calculateItemPrice;
@@ -170,7 +170,7 @@ class Order
             if (count($childProducts)) {
                 $childProduct = reset($childProducts);
                 $product = $childProduct->getProduct();
-            }else{
+            } else {
                 $childProduct = $orderItem;
                 $product = $orderItem->getProduct();
             }
@@ -183,7 +183,6 @@ class Order
             $items[] = $item;
         }
         return $items;
-
     }
 
     /**
@@ -191,9 +190,10 @@ class Order
      * @param \Magento\Catalog\Api\Data\ProductInterface|null $product
      * @return null|string
      */
-    protected function getUpcForRetailOps(\Magento\Sales\Api\Data\OrderItemInterface $orderItem,
-                                          \Magento\Catalog\Api\Data\ProductInterface $product= null)
-    {
+    protected function getUpcForRetailOps(
+        \Magento\Sales\Api\Data\OrderItemInterface $orderItem,
+        \Magento\Catalog\Api\Data\ProductInterface $product = null
+    ) {
         return $this->upcFinder->getUpc($orderItem, $product);
     }
 
@@ -246,7 +246,6 @@ class Order
         $paymentR['amount'] = $this->calculateAmount->calculateGrandTotal($order);
         $paymentR['transaction_type'] = 'charge';
         return $this->getGiftPaymentTransaction([$paymentR], $order);
-
     }
 
     /**

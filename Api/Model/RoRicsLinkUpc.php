@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Model;
 
-
 use \Magento\Framework\Model\AbstractModel;
 use RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface;
 
@@ -50,10 +49,10 @@ class RoRicsLinkUpc extends AbstractModel implements RetailOpsRicsLinkByUpcInter
     public function setRoUpc(bool $value)
     {
         //for using cascade index set to null
-        if($value === false){
+        if ($value === false) {
             return parent::setData(self::RO_UPC, null);
         }
-       return parent::setData(self::RO_UPC, (int)$value);
+        return parent::setData(self::RO_UPC, (int)$value);
     }
 
     protected function _construct()

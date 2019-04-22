@@ -8,7 +8,6 @@
 
 namespace RetailOps\Api\Logger;
 
-
 class Base extends \Magento\Framework\Logger\Handler\Base
 {
     /**

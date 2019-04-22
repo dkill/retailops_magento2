@@ -11,6 +11,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Api\SearchResultsInterfaceFactory;
+
 class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
 {
     protected $objectFactory;
@@ -18,9 +19,8 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
     public function __construct(
         QueueFactory $objectFactory,
         CollectionFactory $collectionFactory,
-        SearchResultsInterfaceFactory $searchResultsFactory       
-    )
-    {
+        SearchResultsInterfaceFactory $searchResultsFactory
+    ) {
         $this->objectFactory        = $objectFactory;
         $this->collectionFactory    = $collectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
@@ -28,12 +28,9 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
     
     public function save(QueueInterface $object)
     {
-        try
-        {
+        try {
             $object->save();
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             throw new CouldNotSaveException($e->getMessage());
         }
         return $object;
@@ -47,8 +44,8 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
         if (!$object->getId()) {
             throw new NoSuchEntityException(__('Object with id "%1" does not exist.', $id));
         }
-        return $object;        
-    }       
+        return $object;
+    }
 
     public function delete(QueueInterface $object)
     {
@@ -57,18 +54,18 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
         } catch (Exception $exception) {
             throw new CouldNotDeleteException(__($exception->getMessage()));
         }
-        return true;    
-    }    
+        return true;
+    }
 
     public function deleteById($id)
     {
         return $this->delete($this->getById($id));
-    }    
+    }
 
     public function getList(SearchCriteriaInterface $criteria)
     {
         $searchResults = $this->searchResultsFactory->create();
-        $searchResults->setSearchCriteria($criteria);  
+        $searchResults->setSearchCriteria($criteria);
         $collection = $this->collectionFactory->create();
         foreach ($criteria->getFilterGroups() as $filterGroup) {
             $fields = [];
@@ -81,7 +78,7 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
             if ($fields) {
                 $collection->addFieldToFilter($fields, $conditions);
             }
-        }  
+        }
         $searchResults->setTotalCount($collection->getSize());
         $sortOrders = $criteria->getSortOrders();
         if ($sortOrders) {
@@ -95,12 +92,12 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
         }
         $collection->setCurPage($criteria->getCurrentPage());
         $collection->setPageSize($criteria->getPageSize());
-        $objects = [];                                     
+        $objects = [];
         foreach ($collection as $objectModel) {
             $objects[] = $objectModel;
         }
         $searchResults->setItems($objects);
-        return $searchResults;        
+        return $searchResults;
     }
 
     /**
@@ -109,12 +106,9 @@ class QueueRepository implements \RetailOps\Api\Api\QueueRepositoryInterface
     public function deleteByOrderInc($orderInc)
     {
         $collection = $this->collectionFactory->create();
-        $collection->addFieldToFilter(QueueInterface::ORDER_Id,$orderInc);
-        foreach ($collection as $item)
-        {
+        $collection->addFieldToFilter(QueueInterface::ORDER_Id, $orderInc);
+        foreach ($collection as $item) {
             $item->delete();
         }
     }
-
-
 }
