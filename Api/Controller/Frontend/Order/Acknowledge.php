@@ -14,7 +14,7 @@ use \RetailOps\Api\Controller\RetailOps;
 class Acknowledge  extends RetailOps
 {
     const SERVICENAME = 'order_acknowledge';
-    const ENABLE = 'retailops/RetailOps_feed/order_acknowledge';
+    const ENABLE = 'retailops/retailops_feed/order_acknowledge';
     /**
      * @var string
      */

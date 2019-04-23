@@ -13,7 +13,7 @@ use Magento\Framework\App\ObjectManager;
 
 class Cancel
 {
-    const QUEUE = 'retailops/RetailOps_advanced/cancel_queue';
+    const QUEUE = 'retailops/retailops_advanced/cancel_queue';
     /**
      * @var \RetailOps\Api\Model\Api\Order\Cancel
      */

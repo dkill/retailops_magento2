@@ -14,7 +14,7 @@ use Magento\Framework\App\ObjectManager;
 
 class Router implements \Magento\Framework\App\RouterInterface
 {
-    const MODULE_ENABLE = 'retailops/RetailOps/turn_on';
+    const MODULE_ENABLE = 'retailops/retailops/turn_on';
     protected static $map =
         [
             'inventory_push_v1' => 'Inventory',

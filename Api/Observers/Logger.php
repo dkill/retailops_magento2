@@ -13,7 +13,7 @@ use Magento\Framework\App\ObjectManager;
 
 class Logger implements \Magento\Framework\Event\ObserverInterface
 {
-    const LOG_STATUS = 'retailops/RetailOps/enable_log';
+    const LOG_STATUS = 'retailops/retailops/enable_log';
 
     /**
      * @var \RetailOps\Api\Model\LoggerFactory

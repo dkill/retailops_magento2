@@ -15,7 +15,7 @@ use \RetailOps\Api\Controller\RetailOps;
 class Cancel extends RetailOps
 {
     const SERVICENAME = 'order_cancel';
-    const ENABLE = 'retailops/RetailOps_feed/order_cancel';
+    const ENABLE = 'retailops/retailops_feed/order_cancel';
     /**
      * @var string
      */

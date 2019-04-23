@@ -12,7 +12,7 @@ use \Magento\Sales\Model\Order as MagentoOrder;
 class CalculateInventory
 {
     const QUANTITY = 'quantity_available';
-    const INVENTORY_TYPE = 'retailops/_RetailOps/statuses_inventory';
+    const INVENTORY_TYPE = 'retailops/retailops/statuses_inventory';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface

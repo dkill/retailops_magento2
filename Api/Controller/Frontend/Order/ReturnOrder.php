@@ -13,7 +13,7 @@ use \RetailOps\Api\Controller\RetailOps;
 
 class ReturnOrder extends RetailOps
 {
-    CONST ENABLE = 'retailops/RetailOps_feed/order_return';
+    CONST ENABLE = 'retailops/retailops_feed/order_return';
     /**
      * @var \RetailOps\Api\Model\Order\OrderReturn
      */

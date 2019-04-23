@@ -11,7 +11,7 @@ class Inventory extends RetailOps
     const SKU = 'sku';
     const QUANTITY = 'calc_inventory';
     const SERVICENAME = 'inventory';
-    const ENABLE = 'retailops/RetailOps_feed/inventory_push';
+    const ENABLE = 'retailops/retailops_feed/inventory_push';
     /**
      * @var string
      */
