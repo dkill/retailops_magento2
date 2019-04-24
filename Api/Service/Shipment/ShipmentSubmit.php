@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 17.10.16
- * Time: 10.57
- */
 
 namespace RetailOps\Api\Service\Shipment;
 
-
+/**
+ * Submit shipment service class.
+ *
+ */
 class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
 {
     /**
@@ -29,12 +26,13 @@ class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
      * @param \RetailOps\Api\Service\OrderCheck $orderCheck
      * @param \RetailOps\Api\Service\InvoiceHelper $invoiceHelper
      */
-    public function __construct(\Magento\Shipping\Model\Config $shippingConfig,
-                                \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
-                                \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
-                                \RetailOps\Api\Service\OrderCheck $orderCheck,
-                                \RetailOps\Api\Service\InvoiceHelper $invoiceHelper)
-    {
+    public function __construct(
+        \Magento\Shipping\Model\Config $shippingConfig,
+        \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
+        \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
+        \RetailOps\Api\Service\OrderCheck $orderCheck,
+        \RetailOps\Api\Service\InvoiceHelper $invoiceHelper
+    ) {
         $this->orderCheck = $orderCheck;
         $this->invoiceHelper = $invoiceHelper;
         parent::__construct($shippingConfig, $shipmentLoader, $shipmentSender);
@@ -45,11 +43,11 @@ class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
      */
     public function registerShipment(array $postData = [])
     {
-        if(!$this->getOrder()) {
+        if (!$this->getOrder()) {
             throw new \LogicException(__('No any orders'));
         }
         $order = $this->getOrder();
-        if(!$this->orderCheck->canOrderShip($this->getOrder())) {
+        if (!$this->orderCheck->canOrderShip($this->getOrder())) {
             throw new \LogicException(__(sprintf('This order can\'t be ship, order number: %s', $this->getOrder()->getId())));
         }
         $this->setUnShippedItems($postData);
@@ -76,7 +74,7 @@ class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
             if ($this->orderCheck->getForcedShipmentWithInvoice($order)) {
                 $this->invoiceHelper->createInvoice($order, $this->getShippmentItems());
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             if ($this->orderCheck->getForcedShipmentWithInvoice($order)) {
                 $this->invoiceHelper->createInvoice($this->getShippmentItems(), $order);
@@ -88,10 +86,11 @@ class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
 
     protected function issetItems($items, \Magento\Sales\Api\Data\OrderInterface $order)
     {
-        if(is_array($items) && count($items)) {
-            foreach ($items as $item=>$qty) {
-                if(!$this->orderCheck->hasItem($item, $order))
+        if (is_array($items) && count($items)) {
+            foreach ($items as $item => $qty) {
+                if (!$this->orderCheck->hasItem($item, $order)) {
                     throw new \LogicException(__(sprintf('Item with such id:%s don\'t exists in  order:%s'), [$item, $order->getId()]));
+                }
             }
             return true;
         }
@@ -100,43 +99,43 @@ class ShipmentSubmit extends \RetailOps\Api\Service\Shipment
 
     public function setTrackingAndShipmentItems(array $postData = [])
     {
-        if( !isset($postData['shipment']) ) {
+        if (!isset($postData['shipment'])) {
             return;
         }
         $shipment = $postData['shipment'];
-        if ( !count($shipment)) {
+        if (!count($shipment)) {
             return;
         }
 
-            if(!isset($shipment['packages'])) {
-                throw new \LogicException(__('No any package for orders'));
-            }
+        if (!isset($shipment['packages'])) {
+            throw new \LogicException(__('No any package for orders'));
+        }
             $tracking = [];
             $magentoTracking = $this->_getCarriersInstances();
-            foreach ( $shipment['packages'] as $package ) {
-                $carrierName = isset($package['carrier_name']) ? strtolower($package['carrier_name']) : null;
-                if ($carrierName === null) {
-                    continue;
-                }
-                if(isset($package['tracking_number']) && !empty($package['tracking_number'])) {
-                    //try to find retailops carrier in magento carriers, else use custom label
-                    if (isset($magentoTracking[$carrierName])) {
-                        $tracking[] = [
-                            'carrier_code' => $carrierName,
-                            'title' => $magentoTracking[$carrierName]->getConfigData('title'),
-                            'number' => isset($package['tracking_number']) ? $package['tracking_number'] : null
-                        ];
-                    } else {
-                        $tracking[] = [
-                            'carrier_code' => 'custom',
-                            'title' => $package['carrier_class_name'] ?? 'RetailOps',
-                            'number' => isset($package['tracking_number']) ? $package['tracking_number'] : null
-                        ];
-                    }
-                }
-                $this->setShipmentsItems($package['package_items']);
-                $this->tracking = $tracking;
+        foreach ($shipment['packages'] as $package) {
+            $carrierName = isset($package['carrier_name']) ? strtolower($package['carrier_name']) : null;
+            if ($carrierName === null) {
+                continue;
             }
+            if (isset($package['tracking_number']) && !empty($package['tracking_number'])) {
+                //try to find retailops carrier in magento carriers, else use custom label
+                if (isset($magentoTracking[$carrierName])) {
+                    $tracking[] = [
+                        'carrier_code' => $carrierName,
+                        'title' => $magentoTracking[$carrierName]->getConfigData('title'),
+                        'number' => isset($package['tracking_number']) ? $package['tracking_number'] : null
+                    ];
+                } else {
+                    $tracking[] = [
+                        'carrier_code' => 'custom',
+                        'title' => $package['carrier_class_name'] ?? 'RetailOps',
+                        'number' => isset($package['tracking_number']) ? $package['tracking_number'] : null
+                    ];
+                }
+            }
+            $this->setShipmentsItems($package['package_items']);
+            $this->tracking = $tracking;
+        }
     }
 
     protected function haveQuantityToShip($items, \Magento\Sales\Api\Data\OrderInterface $order)

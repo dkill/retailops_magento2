@@ -1,13 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 11.57
- */
 
 namespace RetailOps\Api\Controller\Adminhtml;
 
+/**
+ * Abstract queue controller class.
+ *
+ */
 abstract class Queue extends \Magento\Backend\App\Action
 {
     /**
@@ -33,8 +31,7 @@ abstract class Queue extends \Magento\Backend\App\Action
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory,
         \Magento\Ui\Component\MassAction\Filter $massFilter
-    )
-    {
+    ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->resultForwardFactory = $resultForwardFactory;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();

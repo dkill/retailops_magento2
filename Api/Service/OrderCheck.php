@@ -1,15 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.10.16
- * Time: 12.40
- */
 
 namespace RetailOps\Api\Service;
 
-
-class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
+/**
+ * Order check class.
+ *
+ */
+class OrderCheck implements \RetailOps\Api\Api\Services\Order\CheckInterface
 {
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
@@ -55,7 +52,7 @@ class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
                 $item = $itemEntity;
             }
         }
-        if(is_object($item)) {
+        if (is_object($item)) {
 
             if ($item->getIsVirtual() || $item->getLockedDoShip()) {
                 return false;
@@ -72,9 +69,9 @@ class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
                             continue;
                         }
 
-                            if ($child->getQtyToShip() > 0) {
-                                return true;
-                            }
+                        if ($child->getQtyToShip() > 0) {
+                            return true;
+                        }
                     }
 
                     return false;
@@ -92,7 +89,6 @@ class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
             }
         }
         return false;
-
     }
 
     /**
@@ -102,7 +98,7 @@ class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
     public function getOrder($orderId)
     {
         $order = $this->orderRepository->get((int)$orderId);
-        if( is_object($order) && $order->getId() ) {
+        if (is_object($order) && $order->getId()) {
             return $order;
         }
         throw new \LogicException('No order with id'.$orderId);
@@ -112,5 +108,4 @@ class OrderCheck implements \RetailOps\Api\Api\Services\Order\Check
     {
         $this->orderRepository = $orderRepository;
     }
-
 }

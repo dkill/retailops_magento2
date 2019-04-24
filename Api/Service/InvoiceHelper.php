@@ -1,15 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 17.10.16
- * Time: 14.11
- */
 
 namespace RetailOps\Api\Service;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
+
+/**
+ * Invoice helper class.
+ *
+ */
 class InvoiceHelper
 {
     public static $captureOnlinePayment = [
@@ -27,14 +26,14 @@ class InvoiceHelper
      * @return bool
      * @throws LocalizedException
      */
-    public function createInvoice(\Magento\Sales\Model\Order $order, $items=[])
+    public function createInvoice(\Magento\Sales\Model\Order $order, $items = [])
     {
-        if(!count($items)>0)
+        if (!count($items)>0) {
             return false;
+        }
         if ($order->canInvoice()) {
             $invoice = $this->invoiceService->prepareInvoice($order, $items);
-            if($this->captureOnline($order))
-            {
+            if ($this->captureOnline($order)) {
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
             }
             if (!$invoice) {
@@ -47,15 +46,14 @@ class InvoiceHelper
                 );
             }
              $invoice->addComment(
-                    'Create for RetailOps'
-               );
-
+                 'Create for RetailOps'
+             );
 
             $invoice->register();
             $invoice->getOrder()->setIsInProcess(true);
             return $this->saveInvoice($invoice);
 
-        }else{
+        } else {
             return false;
         }
         return $invoice->getId() ? true : false;
@@ -64,14 +62,12 @@ class InvoiceHelper
     public function captureOnline(\Magento\Sales\Model\Order $order)
     {
         $method = $order->getPayment()->getMethod();
-        if(array_key_exists($method, $this::$captureOnlinePayment)){
+        if (array_key_exists($method, $this::$captureOnlinePayment)) {
             return true;
         }
 
         return false;
     }
-
-
 
     /**
      * InvoiceHelper constructor.
@@ -88,7 +84,7 @@ class InvoiceHelper
     public function saveInvoice(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $transactionSave = ObjectManager::getInstance()->create(
-            'Magento\Framework\DB\Transaction'
+            \Magento\Framework\DB\Transaction::class
         )->addObject(
             $invoice
         )->addObject(
@@ -96,5 +92,4 @@ class InvoiceHelper
         )->save();
         return $invoice;
     }
-
 }

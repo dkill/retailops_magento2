@@ -1,10 +1,14 @@
 <?php
+
 namespace RetailOps\Api\Api;
 
 use RetailOps\Api\Model\QueueInterface;
 use Magento\Framework\Api\SearchCriteriaInterface;
 
-interface QueueRepositoryInterface 
+/**
+ * Queue repository interface
+ */
+interface QueueRepositoryInterface
 {
     public function save(QueueInterface $page);
 

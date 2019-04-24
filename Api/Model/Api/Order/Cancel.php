@@ -1,13 +1,15 @@
 <?php
 
-
 namespace RetailOps\Api\Model\Api\Order;
 
+use \RetailOps\Api\Model\Api\Traits\Filter;
 
+/**
+ * Cancel order class.
+ *
+ */
 class Cancel
 {
-    use \RetailOps\Api\Model\Api\Traits\Filter;
-
     /**
      * @var \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface
      */
@@ -15,8 +17,9 @@ class Cancel
     protected $response;
     protected $status = 'success';
     protected $events = [];
+
     /**
-     * @var \\RetailOps\Api\Model\Order\Status\History
+     * @var \RetailOps\Api\Model\Order\Status\History
      */
     protected $historyRetail;
 
@@ -35,7 +38,7 @@ class Cancel
             $this->status = 'fail';
             $this->setEventsInfo($e);
 
-        }finally{
+        } finally {
             $response = [];
             $response['status'] = $this->status;
             $response['events'] = $this->events;
@@ -56,7 +59,7 @@ class Cancel
                 'identifier_type' => 'order_refnum',
                 'identifier' => (string)$orderId];
 
-                }
+        }
         $this->events[] = $event;
     }
 
@@ -82,15 +85,15 @@ class Cancel
      * @param \Magento\Framework\Api\FilterFactory $filter
      * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
      */
-    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-                                \RetailOps\Api\Logger\Logger $logger,
-                                \Magento\Framework\Api\SearchCriteria $searchCriteria,
-                                \Magento\Framework\Api\FilterFactory $filter,
-                                \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
-                                \RetailOps\Api\Model\Order\Status\History $historyRetail,
-                                \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
-    )
-    {
+    public function __construct(
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \RetailOps\Api\Logger\Logger $logger,
+        \Magento\Framework\Api\SearchCriteria $searchCriteria,
+        \Magento\Framework\Api\FilterFactory $filter,
+        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
+        \RetailOps\Api\Model\Order\Status\History $historyRetail,
+        \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
+    ) {
         $this->orderRepository = $orderRepository;
         $this->logger = $logger;
         $this->searchCriteria = $searchCriteria;
@@ -111,7 +114,7 @@ class Cancel
     {
         if (!$order->canCancel()) {
 //            throw new \LogicException(__('Order cannot be Canceled'));
-           return  $this->allRefund($order);
+            return  $this->allRefund($order);
         }
 
         $order->cancel();

@@ -1,16 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 13.38
- */
 
 namespace RetailOps\Api\Observers;
 
-
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * Logger observer class.
+ *
+ */
 class Logger implements \Magento\Framework\Event\ObserverInterface
 {
     const LOG_STATUS = 'retailops/RetailOps/enable_log';
@@ -24,6 +21,7 @@ class Logger implements \Magento\Framework\Event\ObserverInterface
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
+
     /**
      * @param Observer $observer
      * @return void
@@ -35,10 +33,10 @@ class Logger implements \Magento\Framework\Event\ObserverInterface
         }
         $response = $observer->getResponse();
         $request = $observer->getRequest();
-        if($request instanceof \Magento\Framework\App\Request\Http) {
+        if ($request instanceof \Magento\Framework\App\Request\Http) {
             $request = (array)$request->getPost();
         }
-        if( isset( $request['integration_auth_token'] )) {
+        if (isset($request['integration_auth_token'])) {
             unset($request['integration_auth_token']);
         }
         $loggerRetailOps = $this->loggerRetailOps->create();
@@ -46,16 +44,18 @@ class Logger implements \Magento\Framework\Event\ObserverInterface
         $loggerRetailOps->setResponse(json_encode($response));
         $loggerRetailOps->setStatus($observer->getStatus());
         $loggerRetailOps->setUrl((string)$observer->getRequest()->getRequestString());
-        $time = ObjectManager::getInstance()->get('Magento\Framework\Stdlib\DateTime\DateTime');
+        $time = ObjectManager::getInstance()->get(Magento\Framework\Stdlib\DateTime\DateTime::class);
         $loggerRetailOps->setCreateDate($time->gmtDate());
-        if(is_object($observer->getError())) {
+        if (is_object($observer->getError())) {
             $loggerRetailOps->setError($observer->getError()->getMessage());
         }
         $loggerRetailOps->save();
     }
 
-    public function __construct(\RetailOps\Api\Model\LoggerFactory $loggerRetailOps, \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
-    {
+    public function __construct(
+        \RetailOps\Api\Model\LoggerFactory $loggerRetailOps,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
         $this->loggerRetailOps = $loggerRetailOps;
         $this->scopeConfig = $scopeConfig;
     }

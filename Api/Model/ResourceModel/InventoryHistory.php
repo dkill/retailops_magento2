@@ -1,14 +1,11 @@
 <?php
+
+namespace RetailOps\Api\Model\ResourceModel;
+
 /**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.10.16
- * Time: 13.55
+ * Inventory history resource class.
+ *
  */
-
-namespace RetailOps\Api\Model\Resource;
-
-
 class InventoryHistory extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

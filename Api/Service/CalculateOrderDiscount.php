@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 2.11.16
- * Time: 15.40
- */
 
 namespace RetailOps\Api\Service;
 
-
+/**
+ * Calculate order discount class.
+ *
+ */
 class CalculateOrderDiscount implements CalculateDiscountInterface
 {
     /**

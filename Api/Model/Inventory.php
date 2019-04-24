@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 8.9.16
- * Time: 17.43
- */
 
 namespace RetailOps\Api\Model;
 
-
+/**
+ * Inventory class.
+ *
+ */
 class Inventory implements \RetailOps\Api\Api\InventoryInterface
 {
     protected $sku;
@@ -58,5 +55,4 @@ class Inventory implements \RetailOps\Api\Api\InventoryInterface
     {
         return $this->count;
     }
-
 }

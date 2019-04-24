@@ -1,14 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 27.10.16
- * Time: 10.11
- */
 
 namespace RetailOps\Api\Service;
 
 use \Magento\Sales\Model\Order as MagentoOrder;
+
+/**
+ * Calculate inventory class
+ *
+ */
 class CalculateInventory
 {
     const QUANTITY = 'quantity_available';
@@ -29,12 +28,12 @@ class CalculateInventory
      */
     protected $orderItemCollectionFactory;
 
-    public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-                                \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-                                \Magento\Sales\Model\ResourceModel\Order\Item\CollectionFactory $orderItemCollectionFactory,
-                                \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $productAttributeCollectionFactory
-                                )
-    {
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \Magento\Sales\Model\ResourceModel\Order\Item\CollectionFactory $orderItemCollectionFactory,
+        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $productAttributeCollectionFactory
+    ) {
         $this->orderItemCollectionFactory = $orderItemCollectionFactory;
         $this->productAttributeCollectionFactory = $productAttributeCollectionFactory;
         $this->scopeConfig = $scopeConfig;
@@ -43,16 +42,15 @@ class CalculateInventory
     public function calculateInventory(array $inventories)
     {
         $inventoryTypes =  $this->scopeConfig->getValue(self::INVENTORY_TYPE);
-        if( $inventoryTypes === null ) {
+        if ($inventoryTypes === null) {
             return $this->setDefaultInventories($inventories);
         }
         $inventoryTypes = explode(',', $inventoryTypes);
-        foreach ($inventories as &$inventory)
-        {
+        foreach ($inventories as &$inventory) {
             $quantityDetail = $inventory['quantity_detail'];
             $count = 0;
             foreach ($quantityDetail as $quantity) {
-                if ( in_array($quantity['quantity_type'], $inventoryTypes)
+                if (in_array($quantity['quantity_type'], $inventoryTypes)
                     || (in_array('empty', $inventoryTypes) && $quantity['quantity_type'] == '')) {
                     $count += (float)$quantity['total_quantity'];
                 }
@@ -70,8 +68,7 @@ class CalculateInventory
      */
     public function setDefaultInventories($inventories)
     {
-        foreach ($inventories as &$inventory)
-        {
+        foreach ($inventories as &$inventory) {
             $inventory['calc_inventory'] = $inventory[self::QUANTITY];
         }
 
@@ -83,15 +80,14 @@ class CalculateInventory
      */
     public function addInventoiesFromNotSendedOrderYet(array $inventories)
     {
-        if(!count($inventories)) {
+        if (!count($inventories)) {
             return;
         }
         $upcs = [];
-        foreach ($inventories as $inventory)
-        {
+        foreach ($inventories as $inventory) {
             $upcs[] = (string)$inventory->getUpc();
         }
-        if(count($upcs)) {
+        if (count($upcs)) {
             $upcsWithCount = $this->getItemsQuantity($upcs);
             foreach ($inventories as $inventory) {
                 if (isset($upcsWithCount[$inventory->getUpc()])) {
@@ -102,7 +98,6 @@ class CalculateInventory
                 }
             }
         }
-
     }
 
     /**
@@ -112,8 +107,7 @@ class CalculateInventory
     protected function getItemsQuantity(array $upcs)
     {
         $upcWithCount = [];
-        foreach ($upcs as $upc)
-        {
+        foreach ($upcs as $upc) {
             $upcWithCount[$upc] = 0;
         }
         /**
@@ -156,16 +150,24 @@ class CalculateInventory
         SUM(main_table.qty_refunded),
         SUM(soi.qty_refunded))) AS sum_ordered')]
         );
-        $collection->getSelect()->where('so.retailops_send_status=?',\RetailOps\Api\Model\Api\Map\Order::ORDER_NO_SEND_STATUS);
+        $collection->getSelect()->where(
+            'so.retailops_send_status=?',
+            \RetailOps\Api\Model\Api\Map\Order::ORDER_NO_SEND_STATUS
+        );
         $collection->getSelect()->where('cpev.value in (?)', $upcs);
-        $collection->getSelect()->where('so.state NOT IN (?)', [MagentoOrder::STATE_CANCELED, MagentoOrder::STATE_CLOSED]);
-        $collection->getSelect()->where('main_table.product_type=?', \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE);
-//        $collection->getSelect()->where('soi.product_type=?', \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE);
+        $collection->getSelect()->where(
+            'so.state NOT IN (?)',
+            [MagentoOrder::STATE_CANCELED, MagentoOrder::STATE_CLOSED]
+        );
+        $collection->getSelect()->where(
+            'main_table.product_type=?',
+            \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+        );
         $collection->getSelect()->where('cpev.value IS NOT NULL');
         $collection->getSelect()->group('cpev.value');
         $collection->load();
         foreach ($collection as $item) {
-            if(isset($upcWithCount[$item->getUpc()])) {
+            if (isset($upcWithCount[$item->getUpc()])) {
                 $upcWithCount[$item->getUpc()] = (float)$item->getSumOrdered();
             }
         }

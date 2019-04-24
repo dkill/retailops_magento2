@@ -1,25 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.10.16
- * Time: 12.26
- */
 
 namespace RetailOps\Api\Api\Services\Order;
 
-
 /**
- * Interface Check
- * @package RetailOps\Api\Api\Services\Order
+ * Order check interface
+ *
  */
-interface Check
+interface CheckInterface
 {
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order
      * @return boolean
      */
-    public function canInvoice( \Magento\Sales\Model\Order $order );
+    public function canInvoice(\Magento\Sales\Model\Order $order);
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order

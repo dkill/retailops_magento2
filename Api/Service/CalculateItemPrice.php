@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 2.11.16
- * Time: 18.21
- */
 
 namespace RetailOps\Api\Service;
 
-
+/**
+ * Calculate item price class.
+ *
+ */
 class CalculateItemPrice implements CalculateItemPriceInterface
 {
     public function calculate(\Magento\Sales\Api\Data\OrderItemInterface $item):float
@@ -19,7 +16,7 @@ class CalculateItemPrice implements CalculateItemPriceInterface
         $discountPerProduct = round($discount/$qty, 4, PHP_ROUND_HALF_UP);
         $priceWithDiscount = round($basePrice - $discountPerProduct, 2, PHP_ROUND_HALF_UP);
         if ($priceWithDiscount < 0) {
-           $priceWithDiscount = 0;
+            $priceWithDiscount = 0;
         }
         return $priceWithDiscount;
     }

@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 8.9.16
- * Time: 17.39
- */
 
 namespace RetailOps\Api\Api;
 
-
+/**
+ * Inventory interface
+ *
+ */
 interface InventoryInterface
 {
     /**
@@ -22,7 +19,6 @@ interface InventoryInterface
      * @return null
      */
     public function setCount($count);
-
 
     /**
      * @return string|null|integer
@@ -56,5 +52,4 @@ interface InventoryInterface
      * @return mixed
      */
     public function getReserveCount();
-
 }

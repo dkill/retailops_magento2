@@ -1,17 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 12.10.16
- * Time: 18.49
- */
 
 namespace RetailOps\Api\Test\Unit\Service\Shipment;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use \Magento\Framework\TestFramework\Unit\Helper\ObjectManager as ObjectManagerHelper;
+use \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader;
+
+/**
+ * Complete test class
+ *
+ */
 class CompleteTest extends \PHPUnit_Framework_TestCase
 {
     const PATH = '/app/code/RetailOps/Api/Test/Unit/Service/Shipment';
+
     /**
      * @var \Magento\Shipping\Model\Config | \PHPUnit_Framework_MockObject_MockObject
      */
@@ -40,16 +41,16 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->objectManagerHelper = new ObjectManagerHelper($this);
-        $this->shippingConfigMock = $this->getMockBuilder('\\Magento\Shipping\Model\Config')
+        $this->shippingConfigMock = $this->getMockBuilder(\Magento\Shipping\Model\Config::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
-        $upsMock = $this->getMockBuilder('\\Magento\Ups\Model\Carrier')
+        $upsMock = $this->getMockBuilder(\Magento\Ups\Model\Carrier::class)
         ->disableOriginalConstructor()
         ->getMock();
         $upsMock->expects($this->any())
             ->method('getConfigData')
             ->willReturn('ups');
-        $uspsMock = $this->getMockBuilder('\\Magento\Usps\Model\Carrier')
+        $uspsMock = $this->getMockBuilder(\Magento\Usps\Model\Carrier::class)
         ->disableOriginalConstructor()
         ->getMock();
         $uspsMock->expects($this->any())
@@ -63,14 +64,14 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $this->shippingConfigMock->expects($this->any())
                                  ->method('getAllCarriers')
                                  ->willReturn($allCarriers);
-        $this->shipmentLoaderMock = $this->getMockBuilder('\Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader')
+        $this->shipmentLoaderMock = $this->getMockBuilder(ShipmentLoader::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
-        $this->shipmentSenderMock = $this->getMockBuilder('\Magento\Sales\Model\Order\Email\Sender\ShipmentSender')
+        $this->shipmentSenderMock = $this->getMockBuilder(\Magento\Sales\Model\Order\Email\Sender\ShipmentSender::class)
                                          ->disableOriginalConstructor()
                                          ->getMock();
         $this->model = $this->objectManagerHelper->getObject(
-            'RetailOps\Api\Service\Shipment\Complete',
+            \RetailOps\Api\Service\Shipment\Complete::class,
             [
             'shippingConfig' => $this->shippingConfigMock,
             'shipmentLoader' => $this->shipmentLoaderMock,
@@ -98,44 +99,42 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
 
     public function testCalcQuantity()
     {
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>1]);
-        $this->assertEquals(1,$this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->assertEquals(2,$this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>10]);
-        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 2]));
-        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 8]));
-        $this->assertEquals(8, $this->getDataFromMethod($this->model, 'calcQuantity',['150', 8]));
-
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>1]);
+        $this->assertEquals(1, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->assertEquals(2, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>10]);
+        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 2]));
+        $this->assertEquals(0, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 8]));
+        $this->assertEquals(8, $this->getDataFromMethod($this->model, 'calcQuantity', ['150', 8]));
     }
 
     public function testSetTrackingAndShipmentItems()
     {
         $postData = \file_get_contents($this->getPath('orderCompleteUnShipment.json'));
         $postData = json_decode($postData, true);
-        $this->setPropertyValue($this->model,'unShippmentItems', ['150'=>1]);
+        $this->setPropertyValue($this->model, 'unShippmentItems', ['150'=>1]);
         $this->model->setTrackingAndShipmentItems($postData['order']);
         $tracking = $this->model->getTracking();
         $this->assertEquals(1, count($tracking));
-        $this->assertEquals('ups',$tracking[0]['carrier_code']);
+        $this->assertEquals('ups', $tracking[0]['carrier_code']);
         $shipmentsItems = $this->model->getShippmentItems();
         $this->assertEquals(1, count($shipmentsItems));
-        $this->assertEquals(1,$shipmentsItems['items']['150']);
+        $this->assertEquals(1, $shipmentsItems['items']['150']);
 
         //fails test
         $postData = \file_get_contents($this->getPath('orderCompleteEmptyUnShipment.json'));
         $postData = json_decode($postData, true);
         //reset values
-        $this->setPropertyValue($this->model,'unShippmentItems', []);
-        $this->setPropertyValue($this->model,'shippmentItems', []);
+        $this->setPropertyValue($this->model, 'unShippmentItems', []);
+        $this->setPropertyValue($this->model, 'shippmentItems', []);
         //reset values
         $this->model->setTrackingAndShipmentItems($postData['order']);
         $tracking = $this->model->getTracking();
         $this->assertEquals(2, count($tracking));
-        $this->assertEquals('custom',$tracking[1]['carrier_code']);
+        $this->assertEquals('custom', $tracking[1]['carrier_code']);
         $shipmentsItems = $this->model->getShippmentItems();
         $this->assertEquals(2, count($shipmentsItems['items']));
-        $this->assertEquals(3,$shipmentsItems['items']["62"]);
-
+        $this->assertEquals(3, $shipmentsItems['items']["62"]);
     }
 
     protected function getDataFromMethod($object, $methodName, $args)
@@ -157,9 +156,7 @@ class CompleteTest extends \PHPUnit_Framework_TestCase
         $reflection = new \ReflectionClass($object);
         $reflection_property = $reflection->getProperty($propertyName);
         $reflection_property->setAccessible(true);
-        $reflection_property->setValue($object,$value);
+        $reflection_property->setValue($object, $value);
         return $object;
     }
-
-
 }

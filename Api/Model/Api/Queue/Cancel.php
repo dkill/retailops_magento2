@@ -1,22 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 11.22
- */
 
 namespace RetailOps\Api\Model\Api\Queue;
 
 use RetailOps\Api\Api\Queue\QueueInterface;
 use RetailOps\Api\Model\QueueInterface as Queue;
+use RetailOps\Api\Model\Api\Traits\FullFilter;
+
+/**
+ * Queue cancel class.
+ *
+ */
 class Cancel implements QueueInterface
 {
-    use \RetailOps\Api\Model\Api\Traits\FullFilter;
-
     protected $response;
     protected $status = 'success';
     protected $events = [];
+
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
      */
@@ -34,7 +33,7 @@ class Cancel implements QueueInterface
     /**
      * @return Queue
      */
-    public function setToQueue($message, \Magento\Sales\Api\Data\OrderInterface $order, $type=Queue::CANCEL_TYPE)
+    public function setToQueue($message, \Magento\Sales\Api\Data\OrderInterface $order, $type = Queue::CANCEL_TYPE)
     {
         /**
          * @var \RetailOps\Api\Model\Queue $queue
@@ -44,7 +43,6 @@ class Cancel implements QueueInterface
         $queue->setQueueType($type);
         $queue->setOrderId($order->getIncrementId());
          return $this->queueRepository->save($queue);
-
     }
 
     /**
@@ -54,10 +52,9 @@ class Cancel implements QueueInterface
      */
     public function getFromQueue($id)
     {
-       return $this->queueRepository->getById($id);
+        return $this->queueRepository->getById($id);
     }
-
-
+    
     public function cancel($data)
     {
         $orderId = $this->getOrderIdByIncrement($data['channel_order_refnum']);
@@ -68,27 +65,26 @@ class Cancel implements QueueInterface
 
         if ($order->getId()) {
             $message = $this->getMessage($order);
-            $this->setToQueue($message,$order);
+            $this->setToQueue($message, $order);
         }
         $response['status'] = $this->status;
         $response['events'] = $this->events;
         return $this->response = $response;
-
     }
 
-    public function getMessage( \Magento\Sales\Api\Data\OrderInterface $order)
+    public function getMessage(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         $incrementId = $order->getIncrementId();
         return sprintf(__('Cancel order number: %s'), $incrementId);
     }
 
-    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-                                \RetailOps\Api\Model\QueueFactory $queue,
-                                \RetailOps\Api\Model\QueueRepository $queueRepository)
-    {
+    public function __construct(
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \RetailOps\Api\Model\QueueFactory $queue,
+        \RetailOps\Api\Model\QueueRepository $queueRepository
+    ) {
         $this->orderRepository = $orderRepository;
         $this->queueFactory = $queue;
         $this->queueRepository = $queueRepository;
     }
-
 }

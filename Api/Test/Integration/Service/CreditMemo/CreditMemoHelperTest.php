@@ -1,22 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.11.16
- * Time: 17.17
- */
 
 namespace RetailOps\Api\Test\Integration\Service\CreditMemo;
 
 use Magento\TestFramework\Helper\Bootstrap;
 
+/**
+ * Credit memo helper test
+ *
+ */
 class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
 {
     const INCREMENT_1 = '100000001';
 
     protected function setUp()
     {
-        Bootstrap::getObjectManager()->get('Magento\Framework\App\AreaList')
+        Bootstrap::getObjectManager()->get(\Magento\Framework\App\AreaList::class)
             ->getArea('adminhtml')
             ->load(\Magento\Framework\App\Area::PART_CONFIG);
     }
@@ -30,20 +28,19 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         /**
          * @var \RetailOps\Api\Service\CreditMemo\CreditMemoHelper
          */
-        $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
+        $creditMemoHelper = $objectManager->get(\RetailOps\Api\Service\CreditMemo\CreditMemoHelper::class);
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        $this->assertEquals(0,count($creditMemoItems));
+        $this->assertEquals(0, count($creditMemoItems));
     }
 
     /**
@@ -56,21 +53,19 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         /**
          * @var \RetailOps\Api\Service\CreditMemo\CreditMemoHelper
          */
-        $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
+        $creditMemoHelper = $objectManager->get(\RetailOps\Api\Service\CreditMemo\CreditMemoHelper::class);
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        foreach ($arrItems as $key => $quantity)
-        {
+        foreach ($arrItems as $key => $quantity) {
             $this->assertEquals((float)$quantity, $creditMemoItems[$key]);
         }
     }
@@ -86,19 +81,18 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \Magento\Sales\Model\Order $order
          */
-        $order = $objectManager->get('Magento\Sales\Model\Order');
+        $order = $objectManager->get(\Magento\Sales\Model\Order::class);
         $order->loadByIncrementId(self::INCREMENT_1);
         $items = $order->getItems();
         $arrItems = [];
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $arrItems[$item->getId()] = $item->getQtyOrdered();
         }
         $rightMassive = [];
-        foreach ($items as $item){
-            if($item->getQtyInvoiced() > 0){
+        foreach ($items as $item) {
+            if ($item->getQtyInvoiced() > 0) {
                 $rightMassive[$item->getId()] = $item->getQtyInvoiced();
-            }else{
+            } else {
                 $rightMassive[$item->getId()] = 0;
             }
         }
@@ -106,10 +100,9 @@ class CreditMemoHelperTest extends \PHPUnit_Framework_TestCase
         /**
          * @var \RetailOps\Api\Service\CreditMemo\CreditMemoHelper
          */
-        $creditMemoHelper = $objectManager->get('RetailOps\Api\Service\CreditMemo\CreditMemoHelper');
+        $creditMemoHelper = $objectManager->get(\RetailOps\Api\Service\CreditMemo\CreditMemoHelper::class);
         $creditMemoItems = $creditMemoHelper->needCreditMemo($order, $arrItems);
-        foreach ($creditMemoItems as $key => $quantity)
-        {
+        foreach ($creditMemoItems as $key => $quantity) {
             $this->assertEquals((float)$quantity, $rightMassive[$key]);
         }
     }

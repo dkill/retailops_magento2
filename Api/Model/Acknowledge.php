@@ -1,20 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 22.9.16
- * Time: 14.11
- */
 
 namespace RetailOps\Api\Model;
 
-
+/**
+ * Acknowlegde class.
+ *
+ */
 class Acknowledge
 {
     /**
      * @var Api\Acknowledge
      */
     protected $acknowledge;
+
     /**
      * @param array $postData
      * @return array
@@ -32,5 +30,4 @@ class Acknowledge
     {
         $this->acknowledge = $acknowledge;
     }
-
 }

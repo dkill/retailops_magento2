@@ -1,16 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 23.9.16
- * Time: 12.12
- */
 
 namespace RetailOps\Api\Model\Order;
 
-
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * Cancel order class.
+ *
+ */
 class Cancel
 {
     const QUEUE = 'retailops/RetailOps_advanced/cancel_queue';
@@ -24,13 +21,13 @@ class Cancel
      */
     protected $cancelQueue;
 
-    public function cancelOrder( $postData )
+    public function cancelOrder($postData)
     {
         if ($postData['order']) {
-            $scopeConfig = ObjectManager::getInstance()->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::QUEUE)) {
+            $scopeConfig = ObjectManager::getInstance()->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+            if (!$scopeConfig->getValue(self::QUEUE)) {
                 $response = $this->cancelOrder->cancel($postData['order']);
-            }else {
+            } else {
                 $response = $this->cancelQueue->cancel($postData['order']);
             }
             return $response;
@@ -42,9 +39,10 @@ class Cancel
      * Cancel constructor.
      * @param \\RetailOps\Api\Model\Api\Order\Cancel $cancelOrder
      */
-    public function __construct(\RetailOps\Api\Model\Api\Order\Cancel $cancelOrder,
-                                \RetailOps\Api\Model\Api\Queue\Cancel $cancelQueue)
-    {
+    public function __construct(
+        \RetailOps\Api\Model\Api\Order\Cancel $cancelOrder,
+        \RetailOps\Api\Model\Api\Queue\Cancel $cancelQueue
+    ) {
         $this->cancelOrder = $cancelOrder;
         $this->cancelQueue = $cancelQueue;
     }

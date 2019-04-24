@@ -1,28 +1,39 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 11.53
- */
 
 namespace RetailOps\Api\Controller\Frontend\Order;
 
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Update controller class action.
+ *
+ */
 class Update extends RetailOps
 {
     const SERVICENAME = 'order_update';
     const ENABLE = 'retailops/RetailOps_feed/order_update';
+
     protected $events = [];
+
     protected $response = [];
+
     protected $status = 'success';
+
+    public function __construct(
+        \RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
+        \Magento\Framework\App\Action\Context $context
+    ) {
+        $this->orderFactory = $orderFactory;
+        parent::__construct($context);
+        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
+    }
+
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $postData = $this->getRequest()->getPost();
@@ -60,14 +71,5 @@ class Update extends RetailOps
             $this->getResponse()->setStatusCode('200');
             return $this->getResponse();
         }
-    }
-
-
-    public function __construct(\RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
-                                \Magento\Framework\App\Action\Context $context )
-    {
-        $this->orderFactory = $orderFactory;
-        parent::__construct($context);
-        $this->logger = $this->_objectManager->get('\RetailOps\Api\Logger\Logger');
     }
 }

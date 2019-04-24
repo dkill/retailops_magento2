@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.10.16
- * Time: 12.34
- */
 
 namespace RetailOps\Api\Api;
 
-
+/**
+ * Inventory history interface
+ *
+ */
 interface InventoryHistoryInterface
 {
     /**
@@ -43,5 +40,4 @@ interface InventoryHistoryInterface
      * @return $this
      */
     public function load($historyId);
-
 }

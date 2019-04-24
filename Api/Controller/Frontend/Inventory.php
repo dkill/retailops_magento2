@@ -5,6 +5,10 @@ namespace RetailOps\Api\Controller\Frontend;
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Controller\RetailOps;
 
+/**
+ * Inventory controller class
+ *
+ */
 class Inventory extends RetailOps
 {
     const PARAM = 'inventory_updates';
@@ -32,8 +36,8 @@ class Inventory extends RetailOps
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $inventories = $this->getRequest()->getParam(self::PARAM);
@@ -45,7 +49,7 @@ class Inventory extends RetailOps
                     $upcs = $this->upcRepository->getProductUpcByRoUpc($invent[self::SKU]);
                     //if for one rics_integration Id can be many products
                     foreach ($upcs as $upc) {
-                        $object = ObjectManager::getInstance()->create('\RetailOps\Api\Model\Inventory');
+                        $object = ObjectManager::getInstance()->create(\RetailOps\Api\Model\Inventory::class);
                         $object->setUPC($upc);
                         $object->setCount($invent[self::QUANTITY]);
                         $inventoryObjects[] = $object;
@@ -53,14 +57,18 @@ class Inventory extends RetailOps
                     $upcs = [];
                 }
                 $this->inventory->addInventoiesFromNotSendedOrderYet($inventoryObjects);
-                $inventoryApi = ObjectManager::getInstance()->create('\RetailOps\Api\Model\Inventory\Inventory');
-                foreach ($inventoryObjects as $inventory){
+                $inventoryApi = ObjectManager::getInstance()->create(\RetailOps\Api\Model\Inventory\Inventory::class);
+                foreach ($inventoryObjects as $inventory) {
                     $this->association[] = ['identifier_type' => 'sku_number', 'identifier'=>$inventory->getUPC()];
                 }
-                $state = ObjectManager::getInstance()->get('\Magento\Framework\App\State');
-                $state->emulateAreaCode(\Magento\Framework\App\Area::AREA_WEBAPI_REST, [$inventoryApi, 'setInventory'], [$inventoryObjects]);
+                $state = ObjectManager::getInstance()->get(\Magento\Framework\App\State::class);
+                $state->emulateAreaCode(
+                    \Magento\Framework\App\Area::AREA_WEBAPI_REST,
+                    [$inventoryApi, 'setInventory'],
+                    [$inventoryObjects]
+                );
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             $event = [
                 'event_type' => 'error',
                 'code' => $e->getCode(),
@@ -71,10 +79,9 @@ class Inventory extends RetailOps
             $this->events[] = $event;
             $this->statusRetOps = 'error';
 
-        }finally {
+        } finally {
             $this->response['events'] = [];
-            foreach ($this->events as $event)
-            {
+            foreach ($this->events as $event) {
                 $this->response['events'][] = $event;
             }
             $this->getResponse()->representJson(json_encode($this->response));
@@ -82,17 +89,15 @@ class Inventory extends RetailOps
             parent::execute();
             return $this->getResponse();
         }
-
-
     }
 
-    public function __construct(\Magento\Framework\App\Action\Context $context,
-                                \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository,
-                                \RetailOps\Api\Service\CalculateInventory $inventory)
-    {
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository,
+        \RetailOps\Api\Service\CalculateInventory $inventory
+    ) {
         $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
         parent::__construct($context);
     }
-
 }

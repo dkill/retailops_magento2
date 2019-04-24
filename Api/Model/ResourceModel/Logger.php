@@ -1,14 +1,11 @@
 <?php
+
+namespace RetailOps\Api\Model\ResourceModel;
+
 /**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 13.01
+ * Logger resource model class.
+ *
  */
-
-namespace RetailOps\Api\Model\Resource;
-
-
 class Logger extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

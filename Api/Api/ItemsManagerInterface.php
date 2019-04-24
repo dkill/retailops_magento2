@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 15.11.16
- * Time: 13.04
- */
 
 namespace RetailOps\Api\Api;
 
-
+/**
+ * Items manager interface
+ *
+ */
 interface ItemsManagerInterface
 {
     /**
@@ -29,11 +26,9 @@ interface ItemsManagerInterface
      * @return array
      */
     public function getCancelItems();
-
-
+    
     /**
      * @return array
      */
     public function getNeedInvoiceItems();
-
 }

@@ -1,14 +1,11 @@
 <?php
+
+namespace RetailOps\Api\Model\ResourceModel\Order\Status;
+
 /**
- * Created by PhpStorm.
- * User: galillei
- * Date: 23.9.16
- * Time: 17.19
+ * Order status history resource model class.
+ *
  */
-
-namespace RetailOps\Api\Model\Resource\Order\Status;
-
-
 class History extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     protected function _construct()

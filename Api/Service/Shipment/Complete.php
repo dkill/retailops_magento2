@@ -1,17 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 12.10.16
- * Time: 14.02
- */
 
 namespace RetailOps\Api\Service\Shipment;
 
-
+/**
+ * Complete shipment class.
+ *
+ */
 class Complete extends \RetailOps\Api\Service\Shipment
 {
-   const COMPLETE = 'complete';
+    const COMPLETE = 'complete';
     /**
      * @var \RetailOps\Api\Service\OrderCheck
      */
@@ -22,12 +19,13 @@ class Complete extends \RetailOps\Api\Service\Shipment
      */
     protected $invoiceHelper;
 
-    public function __construct(\Magento\Shipping\Model\Config $shippingConfig,
-                                \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
-                                \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
-                                \RetailOps\Api\Service\OrderCheck $orderCheck,
-                                \RetailOps\Api\Service\InvoiceHelper $invoiceHelper)
-    {
+    public function __construct(
+        \Magento\Shipping\Model\Config $shippingConfig,
+        \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
+        \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender,
+        \RetailOps\Api\Service\OrderCheck $orderCheck,
+        \RetailOps\Api\Service\InvoiceHelper $invoiceHelper
+    ) {
         $this->orderCheck = $orderCheck;
         $this->invoiceHelper = $invoiceHelper;
         parent::__construct($shippingConfig, $shipmentLoader, $shipmentSender);
@@ -37,17 +35,17 @@ class Complete extends \RetailOps\Api\Service\Shipment
      */
     public function registerShipment(array $postData = [])
     {
-        if(!$this->getOrder()) {
+        if (!$this->getOrder()) {
             throw new \LogicException(__('No any orders'));
         }
         $order = $this->getOrder();
-        if(!$this->orderCheck->canOrderShip($this->getOrder())) {
+        if (!$this->orderCheck->canOrderShip($this->getOrder())) {
             return;
 //            throw new \LogicException(__(sprintf('This order can\'t be ship, order number: %s', $this->getOrder()->getId())));
         }
         $this->setUnShippedItems($postData);
         //synchonize api with Shipment abstract class
-        if(isset($postData['shipment'])) {
+        if (isset($postData['shipment'])) {
             $postData['shipments'] = $postData['shipment'];
         }
         $this->setTrackingAndShipmentItems($postData);
@@ -61,7 +59,6 @@ class Complete extends \RetailOps\Api\Service\Shipment
         $this->haveQuantityToShip($this->getShippmentItems()['items'], $order);
 
         $this->createShipment($this->getOrder());
-
     }
 
     protected function haveQuantityToShip($items, \Magento\Sales\Api\Data\OrderInterface $order)
@@ -76,14 +73,14 @@ class Complete extends \RetailOps\Api\Service\Shipment
 
     protected function issetItems($items, \Magento\Sales\Api\Data\OrderInterface $order)
     {
-        if(is_array($items) && count($items)) {
-            foreach ($items as $item=>$qty) {
-                if(!$this->orderCheck->hasItem($item, $order))
+        if (is_array($items) && count($items)) {
+            foreach ($items as $item => $qty) {
+                if (!$this->orderCheck->hasItem($item, $order)) {
                     throw new \LogicException(__(sprintf('Item with such id:%s don\'t exists in  order:%s'), [$item, $order->getId()]));
+                }
             }
             return true;
         }
         throw new \LogicException(__('No have any items for shipment'));
     }
-
 }

@@ -1,20 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.10.16
- * Time: 12.07
- */
 
 namespace RetailOps\Api\Controller\Frontend\Order;
 
 use \RetailOps\Api\Controller\RetailOps;
 
-class Shipment  extends RetailOps
+/**
+ * Shipment controller class action.
+ *
+ */
+class Shipment extends RetailOps
 {
     const SERVICENAME = 'shipment_submit';
     const COUNT_ORDERS_PER_REQUEST = 50;
     const ENABLE = 'retailops/RetailOps_feed/order_shipment_submit';
+
     /**
      * @var string
      */
@@ -35,10 +34,11 @@ class Shipment  extends RetailOps
      */
     protected $events=[];
 
-    public function __construct(\RetailOps\Api\Model\Shipment\ShipmentSubmit $shipmentSubmit,
-                                \Magento\Framework\App\Action\Context $context,
-                                \RetailOps\Api\Logger\Logger $logger)
-    {
+    public function __construct(
+        \RetailOps\Api\Model\Shipment\ShipmentSubmit $shipmentSubmit,
+        \Magento\Framework\App\Action\Context $context,
+        \RetailOps\Api\Logger\Logger $logger
+    ) {
         $this->shipmentSubmit = $shipmentSubmit;
         parent::__construct($context);
         $this->logger = $logger;
@@ -47,8 +47,8 @@ class Shipment  extends RetailOps
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
-            if(!$scopeConfig->getValue(self::ENABLE)) {
+            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+            if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('This feed disable');
             }
             $postData = (array)$this->getRequest()->getPost();
@@ -67,7 +67,7 @@ class Shipment  extends RetailOps
             $this->statusRetOps = 'error';
             parent::execute();
         } finally {
-            if(!array_key_exists('events', $this->response)) {
+            if (!array_key_exists('events', $this->response)) {
                 $this->response['events'] = [];
             }
 //            $this->response['status'] = $this->response['status'] ?? $this->statusRetOps;
@@ -80,8 +80,4 @@ class Shipment  extends RetailOps
             return $this->getResponse();
         }
     }
-
-
-
-
 }

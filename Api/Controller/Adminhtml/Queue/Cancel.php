@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 11.59
- */
 
 namespace RetailOps\Api\Controller\Adminhtml\Queue;
 
-
+/**
+ * Queue cancel controller class action.
+ *
+ */
 class Cancel extends \RetailOps\Api\Controller\Adminhtml\Queue
 {
     public function execute()

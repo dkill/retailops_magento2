@@ -1,13 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 10.10.16
- * Time: 16.44
- */
 
 namespace RetailOps\Api\Service;
 
+/**
+ * Shipment class.
+ *
+ */
 abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
 {
     /**
@@ -52,12 +50,13 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
     public function setUnShippedItems(array $postData = [])
     {
         $this->unShippmentItems = [];
-        if(!count($postData)) {
+        if (!count($postData)) {
             return;
         }
         $unShipments = $postData['unshipped_items'] ?? null;
-        if($unShipments === null)
+        if ($unShipments === null) {
             return;
+        }
         foreach ($unShipments as $item) {
             $this->unShippmentItems[$item['channel_item_refnum']] = $item['unshipped_quantity'];
         }
@@ -67,25 +66,25 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
     {
         $this->shippmentItems = [];
         $this->tracking = [];
-        if( !isset($postData['shipments']) ) {
+        if (!isset($postData['shipments'])) {
             return;
         }
         $shipment = $postData['shipments'];
-        if ( !count($shipment)) {
+        if (!count($shipment)) {
             return;
         }
         foreach ($shipment as $ship) {
-            if(!isset($ship['packages'])) {
+            if (!isset($ship['packages'])) {
                 throw new \LogicException(__('No any package for orders'));
             }
             $tracking = [];
             $magentoTracking = $this->_getCarriersInstances();
-            foreach ( $ship['packages'] as $package ) {
+            foreach ($ship['packages'] as $package) {
                 $carrierName = isset($package['carrier_name']) ? strtolower($package['carrier_name']) : null;
                 if ($carrierName === null) {
                     continue;
                 }
-                if(isset($package['tracking_number']) && !empty($package['tracking_number'])) {
+                if (isset($package['tracking_number']) && !empty($package['tracking_number'])) {
 
                     //try to find retailops carrier in magento carriers, else use custom label
                     if (isset($magentoTracking[$carrierName])) {
@@ -116,36 +115,35 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
         return $this->shippingConfig->getAllCarriers();
     }
 
-    public function __construct(\Magento\Shipping\Model\Config $shippingConfig,
-                                \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
-                                \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender)
-    {
+    public function __construct(
+        \Magento\Shipping\Model\Config $shippingConfig,
+        \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader $shipmentLoader,
+        \Magento\Sales\Model\Order\Email\Sender\ShipmentSender $shipmentSender
+    ) {
         $this->shippingConfig = $shippingConfig;
         $this->shipmentLoader = $shipmentLoader;
         $this->shipmentSender = $shipmentSender;
-
     }
 
     /**
      * @param  array $packageItems
      */
-    public function setShipmentsItems(array $packageItems=[])
+    public function setShipmentsItems(array $packageItems = [])
     {
-        if ( is_array($packageItems) && count($packageItems) === 0 ) {
+        if (is_array($packageItems) && count($packageItems) === 0) {
             return;
         }
         foreach ($packageItems as $item) {
             if (isset($this->shippmentItems['items'][$item['channel_item_refnum']])) {
-                $quantity = (float)$this->shippmentItems['items'][$item['channel_item_refnum']] + (float)$item['quantity'];
+                $quantity =
+                    (float)$this->shippmentItems['items'][$item['channel_item_refnum']] + (float)$item['quantity'];
                 $this->shippmentItems['items'][$item['channel_item_refnum']] =
                     $this->calcQuantity($item['channel_item_refnum'], $quantity);
-            }else{
+            } else {
                 $this->shippmentItems['items'][$item['channel_item_refnum']] =
                     $this->calcQuantity($item['channel_item_refnum'], (float)$item['quantity']);
             }
         }
-
-
     }
 
     private function calcQuantity($itemId, $quantity)
@@ -182,9 +180,7 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
         $shipment->register();
         $this->_saveShipment($shipment);
         $this->sendEmail($shipment);
-
     }
-
 
     /**
      * Save shipment and order in one transaction
@@ -196,7 +192,7 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
     {
         $shipment->getOrder()->setIsInProcess(true);
         $transaction = \Magento\Framework\App\ObjectManager::getInstance()->create(
-            'Magento\Framework\DB\Transaction'
+            \Magento\Framework\DB\Transaction::class
         );
         $transaction->addObject(
             $shipment
@@ -211,7 +207,7 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
      * @param \Magento\Sales\Api\Data\OrderInterface $order
      * return void
      */
-    public function setOrder( \Magento\Sales\Api\Data\OrderInterface $order)
+    public function setOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         $this->order = $order;
     }
@@ -248,7 +244,7 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
         return $this->order;
     }
 
-    public function registerShipment(array $postData=[])
+    public function registerShipment(array $postData = [])
     {
         $this->setUnShippedItems($postData);
         $this->setTrackingAndShipmentItems($postData);
@@ -259,6 +255,4 @@ abstract class Shipment implements \RetailOps\Api\Api\Shipment\ShipmentInterface
     {
         $this->shipmentSender->send($shipment);
     }
-
-
 }

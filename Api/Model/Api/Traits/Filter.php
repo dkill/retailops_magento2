@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 23.9.16
- * Time: 12.36
- */
 
 namespace RetailOps\Api\Model\Api\Traits;
 
-
 use Magento\Framework\App\ObjectManager;
+
 trait Filter
 {
     /**
@@ -40,7 +34,7 @@ trait Filter
      * @param array $filters
      * @return mixed
      */
-    public function createFilterGroups( array $filters)
+    public function createFilterGroups(array $filters)
     {
         /**
          * @var  \Magento\Framework\Api\Search\FilterGroup
@@ -73,7 +67,7 @@ trait Filter
     {
         $orders[$orderInc] = 1;
         $ordersId = array_keys($this->setOrderIdByIncrementId($orders));
-        if(!is_array($ordersId) || !count($ordersId)) {
+        if (!is_array($ordersId) || !count($ordersId)) {
             throw new \LogicException(__('This increment id doesn\'t exists'));
         }
         $orderId = reset($ordersId);
@@ -85,22 +79,21 @@ trait Filter
      */
     public function setOrderIdByIncrementId($orders)
     {
-        $resource = ObjectManager::getInstance()->get('Magento\Framework\App\ResourceConnection');
+        $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
         $connection = $resource->getConnection();
         $existsOrders = [];
         $template = 'increment_id IN (%s)';
         $orderKeys = array_keys($orders);
         array_walk($orderKeys, [$this,'addQuote']);
-        $bind = join($orderKeys,',');
+        $bind = join($orderKeys, ',');
         $where = sprintf($template, $bind);
-        $select = $connection->select()->from('sales_order',['entity_id', 'increment_id'])
+        $select = $connection->select()->from('sales_order', ['entity_id', 'increment_id'])
             ->where($where);
-
 
         $result = $connection->fetchAll($select, []);
         if (count($result)) {
             foreach ($result as $row) {
-                foreach ($orders as $key=>$order) {
+                foreach ($orders as $key => $order) {
                     if ((string)$key === (string)$row['increment_id']) {
                         $existsOrders[$row['entity_id']] = $order;
                     }
@@ -108,7 +101,6 @@ trait Filter
             }
         }
         return $existsOrders;
-
     }
 
     public function addQuote($item)

@@ -1,6 +1,10 @@
 <?php
 namespace RetailOps\Api\Controller\Adminhtml;
 
+/**
+ * Abstract log controller class.
+ *
+ */
 abstract class Log extends \Magento\Backend\App\Action
 {
     protected $resultPageFactory;
@@ -10,8 +14,7 @@ abstract class Log extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
-    )
-    {
+    ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->resultForwardFactory = $resultForwardFactory;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();

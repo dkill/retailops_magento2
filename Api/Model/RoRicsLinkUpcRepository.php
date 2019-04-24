@@ -1,19 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 21.10.16
- * Time: 9.33
- */
 
 namespace RetailOps\Api\Model;
 
-
 use RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcRepositoryInterface;
-use \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\CollectionFactory;
+use \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\CollectionFactory;
 use \RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface as RoRiLink;
 
-
+/**
+ * Ro Rics link upc repository class.
+ *
+ */
 class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterface
 {
     /**
@@ -25,6 +21,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
      * @var Product\CollectionFactory
      */
     protected $productCollectionFactory;
+
     /**
      * @var Resource\RoRicsLinkUpc
      */
@@ -44,12 +41,13 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
      * RoRicsLinkUpcRepository constructor.
      * @param CollectionFactory $collection
      */
-    public function __construct(CollectionFactory $collection,
-                                \RetailOps\Api\Model\Resource\RoRicsLinkUpc $resource,
-                                \RetailOps\Api\Model\RoRicsLinkUpcFactory $roRicsLinkFactory,
-                                \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
-                                \RetailOps\Api\Logger\Logger $logger)
-    {
+    public function __construct(
+        CollectionFactory $collection,
+        \RetailOps\Api\Model\ResourceModel\RoRicsLinkUpc $resource,
+        \RetailOps\Api\Model\RoRicsLinkUpcFactory $roRicsLinkFactory,
+        \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
+        \RetailOps\Api\Logger\Logger $logger
+    ) {
         $this->collectionFactory = $collection;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->resource = $resource;
@@ -65,7 +63,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     public function load($id)
     {
         $model = $this->roRicsLinkFactory->create();
-        return $this->resource->load($model,$id);
+        return $this->resource->load($model, $id);
     }
 
     /**
@@ -75,9 +73,8 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     public function getRoUpc($upc)
     {
         $collection = $this->getAllUpcs($upc);
-        $collection->addFieldToFilter('rrrlu2.'.RoRiLink::RO_UPC,1);
+        $collection->addFieldToFilter('rrrlu2.'.RoRiLink::RO_UPC, 1);
         return $collection->getFirstItem();
-
     }
 
     /**
@@ -90,14 +87,13 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
         $upcItems = $this->getAllUpcs($upc);
         $upcs = [];
         $upcsInStore = [];
-        foreach ($upcItems as $upcLink)
-        {
+        foreach ($upcItems as $upcLink) {
             $upcs[] = $upcLink->getUpc();
         }
-        if(!in_array($upc, $upcs)) {
+        if (!in_array($upc, $upcs)) {
             $upcs[] = $upc;
         }
-        if(!count($upcs)) {
+        if (!count($upcs)) {
             return [];
         }
         /**
@@ -111,7 +107,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
         $productCollection->setStoreId(0);
         $productCollection->load();
         $firstProduct = $productCollection->getFirstItem();
-        if(!$firstProduct->getId()) {
+        if (!$firstProduct->getId()) {
             return [];
         }
         //check that only one product for all upc
@@ -123,9 +119,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
 
         }
         return $upcsInStore;
-
     }
-
 
     /**
      * @param string $upcValue
@@ -133,7 +127,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     public function getByUpc($upcValue)
     {
         $collection = $this->collectionFactory->create();
-        $collection->addFieldToFilter(RoRiLink::UPC,$upcValue);
+        $collection->addFieldToFilter(RoRiLink::UPC, $upcValue);
         return $collection->getFirstItem();
     }
 
@@ -145,15 +139,15 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     {
         $collection = $this->collectionFactory->create();
         /**
-         * @var \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\Collection $collection
+         * @var \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\Collection $collection
          */
         $collection->getSelect()
-            ->joinLeft(['rrrlu2' => $this->resource->getMainTable()],'rrrlu2.'.
+            ->joinLeft(['rrrlu2' => $this->resource->getMainTable()], 'rrrlu2.'.
                 RoRiLink::RICS_ID.'=main_table.'.RoRiLink::RICS_ID, ['rrrlu2.*']);
         $collection->getSelect()->reset(\Magento\Framework\DB\Select::COLUMNS);
         $collection->getSelect()->columns('*', 'rrrlu2');
         $collection->addFieldToFilter('main_table.'.RoRiLink::UPC, [ 'in' => $upcs]);
-        $collection->addFieldToFilter('rrrlu2.'.RoRiLink::RO_UPC,1);
+        $collection->addFieldToFilter('rrrlu2.'.RoRiLink::RO_UPC, 1);
         $collection->setOrder('update_at');
         $collection->getSelect()->group('rrrlu2.entity_id');
         return $collection;
@@ -167,10 +161,10 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     {
         $collection = $this->collectionFactory->create();
         /**
-         * @var \RetailOps\Api\Model\Resource\Collection\RoRicsLinkUpc\Collection $collection
+         * @var \RetailOps\Api\Model\ResourceModel\Collection\RoRicsLinkUpc\Collection $collection
          */
         $collection->getSelect()
-            ->joinLeft(['rrrlu2' => $this->resource->getMainTable()],'rrrlu2.'.
+            ->joinLeft(['rrrlu2' => $this->resource->getMainTable()], 'rrrlu2.'.
                 RoRiLink::RICS_ID.'=main_table.'.RoRiLink::RICS_ID, ['rrrlu2.*']);
         $collection->getSelect()->reset(\Magento\Framework\DB\Select::COLUMNS);
         $collection->getSelect()->columns('*', 'rrrlu2');
@@ -183,7 +177,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     {
         //see if for this upc already has upc
         $upc = $this->getRoUpc($upcValue);
-        if($upc->getId()) {
+        if ($upc->getId()) {
             return;
         }
         $upc = $this->getByUpc($upcValue);
@@ -191,24 +185,22 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
             return;
         }
         $upc->setRoUpc(true);
-        $this->save( $upc );
+        $this->save($upc);
     }
 
-    public function resetROUpc( $upcValue )
+    public function resetROUpc($upcValue)
     {
-        $upc = $this->getRoUpc( $upcValue );
-        if( $upc->getUpc() === $upcValue ) {
+        $upc = $this->getRoUpc($upcValue);
+        if ($upc->getUpc() === $upcValue) {
             return;
         }
         if ($upc->getId()) {
 
             $upc->setRoUpc(false);
-            $this->save( $upc );
+            $this->save($upc);
         }
-        $newRoUpc = $this->getByUpc( $upcValue );
+        $newRoUpc = $this->getByUpc($upcValue);
         $newRoUpc->setRoUpc(true);
-        $this->save( $newRoUpc );
+        $this->save($newRoUpc);
     }
-
-
 }

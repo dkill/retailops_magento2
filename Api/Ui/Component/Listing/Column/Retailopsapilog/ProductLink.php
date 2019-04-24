@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 3.11.16
- * Time: 19.11
- */
 
 namespace RetailOps\Api\Ui\Component\Listing\Column\Retailopsapilog;
 
@@ -12,6 +6,10 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 
+/**
+ * Product link class
+ *
+ */
 class ProductLink extends \Magento\Ui\Component\Listing\Columns\Column
 {
     /**
@@ -46,7 +44,8 @@ class ProductLink extends \Magento\Ui\Component\Listing\Columns\Column
      *
      * @return $this
      */
-    protected function _prepareItem(array & $item) {
+    protected function _prepareItem(array & $item)
+    {
         $itemsAction = $this->getData('itemsAction');
         $indexField = $this->getData('config/indexField');
         $indexFieldName = $this->getData('config/indexFieldName');

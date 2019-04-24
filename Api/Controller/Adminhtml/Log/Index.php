@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 17.4.16
- * Time: 20.49
- */
 
 namespace RetailOps\Api\Controller\Adminhtml\Log;
 
-
+/**
+ * Log index controller action class.
+ *
+ */
 class Index extends \RetailOps\Api\Controller\Adminhtml\Log
 {
     public function execute()

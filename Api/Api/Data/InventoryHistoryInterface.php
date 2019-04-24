@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.10.16
- * Time: 13.12
- */
 
 namespace RetailOps\Api\Api\Data;
 
-
 /**
- * Interface InventoryHistoryInterface
- * @package RetailOps\Api\Api\Data
+ * Inventory history interface
+ *
  */
 interface InventoryHistoryInterface
 {
@@ -106,5 +99,4 @@ interface InventoryHistoryInterface
      * @return void
      */
     public function setOperator($operator);
-
 }

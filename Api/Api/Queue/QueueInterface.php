@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 6.12.16
- * Time: 11.23
- */
 
 namespace RetailOps\Api\Api\Queue;
 
-
+/**
+ * Queue interface
+ *
+ */
 interface QueueInterface
 {
     /**
@@ -21,5 +18,4 @@ interface QueueInterface
      * @return mixed
      */
     public function getFromQueue($id);
-
 }

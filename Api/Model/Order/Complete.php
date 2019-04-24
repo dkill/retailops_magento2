@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 26.9.16
- * Time: 11.56
- */
 
 namespace RetailOps\Api\Model\Order;
 
-
+/**
+ * Complete order class.
+ *
+ */
 class Complete
 {
     protected $completeOrder;
@@ -20,10 +17,9 @@ class Complete
 
     public function updateOrder($postData)
     {
-        if( !isset($postData['order']) || !isset($postData['order']['shipments']) ) {
-            throw new \LogicException( __('Don\'t have valid data') );
+        if (!isset($postData['order']) || !isset($postData['order']['shipments'])) {
+            throw new \LogicException(__('Don\'t have valid data'));
         }
         $this->completeOrder->completeOrder($postData['order']);
-
     }
 }

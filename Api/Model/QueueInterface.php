@@ -1,13 +1,15 @@
 <?php
 namespace RetailOps\Api\Model;
-interface QueueInterface 
+
+interface QueueInterface
 {
     const ID = 'retailops_api_queue_id';
     const MESSAGE = 'message';
     const ACTIVE = 'is_active';
     const QUEUE_TYPE = 'queue_type';
-    const ORDER_Id = 'order_increment_id';
+    const ORDER_ID = 'order_increment_id';
     const CANCEL_TYPE = 1;
+    
     /**
      * @param string $message
      * @return $this

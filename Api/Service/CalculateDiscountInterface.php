@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 2.11.16
- * Time: 15.43
- */
 
 namespace RetailOps\Api\Service;
 
-
+/**
+ * Calculate discount interface
+ *
+ */
 interface CalculateDiscountInterface
 {
     /**

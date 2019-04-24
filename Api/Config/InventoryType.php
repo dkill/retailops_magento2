@@ -1,21 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 27.9.16
- * Time: 10.26
- */
 
 namespace RetailOps\Api\Config;
 
-
+/**
+ * Inventory type configuration class.
+ *
+ */
 class InventoryType implements \Magento\Framework\Option\ArrayInterface
 {
+    /**
+     * @var array
+     */
     protected $statuses = [
         'internal' => 'internal',
         'empty' => 'empty',
         'external' => 'external'
     ];
+
     /**
      * @return array
      */

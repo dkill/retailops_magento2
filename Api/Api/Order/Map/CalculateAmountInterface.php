@@ -1,14 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.11.16
- * Time: 14.10
- */
 
 namespace RetailOps\Api\Api\Order\Map;
 
-
+/**
+ * Calculate amount interface
+ *
+ */
 interface CalculateAmountInterface
 {
     /**

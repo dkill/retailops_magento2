@@ -1,16 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 14.11.16
- * Time: 15.10
- */
 
 namespace RetailOps\Api\Service\CreditMemo;
 
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface;
 
+/**
+ * Credit memo helper class.
+ *
+ */
 class CreditMemoHelper implements CreditMemoHelperInterface
 {
     use \RetailOps\Api\Model\Api\Traits\FullFilter;
@@ -59,29 +57,27 @@ class CreditMemoHelper implements CreditMemoHelperInterface
      */
     public function getQuantity(\Magento\Sales\Api\Data\OrderItemInterface $orderItem, $value)
     {
-       $value = (float)$value;
-       if($orderItem->getParentItem())
-       {
-           $orderItemForCalc = $orderItem->getParentItem();
-       } else {
-           $orderItemForCalc = $orderItem;
-       }
+        $value = (float)$value;
+        if ($orderItem->getParentItem()) {
+            $orderItemForCalc = $orderItem->getParentItem();
+        } else {
+            $orderItemForCalc = $orderItem;
+        }
         $delta = (float)$orderItemForCalc->getQtyOrdered()
                     - (float)$orderItemForCalc->getQtyInvoiced()
                     - (float)$orderItemForCalc->getQtyRefunded()
                     - (float)$orderItemForCalc->getQtyCanceled();
-        if($delta >= $value)
-        {
+        if ($delta >= $value) {
             return 0;
         }
 
         $qtyCreditMemo = $value - $delta;
-        if( $qtyCreditMemo < 0 || $orderItemForCalc->getQtyOrdered() < $qtyCreditMemo )
-        {
-            throw new \LogicException('Qty of creditmemo more than quantity of invoice, item:'.$orderItemForCalc->getId());
+        if ($qtyCreditMemo < 0 || $orderItemForCalc->getQtyOrdered() < $qtyCreditMemo) {
+            throw new \LogicException(
+                'Qty of creditmemo more than quantity of invoice, item:'.$orderItemForCalc->getId()
+            );
         }
         return $qtyCreditMemo;
-
     }
 
     /**
@@ -90,18 +86,16 @@ class CreditMemoHelper implements CreditMemoHelperInterface
      * @param array ['id'=>'quantity'] $items
      * @return array
      */
-    public function needCreditMemo(\Magento\Sales\Model\Order $order, $items=[])
+    public function needCreditMemo(\Magento\Sales\Model\Order $order, $items = [])
     {
         /**
          * @var \Magento\Sales\Api\Data\OrderItemInterface[] $itemsOrder
          */
         $itemsOrder = $order->getItems();
         $creditMemoItems = [];
-        foreach ($items as $key => $value)
-        {
-            foreach ($itemsOrder as $itemOrder)
-            {
-                if((string)$itemOrder->getId() === (string)$key) {
+        foreach ($items as $key => $value) {
+            foreach ($itemsOrder as $itemOrder) {
+                if ((string)$itemOrder->getId() === (string)$key) {
                     $quantity = $this->getCreditMemoQuantity($itemOrder, $value);
                     if ($quantity>0) {
                         $creditMemoItems[$key] = $quantity;
@@ -127,7 +121,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         $this->creditmemoLoader->setOrderId($order->getId());
         $this->creditmemoLoader->setCreditmemo($this->getPrepareCreditmemoData($order, $items));
         $invoice = $this->getInvoice($order, $items);
-        if($invoice) {
+        if ($invoice) {
             $this->creditmemoLoader->setInvoiceId($invoice->getId());
         }
 
@@ -140,22 +134,15 @@ class CreditMemoHelper implements CreditMemoHelperInterface
             }
 
             /**
-             *@var  \Magento\Sales\Api\CreditmemoManagementInterface $creditmemoManagement
+             * @var \Magento\Sales\Api\CreditmemoManagementInterface $creditmemoManagement
              */
             $creditmemoManagement = $this->_objectManager->create(
-                'Magento\Sales\Api\CreditmemoManagementInterface'
+                \Magento\Sales\Api\CreditmemoManagementInterface::class
             );
             /**
              * $creditmemo, offline/online, send_email
              */
             $creditmemoManagement->refund($creditmemo, $this->isOfflineRefund($order), 0);
-
-            /**
-             * for now it commented
-             */
-            if (false) {
-                $this->creditmemoSender->send($creditmemo);
-            }
         }
     }
 
@@ -170,16 +157,14 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         $this->addFilter('invoices', $filter);
         $this->addFilterGroups();
         $invoices = $this->invoiceRepository->getList($this->searchCriteria);
-        foreach ($invoices as $invoice)
-        {
+        foreach ($invoices as $invoice) {
             //return first invoice
             return $invoice;
         }
 
         return null;
     }
-
-
+    
     /**
      * @param $order
      * @param $items
@@ -189,8 +174,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     {
         $prepare = [];
         $convertItems = [];
-        foreach ($items as $id=>$quantity)
-        {
+        foreach ($items as $id => $quantity) {
             $convertItems[$id] = ['qty'=>(float)$quantity];
         }
         $prepare['items'] = $convertItems;
@@ -257,22 +241,20 @@ class CreditMemoHelper implements CreditMemoHelperInterface
      * @param \Magento\Sales\Api\Data\OrderInterface $order
      * @return bool
      */
-    public function isOfflineRefund( \Magento\Sales\Api\Data\OrderInterface $order)
+    public function isOfflineRefund(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         $payment = $order->getPayment();
-        if($payment && $payment->getBaseAmountPaidOnline() > 0) {
+        if ($payment && $payment->getBaseAmountPaidOnline() > 0) {
             return 0;
         }
         return 1;
-
     }
 
     public function __construct(
         \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader,
         \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditmemoSender,
         \Magento\Sales\Model\Order\InvoiceRepository $invoiceRepository
-    )
-    {
+    ) {
         $this->creditmemoLoader = $creditmemoLoader;
         $this->_objectManager = ObjectManager::getInstance();
         $this->creditmemoSender = $creditmemoSender;
@@ -298,6 +280,4 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     {
         $this->shippingAmount = $amount;
     }
-
-
 }

@@ -6,10 +6,14 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\AuthenticationException;
 
+/**
+ * Authorized plugin class.
+ *
+ */
 class Authorized
 {
-    const integration_key_value = 'retailops/RetailOps/password';
-    const integration_key = 'integration_auth_token';
+    const INTEGRATION_KEY_VALUE = 'retailops/RetailOps/password';
+    const INTEGRATION_KEY = 'integration_auth_token';
 
     /**
      * @var \Magento\Framework\App\ResponseInterface
@@ -28,29 +32,27 @@ class Authorized
 
     public function aroundDispatch($subject, $proceed, $request)
     {
-        try{
-            $key = $request->getPost('integration_auth_token');
-            $valid_key = $this->scopeConfig->getValue(self::integration_key_value);
+        try {
+            $key = $request->getPost(self::INTEGRATION_KEY);
+            $valid_key = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
             if (!$key || $valid_key !== $key) {
                 throw new \Magento\Framework\Exception\AuthenticationException(
                     __('A retailops having the specified key does not exist')
                 );
             }
             return $proceed($request);
-        }catch (\Exception $e){
-            if ($e instanceof AuthenticationException){
+        } catch (\Exception $e) {
+            if ($e instanceof AuthenticationException) {
                 $this->response->setContent(__('Cannot authorized'));
                 $this->response->setStatusCode('401');
-            }else{
+            } else {
                 $this->response->setContent(__('Error occur while do request'));
                 $this->response->setStatusCode('500');
             }
-            $logger = ObjectManager::getInstance()->get('\RetailOps\Api\Logger\Logger');
+            $logger = ObjectManager::getInstance()->get(\RetailOps\Api\Logger\Logger::class);
             $logger->addCritical('Error in retailops:'.$e->getMessage(), (array)$request->getPost());
             return $this->response;
         }
-
-
     }
 
     public function __construct(Context $context, \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
@@ -58,5 +60,4 @@ class Authorized
         $this->response = $context->getResponse();
         $this->scopeConfig = $scopeConfig;
     }
-
 }

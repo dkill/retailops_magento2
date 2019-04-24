@@ -1,14 +1,14 @@
 <?php
+
 namespace RetailOps\Api\Model;
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 11.10.16
- * Time: 14.16
- */
+
 use \Magento\Framework\Model\AbstractModel;
 use \RetailOps\Api\Api\Data\InventoryHistoryInterface;
 
+/**
+ * Inventory history class.
+ *
+ */
 class InventoryHistory extends AbstractModel implements InventoryHistoryInterface
 {
     public function getProductId()
@@ -43,7 +43,7 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
 
     public function setInventoryAdd($inventory)
     {
-       return parent::setData(self::INVENTORY_ADD, $inventory);
+        return parent::setData(self::INVENTORY_ADD, $inventory);
     }
 
     public function setProductId($productId)
@@ -71,7 +71,7 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
      */
     protected function _construct()
     {
-        $this->_init('RetailOps\Api\Model\Resource\InventoryHistory');
+        $this->_init(\RetailOps\Api\Model\ResourceModel\InventoryHistory::class);
     }
 
     public function setRealCount($realCount)
@@ -93,5 +93,4 @@ class InventoryHistory extends AbstractModel implements InventoryHistoryInterfac
     {
         return parent::getData(self::RESERVE_COUNT);
     }
-
 }

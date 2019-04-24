@@ -1,17 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: galillei
- * Date: 21.10.16
- * Time: 9.22
- */
 
 namespace RetailOps\Api\Model;
-
 
 use \Magento\Framework\Model\AbstractModel;
 use RetailOps\Api\Api\Data\RetailOpsRicsLinkByUpcInterface;
 
+/**
+ * Ro Rics link UPC class.
+ *
+ */
 class RoRicsLinkUpc extends AbstractModel implements RetailOpsRicsLinkByUpcInterface
 {
     public function getRicsIntegrationId()
@@ -50,14 +47,14 @@ class RoRicsLinkUpc extends AbstractModel implements RetailOpsRicsLinkByUpcInter
     public function setRoUpc(bool $value)
     {
         //for using cascade index set to null
-        if($value === false){
+        if ($value === false) {
             return parent::setData(self::RO_UPC, null);
         }
-       return parent::setData(self::RO_UPC, (int)$value);
+        return parent::setData(self::RO_UPC, (int)$value);
     }
 
     protected function _construct()
     {
-        parent::_init('\RetailOps\Api\Model\Resource\RoRicsLinkUpc');
+        parent::_init(\RetailOps\Api\Model\ResourceModel\RoRicsLinkUpc::class);
     }
 }
