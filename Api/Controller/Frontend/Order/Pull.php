@@ -14,8 +14,8 @@ class Pull extends RetailOps
     const SERVICENAME = 'order';
     const MAX_COUNT_ORDERS_PER_REQUEST = 50;
     const MIN_COUNT_ORDERS_PER_REQUEST = 1;
-    const ENABLE = 'retailops/RetailOps_feed/order_pull';
-    const COUNT_ORDERS_PER_REQUEST = 'retailops/RetailOps/order_count';
+    const ENABLE = 'retailops/retailops_feed/order_pull';
+    const COUNT_ORDERS_PER_REQUEST = 'retailops/retailops/order_count';
 
     /**
      * @var string

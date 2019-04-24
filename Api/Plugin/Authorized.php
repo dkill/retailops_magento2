@@ -12,7 +12,7 @@ use Magento\Framework\Exception\AuthenticationException;
  */
 class Authorized
 {
-    const INTEGRATION_KEY_VALUE = 'retailops/RetailOps/password';
+    const INTEGRATION_KEY_VALUE = 'retailops/retailops/password';
     const INTEGRATION_KEY = 'integration_auth_token';
 
     /**

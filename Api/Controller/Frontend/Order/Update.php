@@ -12,7 +12,7 @@ use \RetailOps\Api\Controller\RetailOps;
 class Update extends RetailOps
 {
     const SERVICENAME = 'order_update';
-    const ENABLE = 'retailops/RetailOps_feed/order_update';
+    const ENABLE = 'retailops/retailops_feed/order_update';
 
     protected $events = [];
 

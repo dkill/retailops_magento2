@@ -11,7 +11,8 @@ use \RetailOps\Api\Controller\RetailOps;
  */
 class ReturnOrder extends RetailOps
 {
-    const ENABLE = 'retailops/RetailOps_feed/order_return';
+    const ENABLE = 'retailops/retailops_feed/order_return';
+
     /**
      * @var \RetailOps\Api\Model\Order\OrderReturn
      */

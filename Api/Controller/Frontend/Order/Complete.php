@@ -12,7 +12,7 @@ use \RetailOps\Api\Controller\RetailOps;
 class Complete extends RetailOps
 {
     const SERVICENAME = 'order_complete';
-    const ENABLE = 'retailops/RetailOps_feed/order_complete';
+    const ENABLE = 'retailops/retailops_feed/order_complete';
     protected $events = [];
     protected $response = [];
     protected $statusRetOps = 'success';

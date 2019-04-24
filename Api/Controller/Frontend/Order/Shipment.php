@@ -12,7 +12,7 @@ class Shipment extends RetailOps
 {
     const SERVICENAME = 'shipment_submit';
     const COUNT_ORDERS_PER_REQUEST = 50;
-    const ENABLE = 'retailops/RetailOps_feed/order_shipment_submit';
+    const ENABLE = 'retailops/retailops_feed/order_shipment_submit';
 
     /**
      * @var string
