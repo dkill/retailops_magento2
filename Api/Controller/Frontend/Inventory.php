@@ -38,7 +38,7 @@ class Inventory extends RetailOps
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $inventories = $this->getRequest()->getParam(self::PARAM);
             $inventoryObjects = [];
@@ -68,13 +68,15 @@ class Inventory extends RetailOps
                     [$inventoryObjects]
                 );
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            print $exception;
+
             $event = [
                 'event_type' => 'error',
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
                 'diagnostic_data' => 'string',
-                'associations'=>$this->association,
+                'associations' => $this->association,
             ];
             $this->events[] = $event;
             $this->statusRetOps = 'error';
@@ -99,5 +101,6 @@ class Inventory extends RetailOps
         $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
         parent::__construct($context);
+        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }

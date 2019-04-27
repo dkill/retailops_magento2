@@ -19,7 +19,6 @@ class Router implements \Magento\Framework\App\RouterInterface
         'order_cancel_v1' => 'Order\\Cancel',
         'order_complete_v1' => 'Order\\Complete',
         'order_shipment_submit_v1' => 'Order\\Shipment'
-
     ];
 
     /**
@@ -57,14 +56,18 @@ class Router implements \Magento\Framework\App\RouterInterface
         $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()->get(
             \Magento\Framework\App\Config\ScopeConfigInterface::class
         );
+
         if (!$scopeConfig->getValue(self::MODULE_ENABLE)) {
             return null;
         }
+
         if (!$request->isPost()) {
             return null;
         }
+
         $identifier = trim($request->getPathInfo(), '/');
         $path = explode('/', $identifier);
+
         if (count($path) !== 2) {
             return null;
         }
@@ -72,12 +75,14 @@ class Router implements \Magento\Framework\App\RouterInterface
         if ($path[0] !== 'retailops') {
             return null;
         }
+
         if (isset(self::$map[$path[1]])) {
             $controller = self::$map[$path[1]];
             $content = file_get_contents('php://input');
             $paremeters = new \Zend\Stdlib\Parameters(json_decode($content, true));
             //fix error with empty content
             $request->setPost($paremeters);
+            $request->setModuleName($path[0]);
             return $this->actionFactory->create(
                 "\\RetailOps\\Api\\Controller\\Frontend\\{$controller}",
                 ['request' => $request]

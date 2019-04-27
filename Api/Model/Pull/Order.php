@@ -5,7 +5,6 @@ use Magento\Framework\Exception\AuthenticationException;
 use \Magento\Framework\ObjectManagerInterface;
 use \RetailOps\Api\Model\Api\Map\Order as OrderMap;
 use \Magento\Sales\Model\Order as MagentoOrder;
-use \RetailOps\Api\Model\Api\Traits\Filter;
 
 /**
  * Order pull class.
@@ -13,6 +12,8 @@ use \RetailOps\Api\Model\Api\Traits\Filter;
  */
 class Order
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     /**
      * @var \Magento\Sales\Api\OrderRepositoryInterface
      */

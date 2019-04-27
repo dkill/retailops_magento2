@@ -2,14 +2,14 @@
 
 namespace RetailOps\Api\Model\Api\Order;
 
-use \RetailOps\Api\Model\Api\Traits\Filter;
-
 /**
  * Cancel order class.
  *
  */
 class Cancel
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     /**
      * @var \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface
      */

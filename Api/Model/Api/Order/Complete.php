@@ -2,14 +2,14 @@
 
 namespace RetailOps\Api\Model\Api\Order;
 
-use \RetailOps\Api\Model\Api\Traits\Filter;
-
 /**
  * Complete order class.
  *
  */
 class Complete
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     const COMPLETE = 'complete';
 
     /**
@@ -118,8 +118,11 @@ class Complete
                 $this->getOrder($orderId),
                 $this->shipment->getShippmentItems()['items']
             );
-            $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
-            $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
+
+            if (count($needInvoiceItems)) {
+                $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
+                $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
+            }
         }
 
         //all available items cancel

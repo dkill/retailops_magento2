@@ -12,8 +12,8 @@ use \RetailOps\Api\Controller\RetailOps;
 class Pull extends RetailOps
 {
     const SERVICENAME = 'order';
-    const MAX_COUNT_ORDERS_PER_REQUEST = 50;
-    const MIN_COUNT_ORDERS_PER_REQUEST = 1;
+    const ORDERS_PER_REQUEST_MAXIMUM = 50;
+    const ORDERS_PER_REQUEST_MINIMUM = 1;
     const ENABLE = 'retailops/retailops_feed/order_pull';
     const COUNT_ORDERS_PER_REQUEST = 'retailops/retailops/order_count';
 
@@ -47,25 +47,27 @@ class Pull extends RetailOps
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $orderFactory = $this->orderFactory->create();
             $pageToken = $this->getRequest()->getParam('page_token');
             $postData = $this->getRequest()->getPost();
             $countOfOrders = $scopeConfig->getValue(self::COUNT_ORDERS_PER_REQUEST);
-            if ($countOfOrders > 50) {
-                $countOfOrders = 50;
+            if ($countOfOrders > self::ORDERS_PER_REQUEST_MAXIMUM) {
+                $countOfOrders = self::ORDERS_PER_REQUEST_MAXIMUM;
             }
-            if ($countOfOrders < 1) {
-                $countOfOrders = 1;
+            if ($countOfOrders < self::ORDERS_PER_REQUEST_MINIMUM) {
+                $countOfOrders = self::ORDERS_PER_REQUEST_MINIMUM;
             }
             $response = $orderFactory->getOrders($pageToken, $countOfOrders, $postData);
             $this->response = $response;
-        } catch (\Exception $e) {
-            $this->logger->addCritical($e->getMessage());
+        } catch (\Exception $exception) {
+            print $exception;
+
+            $this->logger->addCritical($exception->getMessage());
             $this->response = [];
             $this->status = 500;
-            $this->error = $e;
+            $this->error = $exception;
             parent::execute();
         } finally {
             $this->getResponse()->representJson(json_encode($this->response));

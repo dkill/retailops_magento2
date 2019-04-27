@@ -31,10 +31,12 @@ class Complete extends RetailOps
      */
     public function execute()
     {
+        $this->logger->addCritical(json_encode($this->_request->getParams()));
+
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
             /**
@@ -43,15 +45,16 @@ class Complete extends RetailOps
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->updateOrder($postData);
             $this->response = $response;
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            print $exception;
             $event = [
                 'event_type' => 'error',
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
                 'diagnostic_data' => 'string',
                 'associations' => $this->association,
             ];
-            $this->error = $e;
+            $this->error = $exception;
             $this->events[] = $event;
             $this->statusRetOps = 'error';
             parent::execute();

@@ -49,7 +49,7 @@ class Shipment extends RetailOps
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
             $response = $this->shipmentSubmit->updateOrder($postData);

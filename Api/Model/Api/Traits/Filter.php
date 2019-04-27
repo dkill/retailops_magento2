@@ -77,25 +77,28 @@ trait Filter
     /**
      * @param $orders
      */
-    public function setOrderIdByIncrementId($orders)
+    public function setOrderIdByIncrementId($orders = [])
     {
-        $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
-        $connection = $resource->getConnection();
         $existsOrders = [];
-        $template = 'increment_id IN (%s)';
-        $orderKeys = array_keys($orders);
-        array_walk($orderKeys, [$this,'addQuote']);
-        $bind = join($orderKeys, ',');
-        $where = sprintf($template, $bind);
-        $select = $connection->select()->from('sales_order', ['entity_id', 'increment_id'])
-            ->where($where);
 
-        $result = $connection->fetchAll($select, []);
-        if (count($result)) {
-            foreach ($result as $row) {
-                foreach ($orders as $key => $order) {
-                    if ((string)$key === (string)$row['increment_id']) {
-                        $existsOrders[$row['entity_id']] = $order;
+        if (count($orders)) {
+            $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
+            $connection = $resource->getConnection();
+            $template = 'increment_id IN (%s)';
+            $orderKeys = array_keys($orders);
+            array_walk($orderKeys, [$this, 'addQuote']);
+            $bind = join($orderKeys, ',');
+            $where = sprintf($template, $bind);
+            $select = $connection->select()->from('sales_order', ['entity_id', 'increment_id'])
+                ->where($where);
+
+            $result = $connection->fetchAll($select, []);
+            if (count($result)) {
+                foreach ($result as $row) {
+                    foreach ($orders as $key => $order) {
+                        if ((string)$key === (string)$row['increment_id']) {
+                            $existsOrders[$row['entity_id']] = $order;
+                        }
                     }
                 }
             }
@@ -103,8 +106,8 @@ trait Filter
         return $existsOrders;
     }
 
-    public function addQuote($item)
+    public function addQuote(&$item)
     {
-        return '`'.$item.'`';
+        $item = "'".$item."'";
     }
 }

@@ -2,14 +2,14 @@
 
 namespace RetailOps\Api\Model\Shipment;
 
-use \RetailOps\Api\Model\Api\Traits\Filter;
-
 /**
  * Shipment submit class.
  *
  */
 class ShipmentSubmit
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     /**
      * @var \RetailOps\Api\Api\Shipment\ShipmentInterface
      */
@@ -77,7 +77,7 @@ class ShipmentSubmit
                 $postData['shipments'][] = $postData['shipment'];
                 unset($postData['shipment']);
             }
-            
+
             if (array_key_exists('items', $this->shipment->getShippmentItems()) &&
                 count($this->shipment->getShippmentItems()['items'])
             ) {

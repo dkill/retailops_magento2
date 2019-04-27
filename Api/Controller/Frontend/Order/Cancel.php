@@ -17,23 +17,26 @@ class Cancel extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL. self::SERVICENAME;
+
     public function execute()
     {
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
-            $postData = $this->getRequest()->getPost();
+            $postData = $this->getRequest()->getParams();
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->cancelOrder($postData);
             $this->response = $response;
-        } catch (\Exception $e) {
-            $this->logger->addCritical($e->getMessage());
+        } catch (\Exception $exception) {
+            print $exception;
+            exit;
+            $this->logger->addCritical($exception->getMessage());
             $this->response = (object)null;
             $this->status = 500;
-            $this->error = $e;
+            $this->error = $exception;
             parent::execute();
         } finally {
             $this->getResponse()->representJson(json_encode($this->response));

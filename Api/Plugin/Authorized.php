@@ -37,20 +37,21 @@ class Authorized
             $valid_key = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
             if (!$key || $valid_key !== $key) {
                 throw new \Magento\Framework\Exception\AuthenticationException(
-                    __('A retailops having the specified key does not exist')
+                    __('Incorrect authorisation, API key not valid.')
                 );
             }
             return $proceed($request);
-        } catch (\Exception $e) {
-            if ($e instanceof AuthenticationException) {
-                $this->response->setContent(__('Cannot authorized'));
+        } catch (\Exception $exception) {
+            if ($exception instanceof AuthenticationException) {
+                $this->response->setContent($exception->getMessage());
                 $this->response->setStatusCode('401');
             } else {
+                print $exception;
                 $this->response->setContent(__('Error occur while do request'));
                 $this->response->setStatusCode('500');
             }
             $logger = ObjectManager::getInstance()->get(\RetailOps\Api\Logger\Logger::class);
-            $logger->addCritical('Error in retailops:'.$e->getMessage(), (array)$request->getPost());
+            $logger->addCritical('Error in retailops:'.$exception->getMessage(), (array)$request->getPost());
             return $this->response;
         }
     }

@@ -13,7 +13,7 @@
             <argument shared="false" name="shipment" xsi:type="object">\RetailOps\Api\Service\Shipment\ShipmentSubmit</argument>
         </arguments>
     </type>
-    <type name="\RetailOps\Api\Service\CalculateOrderDiscount">
+    <type name="RetailOps\Api\Service\CalculateOrderDiscount">
         <arguments>
             <argument name="rewardPoints" xsi:type="object">RetailOps\Api\Service\Order\Map\RewardPoints</argument>
         </arguments>
@@ -38,15 +38,16 @@
         </arguments>
     </type>
 
-    <type name="\RetailOps\Api\Controller\RetailOps">
-        <plugin name="authorize" type="\RetailOps\Api\Plugin\Authorized" />
+    <type name="RetailOps\Api\Controller\RetailOps">
+        <plugin name="authorize" type="RetailOps\Api\Plugin\Authorized" />
     </type>
-    <type name="\RetailOps\Api\Logger\Base">
+
+    <type name="RetailOps\Api\Logger\Base">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
     </type>
-    <type name="\RetailOps\Api\Logger\Logger">
+    <type name="RetailOps\Api\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">retailLogger</argument>
             <argument name="handlers"  xsi:type="array">
@@ -64,6 +65,9 @@
                 </item>
             </argument>
         </arguments>
+    </type>
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="csrf_validator_skip" type="RetailOps\Api\Plugin\CsrfValidatorSkip" />
     </type>
     <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
         <arguments>

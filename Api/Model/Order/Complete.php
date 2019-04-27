@@ -18,7 +18,7 @@ class Complete
     public function updateOrder($postData)
     {
         if (!isset($postData['order']) || !isset($postData['order']['shipments'])) {
-            throw new \LogicException(__('Don\'t have valid data'));
+            throw new \LogicException(__("Don't have valid data"));
         }
         $this->completeOrder->completeOrder($postData['order']);
     }

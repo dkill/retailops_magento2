@@ -8,8 +8,10 @@ namespace RetailOps\Api\Model\Api;
  */
 class Acknowledge
 {
-    const ACK_STATUS = 1;
     use Traits\Filter;
+
+    const ACK_STATUS = 1;
+
     /**
      * @var array
      */
