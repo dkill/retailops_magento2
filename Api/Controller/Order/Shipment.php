@@ -1,33 +1,47 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Order;
+namespace RetailOps\Api\Controller\Order;
 
-use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
 /**
- * Return order controller class action.
+ * Shipment controller class action.
  *
  */
-class ReturnOrder extends RetailOps
+class Shipment extends RetailOps
 {
-    const ENABLE = 'retailops/retailops_feed/order_return';
+    const SERVICENAME = 'shipment_submit';
+    const COUNT_ORDERS_PER_REQUEST = 50;
+    const ENABLE = 'retailops/retailops_feed/order_shipment_submit';
 
     /**
-     * @var \RetailOps\Api\Model\Order\OrderReturn
+     * @var string
      */
-    protected $orderReturn;
+    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
 
-    protected $events;
+    /**
+     * @var \RetailOps\Api\Model\Shipment\ShipmentSubmit
+     */
+    protected $shipmentSubmit;
+
+    /**
+     * @var string
+     */
+    protected $statusRetOps = 'success';
+
+    /**
+     * @var array|null
+     */
+    protected $events=[];
 
     public function __construct(
-        \RetailOps\Api\Model\Order\OrderReturn $orderReturn,
         \Magento\Framework\App\Action\Context $context,
+        \RetailOps\Api\Model\Shipment\ShipmentSubmit $shipmentSubmit,
         \RetailOps\Api\Logger\Logger $logger
     ) {
-        $this->orderReturn = $orderReturn;
-        parent::__construct($context);
+        $this->shipmentSubmit = $shipmentSubmit;
         $this->logger = $logger;
+        parent::__construct($context);
     }
 
     public function execute()
@@ -38,7 +52,7 @@ class ReturnOrder extends RetailOps
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
-            $response = $this->orderReturn->returnOrder($postData);
+            $response = $this->shipmentSubmit->updateOrder($postData);
             $this->response = $response;
         } catch (\Exception $e) {
             $event = [
@@ -51,7 +65,7 @@ class ReturnOrder extends RetailOps
             $this->error = $e;
             $this->events[] = $event;
             $this->statusRetOps = 'error';
-
+            parent::execute();
         } finally {
             if (!array_key_exists('events', $this->response)) {
                 $this->response['events'] = [];

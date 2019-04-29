@@ -2,17 +2,13 @@
 
 namespace Retailops\Api\Plugin;
 
+use RetailOps\Api\Controller\Router;
+
 /**
  * Csrf validator skip class.
  */
 class CsrfValidatorSkip
 {
-    /**
-     * Module frontname
-     *
-     * @var string
-     */
-    const MODULE_FRONTNAME = 'retailops';
 
     /**
      * @param \Magento\Framework\App\Request\CsrfValidator $subject
@@ -26,7 +22,7 @@ class CsrfValidatorSkip
         $request,
         $action
     ) {
-        if ($request->getModuleName() == self::MODULE_FRONTNAME) {
+        if ($request->getModuleName() == Router::MODULE_FRONTNAME) {
             return;
         }
 

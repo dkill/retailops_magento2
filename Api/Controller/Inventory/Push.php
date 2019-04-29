@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Inventory;
+namespace RetailOps\Api\Controller\Inventory;
 
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Controller\RetailOps;
@@ -19,7 +19,7 @@ class Push extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
     protected $events = [];
     protected $response = [];
     protected $statusRetOps = 'success';
@@ -93,14 +93,23 @@ class Push extends RetailOps
         }
     }
 
+    /**
+     * Push constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository
+     * @param \RetailOps\Api\Service\CalculateInventory $inventory
+     * @param \RetailOps\Api\Logger\Logger $logger
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository,
-        \RetailOps\Api\Service\CalculateInventory $inventory
+        \RetailOps\Api\Service\CalculateInventory $inventory,
+        \RetailOps\Api\Logger\Logger $logger
     ) {
         $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
+        $this->logger = $logger;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }

@@ -1,47 +1,33 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Order;
+namespace RetailOps\Api\Controller\Order;
 
+use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
 
 /**
- * Shipment controller class action.
+ * Update controller class action.
  *
  */
-class Shipment extends RetailOps
+class Update extends RetailOps
 {
-    const SERVICENAME = 'shipment_submit';
-    const COUNT_ORDERS_PER_REQUEST = 50;
-    const ENABLE = 'retailops/retailops_feed/order_shipment_submit';
+    const SERVICENAME = 'order_update';
+    const ENABLE = 'retailops/retailops_feed/order_update';
 
-    /**
-     * @var string
-     */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $events = [];
 
-    /**
-     * @var \RetailOps\Api\Model\Shipment\ShipmentSubmit
-     */
-    protected $shipmentSubmit;
+    protected $response = [];
 
-    /**
-     * @var string
-     */
-    protected $statusRetOps = 'success';
-
-    /**
-     * @var array|null
-     */
-    protected $events=[];
+    protected $status = 'success';
 
     public function __construct(
-        \RetailOps\Api\Model\Shipment\ShipmentSubmit $shipmentSubmit,
         \Magento\Framework\App\Action\Context $context,
+        \RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
         \RetailOps\Api\Logger\Logger $logger
     ) {
-        $this->shipmentSubmit = $shipmentSubmit;
-        parent::__construct($context);
+        $this->orderFactory = $orderFactory;
         $this->logger = $logger;
+        parent::__construct($context);
     }
 
     public function execute()
@@ -51,8 +37,15 @@ class Shipment extends RetailOps
             if (!$scopeConfig->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
-            $postData = (array)$this->getRequest()->getPost();
-            $response = $this->shipmentSubmit->updateOrder($postData);
+            $postData = $this->getRequest()->getPost();
+            $orderFactrory = $this->orderFactory->create();
+            $response = $orderFactrory->updateOrder($postData);
+            $serviceName = self::SERVICENAME;
+            $areaName = "retailops_before_pull_{$serviceName}";
+            $this->_eventManager->dispatch($areaName, [
+                'response' => $response,
+                'request' => $this->getRequest(),
+            ]);
             $this->response = $response;
         } catch (\Exception $e) {
             $event = [
@@ -62,21 +55,21 @@ class Shipment extends RetailOps
                 'diagnostic_data' => 'string',
                 'associations' => $this->association,
             ];
-            $this->error = $e;
+
             $this->events[] = $event;
-            $this->statusRetOps = 'error';
-            parent::execute();
+            $this->status = 'error';
+
         } finally {
-            if (!array_key_exists('events', $this->response)) {
-                $this->response['events'] = [];
-            }
-//            $this->response['status'] = $this->response['status'] ?? $this->statusRetOps;
+            $this->response['events'] = [];
             foreach ($this->events as $event) {
                 $this->response['events'][] = $event;
             }
+            $this->_eventManager->dispatch($areaName, [
+                'request' => $this->getRequest(),
+                'response' =>$response
+            ]);
             $this->getResponse()->representJson(json_encode($this->response));
             $this->getResponse()->setStatusCode('200');
-            parent::execute();
             return $this->getResponse();
         }
     }

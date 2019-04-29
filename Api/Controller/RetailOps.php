@@ -52,7 +52,7 @@ abstract class RetailOps extends \Magento\Framework\App\Action\Action
      * @var array
      */
     protected $association = [];
-    
+
     public function dispatch(RequestInterface $request)
     {
         $this->setParams($request);

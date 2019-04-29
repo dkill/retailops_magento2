@@ -5,20 +5,36 @@ namespace RetailOps\Api\Controller;
 use Magento\Framework\App\ObjectManager;
 
 /**
- * RetailOps router class.
+ * Router class for RetailOps API endpoints.
  *
  */
 class Router implements \Magento\Framework\App\RouterInterface
 {
     const MODULE_ENABLE = 'retailops/retailops/turn_on';
 
+    /**
+     * Module frontname
+     *
+     * @var string
+     */
+    const MODULE_FRONTNAME = 'retailops';
+
+    /**
+     *
+     * @var array
+     */
     protected static $map = [
-        'inventory_push_v1' => 'Inventory\\Push',
-        'order_pull_v1' => 'Order\\Pull',
-        'order_acknowledge_v1' => 'Order\\Acknowledge',
-        'order_cancel_v1' => 'Order\\Cancel',
-        'order_complete_v1' => 'Order\\Complete',
-        'order_shipment_submit_v1' => 'Order\\Shipment'
+        'catalog_get_config_v1' => \RetailOps\Api\Controller\Catalog\GetConfig::class,
+        'catalog_push_v1' => \RetailOps\Api\Controller\Catalog\Push::class,
+        'inventory_push_v1' => \RetailOps\Api\Controller\Inventory\Push::class,
+        'order_acknowledge_v1' => \RetailOps\Api\Controller\Order\Acknowledge::class,
+        'order_cancel_v1' => \RetailOps\Api\Controller\Order\Cancel::class,
+        'order_complete_v1' => \RetailOps\Api\Controller\Order\Complete::class,
+        'order_pull_v1' => \RetailOps\Api\Controller\Order\Pull::class,
+        'order_returned_v1' => \RetailOps\Api\Controller\Order\Returned::class,
+        'order_settle_payment_v1' => \RetailOps\Api\Controller\Order\SettlePayment::class,
+        'order_shipment_submit_v1' => \RetailOps\Api\Controller\Order\Shipment::class,
+        'order_update_v1' => \RetailOps\Api\Controller\Order\Update::class
     ];
 
     /**
@@ -72,19 +88,18 @@ class Router implements \Magento\Framework\App\RouterInterface
             return null;
         }
 
-        if ($path[0] !== 'retailops') {
+        if ($path[0] !== self::MODULE_FRONTNAME) {
             return null;
         }
 
         if (isset(self::$map[$path[1]])) {
-            $controller = self::$map[$path[1]];
             $content = file_get_contents('php://input');
             $paremeters = new \Zend\Stdlib\Parameters(json_decode($content, true));
             //fix error with empty content
             $request->setPost($paremeters);
             $request->setModuleName($path[0]);
             return $this->actionFactory->create(
-                "\\RetailOps\\Api\\Controller\\Frontend\\{$controller}",
+                self::$map[$path[1]],
                 ['request' => $request]
             );
         }

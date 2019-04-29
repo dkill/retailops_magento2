@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Order;
+namespace RetailOps\Api\Controller\Order;
 
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
@@ -46,11 +46,12 @@ class Cancel extends RetailOps
     }
 
     public function __construct(
+        \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\CancelFactory $orderFactory,
-        \Magento\Framework\App\Action\Context $context
+        \RetailOps\Api\Logger\Logger $logger
     ) {
         $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }
