@@ -1,15 +1,15 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend;
+namespace RetailOps\Api\Controller\Frontend\Inventory;
 
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Controller\RetailOps;
 
 /**
- * Inventory controller class
+ * Inventory push controller class
  *
  */
-class Inventory extends RetailOps
+class Push extends RetailOps
 {
     const PARAM = 'inventory_updates';
     const SKU = 'sku';

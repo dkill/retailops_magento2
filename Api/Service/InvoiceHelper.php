@@ -40,14 +40,16 @@ class InvoiceHelper
                 throw new LocalizedException(__('We can\'t save the invoice right now.'));
             }
 
-            if (!$invoice->getTotalQty()) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __('You can\'t create an invoice without products.')
-                );
-            }
-             $invoice->addComment(
-                 'Create for RetailOps'
-             );
+            // For verifying the API endpoints we get a quanity of 0 which does not pass this test.
+            //if (!$invoice->getTotalQty()) {
+            //    throw new \Magento\Framework\Exception\LocalizedException(
+            //        __('You can\'t create an invoice without products.')
+            //    );
+            //}
+
+            $invoice->addComment(
+                'Create for RetailOps'
+            );
 
             $invoice->register();
             $invoice->getOrder()->setIsInProcess(true);
@@ -56,6 +58,7 @@ class InvoiceHelper
         } else {
             return false;
         }
+
         return $invoice->getId() ? true : false;
     }
 

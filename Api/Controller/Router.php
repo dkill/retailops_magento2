@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailOps\Api\CustomRouter;
+namespace RetailOps\Api\Controller;
 
 use Magento\Framework\App\ObjectManager;
 
@@ -13,7 +13,7 @@ class Router implements \Magento\Framework\App\RouterInterface
     const MODULE_ENABLE = 'retailops/retailops/turn_on';
 
     protected static $map = [
-        'inventory_push_v1' => 'Inventory',
+        'inventory_push_v1' => 'Inventory\\Push',
         'order_pull_v1' => 'Order\\Pull',
         'order_acknowledge_v1' => 'Order\\Acknowledge',
         'order_cancel_v1' => 'Order\\Cancel',

@@ -8,7 +8,7 @@ use RetailOps\Api\Api\Order\Map\CalculateAmountInterface;
  * Calculate amount order map class.
  *
  */
-class CalculateAmout implements CalculateAmountInterface
+class CalculateAmount implements CalculateAmountInterface
 {
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order

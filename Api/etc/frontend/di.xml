@@ -3,7 +3,7 @@
         <arguments>
             <argument name="routerList" xsi:type="array">
                 <item name="retailops" xsi:type="array">
-                    <item name="class" xsi:type="string">RetailOps\Api\CustomRouter\Router</item>
+                    <item name="class" xsi:type="string">RetailOps\Api\Controller\Router</item>
                     <item name="disable" xsi:type="boolean">false</item>
                     <item name="sortOrder" xsi:type="string">22</item>
                 </item>
