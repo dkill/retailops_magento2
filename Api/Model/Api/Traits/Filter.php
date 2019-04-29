@@ -12,7 +12,7 @@ trait Filter
     protected $orderRepository;
 
     /**
-     * @var \RetailOps\Api\Logger\Logger
+     * @var \RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 

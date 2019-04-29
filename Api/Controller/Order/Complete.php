@@ -74,7 +74,7 @@ class Complete extends RetailOps
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\CompleteFactory $orderFactory,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;

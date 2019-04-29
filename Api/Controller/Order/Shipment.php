@@ -37,7 +37,7 @@ class Shipment extends RetailOps
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Shipment\ShipmentSubmit $shipmentSubmit,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->shipmentSubmit = $shipmentSubmit;
         $this->logger = $logger;

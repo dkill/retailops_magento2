@@ -36,12 +36,12 @@ class Acknowledge
      * Acknowledge constructor.
      *
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \\RetailOps\Api\Logger\Logger $logger
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
      * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
      */
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Logger\Monolog $logger,
         \Magento\Framework\Api\SearchCriteria $searchCriteria,
         \Magento\Framework\Api\FilterFactory $filter,
         \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup

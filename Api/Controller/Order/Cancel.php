@@ -48,7 +48,7 @@ class Cancel extends RetailOps
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\CancelFactory $orderFactory,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;

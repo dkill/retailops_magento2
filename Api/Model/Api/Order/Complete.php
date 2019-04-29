@@ -27,7 +27,7 @@ class Complete
      */
     protected $cancelItems = [];
     /**
-     * @var \\RetailOps\Api\Logger\Logger
+     * @var \\RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 
@@ -213,7 +213,7 @@ class Complete
     /**
      * Complete constructor.
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \RetailOps\Api\Logger\Logger $logger
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
      * @param \RetailOps\Api\Api\Shipment\ShipmentInterface
      * @param \RetailOps\Api\Service\InvoiceHelper $invoiceHelper
      * @param \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
@@ -221,7 +221,7 @@ class Complete
      */
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Logger\Monolog $logger,
         \RetailOps\Api\Api\Shipment\ShipmentInterface $shipment,
         \RetailOps\Api\Service\InvoiceHelper $invoiceHelper,
         \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper,

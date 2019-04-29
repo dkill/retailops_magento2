@@ -21,7 +21,7 @@ class SettlePayment extends RetailOps
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         parent::__construct($context);
 

@@ -23,7 +23,7 @@ class ReturnOrder extends RetailOps
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\OrderReturn $orderReturn,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderReturn = $orderReturn;
         $this->logger = $logger;

@@ -50,7 +50,7 @@ class Authorized
                 $this->response->setContent(__('Error occur while do request'));
                 $this->response->setStatusCode('500');
             }
-            $logger = ObjectManager::getInstance()->get(\RetailOps\Api\Logger\Logger::class);
+            $logger = ObjectManager::getInstance()->get(\RetailOps\Api\Model\Logger\Monolog::class);
             $logger->addCritical('Error in retailops:'.$exception->getMessage(), (array)$request->getPost());
             return $this->response;
         }

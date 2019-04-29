@@ -30,7 +30,7 @@ class Acknowledge extends RetailOps
     protected $response;
 
     /**
-     * @var \RetailOps\Api\Logger\Logger
+     * @var \RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 
@@ -42,7 +42,7 @@ class Acknowledge extends RetailOps
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\AcknowledgeFactory $orderFactory,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;

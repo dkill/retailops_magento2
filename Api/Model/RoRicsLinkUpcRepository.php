@@ -33,7 +33,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
     protected $roRicsLinkFactory;
 
     /**
-     * @var \RetailOps\Api\Logger\Logger
+     * @var \RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 
@@ -46,7 +46,7 @@ class RoRicsLinkUpcRepository implements RetailOpsRicsLinkByUpcRepositoryInterfa
         \RetailOps\Api\Model\ResourceModel\RoRicsLinkUpc $resource,
         \RetailOps\Api\Model\RoRicsLinkUpcFactory $roRicsLinkFactory,
         \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->collectionFactory = $collection;
         $this->productCollectionFactory = $productCollectionFactory;

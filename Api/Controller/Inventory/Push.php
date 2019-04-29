@@ -99,13 +99,13 @@ class Push extends RetailOps
      * @param \Magento\Framework\App\Action\Context $context
      * @param \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository
      * @param \RetailOps\Api\Service\CalculateInventory $inventory
-     * @param \RetailOps\Api\Logger\Logger $logger
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository,
         \RetailOps\Api\Service\CalculateInventory $inventory,
-        \RetailOps\Api\Logger\Logger $logger
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
