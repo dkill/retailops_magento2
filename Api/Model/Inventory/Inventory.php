@@ -19,7 +19,7 @@ class Inventory
     protected $_inventoryHistoryRepository;
 
     /**
-     * @var LoggerInterface|\RetailOps\Api\Logger\Logger
+     * @var LoggerInterface|\RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 
@@ -192,7 +192,7 @@ class Inventory
      * @param \RICSApi\Model\InventoryHistory $InventoryHistory
      */
     public function __construct(
-        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Logger\Monolog $logger,
         \RetailOps\Api\Model\Product\CollectionFactory $productCollectionFactory,
         \Magento\CatalogInventory\Api\StockRegistryInterface $stock,
         \Magento\CatalogInventory\Model\ResourceModel\Stock $stockRepositories,

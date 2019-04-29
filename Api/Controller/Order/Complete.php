@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Order;
+namespace RetailOps\Api\Controller\Order;
 
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
@@ -31,10 +31,12 @@ class Complete extends RetailOps
      */
     public function execute()
     {
+        $this->logger->addCritical(json_encode($this->_request->getParams()));
+
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
             /**
@@ -43,15 +45,16 @@ class Complete extends RetailOps
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->updateOrder($postData);
             $this->response = $response;
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            print $exception;
             $event = [
                 'event_type' => 'error',
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
                 'diagnostic_data' => 'string',
                 'associations' => $this->association,
             ];
-            $this->error = $e;
+            $this->error = $exception;
             $this->events[] = $event;
             $this->statusRetOps = 'error';
             parent::execute();
@@ -69,11 +72,12 @@ class Complete extends RetailOps
     }
 
     public function __construct(
+        \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\CompleteFactory $orderFactory,
-        \Magento\Framework\App\Action\Context $context
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 }

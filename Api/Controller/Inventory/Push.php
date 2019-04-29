@@ -1,15 +1,15 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend;
+namespace RetailOps\Api\Controller\Inventory;
 
 use Magento\Framework\App\ObjectManager;
 use RetailOps\Api\Controller\RetailOps;
 
 /**
- * Inventory controller class
+ * Inventory push controller class
  *
  */
-class Inventory extends RetailOps
+class Push extends RetailOps
 {
     const PARAM = 'inventory_updates';
     const SKU = 'sku';
@@ -19,7 +19,7 @@ class Inventory extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
     protected $events = [];
     protected $response = [];
     protected $statusRetOps = 'success';
@@ -38,7 +38,7 @@ class Inventory extends RetailOps
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $inventories = $this->getRequest()->getParam(self::PARAM);
             $inventoryObjects = [];
@@ -68,13 +68,15 @@ class Inventory extends RetailOps
                     [$inventoryObjects]
                 );
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
+            print $exception;
+
             $event = [
                 'event_type' => 'error',
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
                 'diagnostic_data' => 'string',
-                'associations'=>$this->association,
+                'associations' => $this->association,
             ];
             $this->events[] = $event;
             $this->statusRetOps = 'error';
@@ -91,13 +93,23 @@ class Inventory extends RetailOps
         }
     }
 
+    /**
+     * Push constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository
+     * @param \RetailOps\Api\Service\CalculateInventory $inventory
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\RoRicsLinkUpcRepository $linkUpcRepository,
-        \RetailOps\Api\Service\CalculateInventory $inventory
+        \RetailOps\Api\Service\CalculateInventory $inventory,
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
+        $this->logger = $logger;
         parent::__construct($context);
     }
 }

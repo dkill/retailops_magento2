@@ -2,14 +2,14 @@
 
 namespace RetailOps\Api\Model\Api\Order;
 
-use \RetailOps\Api\Model\Api\Traits\Filter;
-
 /**
  * Complete order class.
  *
  */
 class Complete
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     const COMPLETE = 'complete';
 
     /**
@@ -27,7 +27,7 @@ class Complete
      */
     protected $cancelItems = [];
     /**
-     * @var \\RetailOps\Api\Logger\Logger
+     * @var \\RetailOps\Api\Model\Logger\Monolog
      */
     protected $logger;
 
@@ -118,8 +118,11 @@ class Complete
                 $this->getOrder($orderId),
                 $this->shipment->getShippmentItems()['items']
             );
-            $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
-            $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
+
+            if (count($needInvoiceItems)) {
+                $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
+                $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
+            }
         }
 
         //all available items cancel
@@ -210,7 +213,7 @@ class Complete
     /**
      * Complete constructor.
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \RetailOps\Api\Logger\Logger $logger
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
      * @param \RetailOps\Api\Api\Shipment\ShipmentInterface
      * @param \RetailOps\Api\Service\InvoiceHelper $invoiceHelper
      * @param \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
@@ -218,7 +221,7 @@ class Complete
      */
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Logger\Monolog $logger,
         \RetailOps\Api\Api\Shipment\ShipmentInterface $shipment,
         \RetailOps\Api\Service\InvoiceHelper $invoiceHelper,
         \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper,

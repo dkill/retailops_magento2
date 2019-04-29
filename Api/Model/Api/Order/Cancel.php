@@ -2,14 +2,14 @@
 
 namespace RetailOps\Api\Model\Api\Order;
 
-use \RetailOps\Api\Model\Api\Traits\Filter;
-
 /**
  * Cancel order class.
  *
  */
 class Cancel
 {
+    use \RetailOps\Api\Model\Api\Traits\Filter;
+
     /**
      * @var \RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface
      */
@@ -80,14 +80,14 @@ class Cancel
     /**
      * Cancel constructor.
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \\RetailOps\Api\Logger\Logger $logger
+     * @param \RetailOps\Api\Model\Logger\Monolog $logger
      * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
      * @param \Magento\Framework\Api\FilterFactory $filter
      * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
      */
     public function __construct(
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \RetailOps\Api\Logger\Logger $logger,
+        \RetailOps\Api\Model\Logger\Monolog $logger,
         \Magento\Framework\Api\SearchCriteria $searchCriteria,
         \Magento\Framework\Api\FilterFactory $filter,
         \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,

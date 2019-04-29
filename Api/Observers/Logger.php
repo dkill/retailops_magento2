@@ -44,7 +44,7 @@ class Logger implements \Magento\Framework\Event\ObserverInterface
         $loggerRetailOps->setResponse(json_encode($response));
         $loggerRetailOps->setStatus($observer->getStatus());
         $loggerRetailOps->setUrl((string)$observer->getRequest()->getRequestString());
-        $time = ObjectManager::getInstance()->get(Magento\Framework\Stdlib\DateTime\DateTime::class);
+        $time = ObjectManager::getInstance()->get(\Magento\Framework\Stdlib\DateTime\DateTime::class);
         $loggerRetailOps->setCreateDate($time->gmtDate());
         if (is_object($observer->getError())) {
             $loggerRetailOps->setError($observer->getError()->getMessage());

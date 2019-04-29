@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailOps\Api\Controller\Frontend\Order;
+namespace RetailOps\Api\Controller\Order;
 
 use Magento\Framework\App\ObjectManager;
 use \RetailOps\Api\Controller\RetailOps;
@@ -21,12 +21,13 @@ class Update extends RetailOps
     protected $status = 'success';
 
     public function __construct(
+        \Magento\Framework\App\Action\Context $context,
         \RetailOps\Api\Model\Order\UpdateFactory $orderFactory,
-        \Magento\Framework\App\Action\Context $context
+        \RetailOps\Api\Model\Logger\Monolog $logger
     ) {
         $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
         parent::__construct($context);
-        $this->logger = $this->_objectManager->get(\RetailOps\Api\Logger\Logger::class);
     }
 
     public function execute()
@@ -34,7 +35,7 @@ class Update extends RetailOps
         try {
             $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
             if (!$scopeConfig->getValue(self::ENABLE)) {
-                throw new \LogicException('This feed disable');
+                throw new \LogicException('API endpoint has been disabled');
             }
             $postData = $this->getRequest()->getPost();
             $orderFactrory = $this->orderFactory->create();

@@ -13,6 +13,7 @@ use RetailOps\Api\Api\Data\InventoryHistoryInterface as InventoryHistoryDataInte
 class InventoryHistoryRepository implements InventoryHistoryInterface
 {
     use \RetailOps\Api\Model\Api\Traits\SearchResult;
+
     /**
      * @var Resource\InventoryHistory
      */

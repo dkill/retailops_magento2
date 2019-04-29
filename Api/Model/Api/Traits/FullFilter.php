@@ -120,7 +120,7 @@ trait FullFilter
         if (count($result)) {
             foreach ($result as $row) {
                 foreach ($orders as $key => $order) {
-                    if ((string)$key === (string)$rowApi/Model/Api/Traits/Filter['increment_id']) {
+                    if ((string)$key === (string)$row['increment_id']) {
                         $existsOrders[$row['entity_id']] = $order;
                     }
                 }

@@ -12,6 +12,7 @@ use RetailOps\Api\Api\Services\CreditMemo\CreditMemoHelperInterface;
 class CreditMemoHelper implements CreditMemoHelperInterface
 {
     use \RetailOps\Api\Model\Api\Traits\FullFilter;
+
     /**
      * @var float
      */
@@ -164,7 +165,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
         return null;
     }
-    
+
     /**
      * @param $order
      * @param $items
