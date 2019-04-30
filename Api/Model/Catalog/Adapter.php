@@ -2,6 +2,8 @@
 
 namespace RetailOps\Api\Model\Catalog;
 
+use Magento\Catalog\Model\Product;
+
 abstract class Adapter implements AdapterInterface
 {
     /**
@@ -86,10 +88,10 @@ abstract class Adapter implements AdapterInterface
     /**
      * Output data for pull api
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param Product $product
      * @return array
      */
-    public function outputData($product)
+    public function outputData(Product $product)
     {
         return [];
     }
