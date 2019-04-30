@@ -56,6 +56,24 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="RetailOps\Api\Model\Catalog\Push">
+        <arguments>
+            <argument name="dataAdapters" xsi:type="array">
+                <item name="attribute" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Attribute</item>
+                <item name="category" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Category</item>
+                <item name="media" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Media</item>
+                <item name="option" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Option</item>
+                <item name="configurable" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Configurable</item>
+                <item name="bundle" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Bundle</item>
+                <item name="downloadable" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Downloadable</item>
+                <item name="tag" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Tag</item>
+                <item name="default" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Simple</item>
+                <item name="link" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Link</item>
+            </argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\App\RouterList">
         <arguments>
             <argument name="routerList" xsi:type="array">
