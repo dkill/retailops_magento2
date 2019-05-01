@@ -59,20 +59,4 @@ interface AdapterInterface
      * @return $this
      */
     public function afterDataProcess(array &$skuToIdMap);
-
-    /**
-     * Prepare data for pull api
-     *
-     * @param $productCollection
-     * @return $this
-     */
-    public function prepareOutputData($productCollection);
-
-    /**
-     * Output data for pull api
-     *
-     * @param Product $product
-     * @return array
-     */
-    public function outputData(Product $product);
 }

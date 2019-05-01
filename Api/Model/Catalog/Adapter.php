@@ -73,26 +73,4 @@ abstract class Adapter implements AdapterInterface
     {
         return $this;
     }
-
-    /**
-     * Prepare data for pull api
-     *
-     * @param $productCollection
-     * @return $this
-     */
-    public function prepareOutputData($productCollection)
-    {
-        return $this;
-    }
-
-    /**
-     * Output data for pull api
-     *
-     * @param Product $product
-     * @return array
-     */
-    public function outputData(Product $product)
-    {
-        return [];
-    }
 }

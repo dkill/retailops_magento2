@@ -119,43 +119,6 @@ class Attribute extends Adapter
     }
 
     /**
-     * @param Product $product
-     * @return array
-     */
-    public function outputData(Product $product)
-    {
-        $data = [];
-        $data['attribute_set'] = $this->getAttributeSetById($product->getDefaultAttributeSetId());
-
-        foreach ($this->simpleAttributes as $attribute) {
-            $data[$attribute] = $product->getData($attribute);
-        }
-
-        foreach ($this->sourceAttributes as $attribute) {
-            $values = $product->getData($attribute);
-            if (array_search($attribute, $this->multiSelectAttributes) !== false) {
-                $values = explode(',', $values);
-            }
-            $values = (array) $values;
-            $data[$attribute] = [];
-
-            foreach ($values as $value) {
-                $optionLabel = array_search($value, $this->attributeOptions[$attribute]);
-                if ($optionLabel) {
-                    $data[$attribute][] = $optionLabel;
-                } else {
-                    $data[$attribute][] = $value;
-                }
-            }
-            if (count($data[$attribute]) == 1) {
-                $data[$attribute] = $data[$attribute][0];
-            }
-        }
-
-        return $data;
-    }
-
-    /**
      * Returns the entity type id.
      *
      * @return int
