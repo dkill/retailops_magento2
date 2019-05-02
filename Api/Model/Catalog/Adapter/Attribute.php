@@ -139,19 +139,6 @@ class Attribute extends Adapter
     }
 
     /**
-     * Returns the name of attribute set by the given id.
-     *
-     * @param int $attributeSetId
-     * @return string
-     */
-    private function getAttributeSetById($attributeSetId)
-    {
-        $attributeSets = $this->getAttributeSets();
-
-        return $attributeSets[$attributeSetId];
-    }
-
-    /**
      * @return array
      */
     private function getAttributeSetGroups()
