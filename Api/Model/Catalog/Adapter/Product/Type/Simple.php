@@ -50,18 +50,13 @@ class Simple extends Adapter
      */
     public function processData(array &$productData, $product)
     {
-        $oldProductUrl = $product->getUrlKey();
         $attributeSetId = $productData['attribute_set_id'];
         $sku = $productData['sku'];
 
         $product->setAttributeSetId($attributeSetId);
 
         if (isset($productData['stock_data']) && is_array($productData['stock_data'])) {
-            //$resourceModel = Mage::getResourceModel('retailops_api/api');
-            //$orderQtys = $resourceModel->getRetailopsNonretrievedQtys();
-            //$stockObj = $resourceModel->subtractNonretrievedQtys($orderQtys, $productData['stock_data']);
-            //$stockObj = $resourceModel->refSubtractQtys($productData['stock_data']);
-            //$productData['stock_data'] = $stockObj->getData();
+            $productData['stock_data']['qty'] = $productData['stock_data']['quantity'];
         }
 
         if (!$product->getId()) {
@@ -83,10 +78,7 @@ class Simple extends Adapter
             throw new \LogicException(implode($errors));
         }
 
-        $this->productRepository->save($product);
-
-        // New URL inserted in mass-redirect table
-        // $this->InsertInMassRedirect($product, $productData, $oldProductUrl);
+        $product = $this->productRepository->save($product);
 
         $productData['product_id'] = $product->getId();
 
@@ -141,32 +133,6 @@ class Simple extends Adapter
     {
         if (!in_array($productType, $this->productType->toOptionArray())) {
             throw new InputException('Product type not exists');
-        }
-    }
-
-    // New URL inserted in massredirect table
-    public function InsertInMassRedirect($product, $productData, $ProductOldUrl)
-    {
-        if (isset($productData['url_key'])) {
-            $NewUrlKey = Mage::getResourceModel('catalog/url')->getCategoryModel()->formatUrlKey($productData['url_key']);
-
-            // Load product data from sku
-            if ($ProductOldUrl) {
-                if ($NewUrlKey != $ProductOldUrl) {
-                    $massredirect['new_url'] = $NewUrlKey . ".html";
-                    $massredirect['old_url'] = $ProductOldUrl;
-                    $massredirect['sku'] = $productData['sku'];
-                    $massredirect['website_id'] = $product['website_ids'][0];
-                    $table = Mage::getSingleton('core/resource')->getTableName('massredirect/massredirect');
-                    $resource = Mage::getSingleton('core/resource');
-                    $writeConnection = $resource->getConnection('core_write');
-                    try {
-                        $writeConnection->insert($table, $massredirect);
-                    } catch (Exception $e) {
-                        $this->_throwException($e->getMessage(), 'error_saving_mass_redirect');
-                    }
-                }
-            }
         }
     }
 }
