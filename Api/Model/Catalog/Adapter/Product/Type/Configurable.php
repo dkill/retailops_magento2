@@ -39,7 +39,7 @@ class Configurable extends Adapter
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, $product)
+    public function processData(array &$productData, Product $product)
     {
         $sku = $productData['sku'];
         if (isset($productData['configurable_sku'])) {

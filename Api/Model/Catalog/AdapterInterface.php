@@ -47,10 +47,10 @@ interface AdapterInterface
      * Processes the actual data.
      *
      * @param array $productData
-     * @param $product
+     * @param Product $product
      * @return mixed
      */
-    public function processData(array &$productData, $product);
+    public function processData(array &$productData, Product $product);
 
     /**
      * Will be called after data has been processed.

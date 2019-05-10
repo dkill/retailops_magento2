@@ -48,7 +48,7 @@ class Simple extends Adapter
      * @param Product $product
      * @return mixed
      */
-    public function processData(array &$productData, $product)
+    public function processData(array &$productData, Product $product)
     {
         $attributeSetId = $productData['attribute_set_id'];
         $sku = $productData['sku'];

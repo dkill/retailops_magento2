@@ -60,10 +60,10 @@ abstract class Adapter implements AdapterInterface
      * Processes the actual data.
      *
      * @param array $productData
-     * @param $product
+     * @param Product $product
      * @return mixed
      */
-    abstract public function processData(array &$productData, $product);
+    abstract public function processData(array &$productData, Product $product);
 
     /**
      * @param array $skuToIdMap

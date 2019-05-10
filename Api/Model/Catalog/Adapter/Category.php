@@ -40,7 +40,7 @@ class Category extends Adapter
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, $product)
+    public function processData(array &$productData, Product $product)
     {
         $assignedCategories = [];
 

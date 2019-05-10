@@ -95,10 +95,10 @@ class Attribute extends Adapter
 
     /**
      * @param array $productData
-     * @param Mage_Catalog_Model_Product $product
+     * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, $product)
+    public function processData(array &$productData, Product $product)
     {
         $productData['attribute_set_id'] = $this->getAttributeSetIdByName($productData['attribute_set']);
         $this->processStaticAttributes($productData);
