@@ -29,6 +29,8 @@ class Shipment extends RetailOps
      */
     protected $statusRetOps = 'success';
 
+    private $response = [];
+
     /**
      * @var array|null
      */
