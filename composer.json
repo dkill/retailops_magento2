@@ -7,10 +7,10 @@
     "require": {},
     "autoload": {
         "files": [
-            "Api/registration.php"
+            "src/registration.php"
         ],
         "psr-4": {
-            "RetailOps\\Api\\": "Api"
+            "Gudtech\\RetailOps\\": "src"
         }
     }
 }
