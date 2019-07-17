@@ -2,8 +2,11 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Magento\Framework\App\ObjectManager;
 use \Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Order\UpdateFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Update controller class action.
@@ -16,26 +19,27 @@ class Update extends RetailOps
 
     protected $events = [];
 
-    protected $response = [];
+    protected $responseEvents = [];
 
     protected $status = 'success';
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Order\UpdateFactory $orderFactory,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
+        Context $context,
+        UpdateFactory $orderFactory,
+        Monolog $logger,
+        ScopeConfigInterface $config
+
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;
-        parent::__construct($context);
+        parent::__construct($context, $config);
     }
 
     public function execute()
     {
         try {
-            $areaName = "retailops_before_pull_". self::SERVICENAME;
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            $areaName = "retailops_before_pull_" . self::SERVICENAME;
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = $this->getRequest()->getPost();
@@ -45,7 +49,7 @@ class Update extends RetailOps
                 'response' => $response,
                 'request' => $this->getRequest(),
             ]);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $exception) {
             $event = [
                 'event_type' => 'error',
@@ -59,15 +63,15 @@ class Update extends RetailOps
             $this->status = 'error';
 
         } finally {
-            $this->response['events'] = [];
+            $this->responseEvents['events'] = [];
             foreach ($this->events as $event) {
-                $this->response['events'][] = $event;
+                $this->responseEvents['events'][] = $event;
             }
             $this->_eventManager->dispatch($areaName, [
                 'request' => $this->getRequest(),
-                'response' => $this->response
+                'response' => $this->responseEvents
             ]);
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode('200');
             return $this->getResponse();
         }

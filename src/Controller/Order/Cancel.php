@@ -2,6 +2,10 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Order\CancelFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use \Gudtech\RetailOps\Controller\RetailOps;
 
@@ -19,39 +23,39 @@ class Cancel extends RetailOps
      */
     protected $areaName = self::BEFOREPULL. self::SERVICENAME;
 
+    public function __construct(
+        Context $context,
+        CancelFactory $orderFactory,
+        Monolog $logger,
+        ScopeConfigInterface $config
+    ) {
+        $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
+        parent::__construct($context, $config);
+    }
+
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = $this->getRequest()->getParams();
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->cancelOrder($postData);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $exception) {
             print $exception;
             exit;
             $this->logger->addCritical($exception->getMessage());
-            $this->response = (object)null;
+            $this->responseEvents = (object)null;
             $this->status = 500;
             $this->error = $exception;
             parent::execute();
         } finally {
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode($this->status);
             parent::execute();
         }
-    }
-
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Order\CancelFactory $orderFactory,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
-    ) {
-        $this->orderFactory = $orderFactory;
-        $this->logger = $logger;
-        parent::__construct($context);
     }
 }

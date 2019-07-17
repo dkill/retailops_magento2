@@ -17,7 +17,7 @@ class PageActions extends \Magento\Ui\Component\Listing\Columns\Column
                 }
                 $item[$name]["view"] = [
                     "href"=>$this->getContext()->getUrl(
-                        "adminhtml/retailops_api_log/viewlog",
+                        "adminhtml/gudtech_retailops_log/viewlog",
                         ["id"=>$id]
                     ),
                     "label"=>__("Edit")

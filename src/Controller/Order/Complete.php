@@ -2,8 +2,11 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Order\CompleteFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Complete controller action class.
@@ -14,17 +17,29 @@ class Complete extends RetailOps
     const SERVICENAME = 'order_complete';
     const ENABLE = 'retailops/retailops_feed/order_complete';
     protected $events = [];
-    protected $response = [];
+    protected $responseEvents = [];
     protected $statusRetOps = 'success';
 
     /**
-     * @var \\RetailOps\Model\Order\Complete
+     * @var \RetailOps\Model\Order\Complete
      */
     protected $orderFactory;
+
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
+
+    public function __construct(
+        Context $context,
+        CompleteFactory $orderFactory,
+        Monolog $logger,
+        ScopeConfigInterface $config
+    ) {
+        $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
+        parent::__construct($context, $config);
+    }
 
     /**
      * @return \Magento\Framework\App\ResponseInterface
@@ -34,8 +49,7 @@ class Complete extends RetailOps
         $this->logger->addCritical(json_encode($this->_request->getParams()));
 
         try {
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
@@ -44,7 +58,7 @@ class Complete extends RetailOps
              */
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->updateOrder($postData);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $exception) {
             print $exception;
             $event = [
@@ -59,25 +73,15 @@ class Complete extends RetailOps
             $this->statusRetOps = 'error';
             parent::execute();
         } finally {
-            $this->response['events'] = $this->response['events'] ?? [] ;
-            $this->response['status'] = $this->statusRetOps;
+            $this->responseEvents['events'] = $this->responseEvents['events'] ?? [];
+            $this->responseEvents['status'] = $this->statusRetOps;
             foreach ($this->events as $event) {
-                $this->response['events'][] = $event;
+                $this->responseEvents['events'][] = $event;
             }
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode('200');
             parent::execute();
             return $this->getResponse();
         }
-    }
-
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Order\CompleteFactory $orderFactory,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
-    ) {
-        $this->orderFactory = $orderFactory;
-        $this->logger = $logger;
-        parent::__construct($context);
     }
 }

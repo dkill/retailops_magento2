@@ -2,8 +2,10 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Magento\Framework\App\ObjectManager;
 use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Order returned controller class
@@ -20,20 +22,21 @@ class Returned extends RetailOps
     private $events = [];
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
+        Context $context,
+        Monolog $logger,
+        ScopeConfigInterface $config
     ) {
         $this->logger = $logger;
-        parent::__construct($context);
+        parent::__construct($context, $config);
     }
 
     public function execute()
     {
-        $this->response['events'] = [];
+        $this->responseEvents['events'] = [];
         foreach ($this->events as $event) {
-            $this->response['events'][] = $event;
+            $this->responseEvents['events'][] = $event;
         }
-        $this->getResponse()->representJson(json_encode($this->response));
+        $this->getResponse()->representJson(json_encode($this->responseEvents));
         $this->getResponse()->setStatusCode('200');
         parent::execute();
         return $this->getResponse();

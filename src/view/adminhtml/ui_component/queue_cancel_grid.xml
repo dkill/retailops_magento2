@@ -11,13 +11,13 @@
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">Gudtech\RetailOps\Ui\Component\Listing\DataProviders\Queue\Cancel\Grid</argument>
             <argument name="name" xsi:type="string">queue_cancel_grid_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">retailops_api_queue_id</argument>
+            <argument name="primaryFieldName" xsi:type="string">gudtech_retailops_queue_id</argument>
             <argument name="requestFieldName" xsi:type="string">id</argument>
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="update_url" xsi:type="url" path="mui/index/render"/>
                     <item name="storageConfig" xsi:type="array">
-                        <item name="indexField" xsi:type="string">retailops_api_queue_id</item>
+                        <item name="indexField" xsi:type="string">gudtech_retailops_queue_id</item>
                     </item>
                 </item>
             </argument>
@@ -33,7 +33,7 @@
             <item name="config" xsi:type="array">
                 <item name="selectProvider" xsi:type="string">queue_cancel_grid.queue_cancel_grid.queue_cancel_grid_columns.ids</item>
                 <item name="displayArea" xsi:type="string">bottom</item>
-                <item name="indexField" xsi:type="string">retailops_api_queue_id</item>
+                <item name="indexField" xsi:type="string">gudtech_retailops_queue_id</item>
             </item>
         </argument>
         <action name="delete">
@@ -41,7 +41,7 @@
                 <item name="config" xsi:type="array">
                     <item name="type" xsi:type="string">delete</item>
                     <item name="label" xsi:type="string" translate="true">Delete</item>
-                    <item name="url" xsi:type="url" path="retailops_api/queue/massDelete"/>
+                    <item name="url" xsi:type="url" path="gudtech_retailops/queue/massDelete"/>
                     <item name="confirm" xsi:type="array">
                         <item name="title" xsi:type="string" translate="true">Delete items</item>
                         <item name="message" xsi:type="string" translate="true">Are you sure you wan't to delete selected items?</item>
@@ -56,11 +56,11 @@
                 <item name="config" xsi:type="array">
                     <item name="resizeEnabled" xsi:type="boolean">false</item>
                     <item name="resizeDefaultWidth" xsi:type="string">55</item>
-                    <item name="indexField" xsi:type="string">retailops_api_queue_id</item>
+                    <item name="indexField" xsi:type="string">gudtech_retailops_queue_id</item>
                 </item>
             </argument>
         </selectionsColumn>
-        <column name="retailops_api_queue_id">
+        <column name="gudtech_retailops_queue_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">textRange</item>

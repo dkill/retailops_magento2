@@ -2,7 +2,11 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use \Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Shipment\ShipmentSubmit;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Shipment controller class action.
@@ -20,7 +24,7 @@ class Shipment extends RetailOps
     protected $areaName = self::BEFOREPULL.self::SERVICENAME;
 
     /**
-     * @var \Gudtech\RetailOps\Model\Shipment\ShipmentSubmit
+     * @var ShipmentSubmit
      */
     protected $shipmentSubmit;
 
@@ -29,7 +33,7 @@ class Shipment extends RetailOps
      */
     protected $statusRetOps = 'success';
 
-    private $response = [];
+    private $responseEvents = [];
 
     /**
      * @var array|null
@@ -37,25 +41,25 @@ class Shipment extends RetailOps
     protected $events=[];
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Shipment\ShipmentSubmit $shipmentSubmit,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
+        Context $context,
+        ShipmentSubmit $shipmentSubmit,
+        Monolog $logger,
+        ScopeConfigInterface $config
     ) {
         $this->shipmentSubmit = $shipmentSubmit;
         $this->logger = $logger;
-        parent::__construct($context);
+        parent::__construct($context, $config);
     }
 
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = (array)$this->getRequest()->getPost();
             $response = $this->shipmentSubmit->updateOrder($postData);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $e) {
             $event = [
                 'event_type' => 'error',
@@ -69,14 +73,14 @@ class Shipment extends RetailOps
             $this->statusRetOps = 'error';
             parent::execute();
         } finally {
-            if (!array_key_exists('events', $this->response)) {
-                $this->response['events'] = [];
+            if (!array_key_exists('events', $this->responseEvents)) {
+                $this->responseEvents['events'] = [];
             }
 //            $this->response['status'] = $this->response['status'] ?? $this->statusRetOps;
             foreach ($this->events as $event) {
-                $this->response['events'][] = $event;
+                $this->responseEvents['events'][] = $event;
             }
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode('200');
             parent::execute();
             return $this->getResponse();

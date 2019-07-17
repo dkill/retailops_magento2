@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Api\Order\Map;
 
+use Magento\Sales\Api\Data\OrderInterface;
+
 /**
  * Calculate amount interface
  *
@@ -9,14 +11,14 @@ namespace Gudtech\RetailOps\Api\Order\Map;
 interface CalculateAmountInterface
 {
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @return float
      */
-    public function calculateShipping(\Magento\Sales\Api\Data\OrderInterface $order);
+    public function calculateShipping(OrderInterface $order);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @return float
      */
-    public function calculateGrandTotal(\Magento\Sales\Api\Data\OrderInterface $order);
+    public function calculateGrandTotal(OrderInterface $order);
 }

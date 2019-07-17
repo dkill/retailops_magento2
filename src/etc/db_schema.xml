@@ -75,8 +75,8 @@
       <column name="rics_integration_id"/>
     </index>
   </table>
-  <table name="retailops_api_queue" resource="default" engine="innodb" comment="retailops_api_queue">
-    <column xsi:type="int" name="retailops_api_queue_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+  <table name="gudtech_retailops_queue" resource="default" engine="innodb" comment="gudtech_retailops_queue">
+    <column xsi:type="int" name="gudtech_retailops_queue_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
     <column xsi:type="text" name="message" nullable="true" comment="Message"/>
     <column xsi:type="timestamp" name="creation_time" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation Time"/>
     <column xsi:type="timestamp" name="update_time" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Modification Time"/>
@@ -84,7 +84,7 @@
     <column xsi:type="int" name="queue_type" padding="11" unsigned="false" nullable="false" identity="false" default="1" comment="Type of queue(cancel and e.t.c.)"/>
     <column xsi:type="varchar" name="order_increment_id" nullable="true" length="255" comment="Order increment id"/>
     <constraint xsi:type="primary" referenceId="PRIMARY">
-      <column name="retailops_api_queue_id"/>
+      <column name="gudtech_retailops_queue_id"/>
     </constraint>
   </table>
 </schema>

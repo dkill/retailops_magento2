@@ -5,7 +5,7 @@
         <section id="retailops" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>RetailOps</label>
             <tab>service</tab>
-            <resource>RetailOps_Api::api</resource>
+            <resource>Gudtech_RetailOps::api</resource>
             <group id="retailops" type="text" translate="label" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General</label>
                 <field id="turn_on" type="select" showInDefault="1" showInStore="1" sortOrder="10" translate="label" showInWebsite="1">

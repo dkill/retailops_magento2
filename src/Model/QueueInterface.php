@@ -3,7 +3,7 @@ namespace Gudtech\RetailOps\Model;
 
 interface QueueInterface
 {
-    const ID = 'retailops_api_queue_id';
+    const ID = 'gudtech_retailops_queue_id';
     const MESSAGE = 'message';
     const ACTIVE = 'is_active';
     const QUEUE_TYPE = 'queue_type';

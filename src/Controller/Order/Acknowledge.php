@@ -2,6 +2,10 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
+use Gudtech\RetailOps\Model\AcknowledgeFactory;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use \Gudtech\RetailOps\Controller\RetailOps;
 
@@ -27,10 +31,10 @@ class Acknowledge extends RetailOps
     /**
      * @var null|string|array
      */
-    protected $response;
+    protected $responseEvents;
 
     /**
-     * @var \Gudtech\RetailOps\Model\Logger\Monolog
+     * @var Monolog
      */
     protected $logger;
 
@@ -40,34 +44,34 @@ class Acknowledge extends RetailOps
     protected $status = 200;
 
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\AcknowledgeFactory $orderFactory,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
+        Context $context,
+        AcknowledgeFactory $orderFactory,
+        Monolog $logger,
+        ScopeConfigInterface $config
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;
-        parent::__construct($context);
+        parent::__construct($context, $config);
     }
 
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = $this->getRequest()->getPost();
             $orderFactrory = $this->orderFactory->create();
             $response = $orderFactrory->setOrderRefs($postData);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $exception) {
             $this->logger->addCritical($exception->getMessage());
-            $this->response = (object)null;
+            $this->responseEvents = (object)null;
             $this->status = 500;
             $this->error = $exception;
             parent::execute();
         } finally {
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode($this->status);
             parent::execute();
         }

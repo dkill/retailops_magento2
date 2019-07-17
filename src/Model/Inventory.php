@@ -36,7 +36,7 @@ class Inventory implements \Gudtech\RetailOps\Api\InventoryInterface
         return $this->reserveCount;
     }
 
-    public function setUPC($sku)
+    public function setUpc($sku)
     {
         $this->sku = $sku;
     }
@@ -46,7 +46,7 @@ class Inventory implements \Gudtech\RetailOps\Api\InventoryInterface
         $this->count = $count;
     }
 
-    public function getUPC()
+    public function getUpc()
     {
         return $this->sku;
     }

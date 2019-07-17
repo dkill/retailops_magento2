@@ -1,6 +1,6 @@
 <?php
 
-namespace Gudtech\Gudtech\RetailOps;
+namespace Gudtech\RetailOps\Api;
 
 /**
  * Inventory interface
@@ -9,10 +9,10 @@ namespace Gudtech\Gudtech\RetailOps;
 interface InventoryInterface
 {
     /**
-     * @param string|integer $productId
+     * @param string|integer $sku
      * @return null
      */
-    public function setUPC($sku);
+    public function setUpc($sku);
 
     /**
      * @param string|integer $count
@@ -29,7 +29,7 @@ interface InventoryInterface
     /**
      * @return string|null|integer
      */
-    public function getUPC();
+    public function getUpc();
 
     /**
      * @param string|integer|float $realCount

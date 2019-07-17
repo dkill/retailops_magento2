@@ -47,7 +47,7 @@ class Router implements \Magento\Framework\App\RouterInterface
      *
      * @var \Magento\Framework\App\ResponseInterface
      */
-    protected $_response;
+    protected $response;
 
     /**
      * @param \Magento\Framework\App\ActionFactory $actionFactory
@@ -58,7 +58,7 @@ class Router implements \Magento\Framework\App\RouterInterface
         \Magento\Framework\App\ResponseInterface $response
     ) {
         $this->actionFactory = $actionFactory;
-        $this->_response = $response;
+        $this->response = $response;
     }
 
     /**

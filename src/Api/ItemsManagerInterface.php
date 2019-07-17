@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Api;
 
+use Magento\Sales\Api\Data\OrderInterface;
+
 /**
  * Items manager interface
  *
@@ -9,24 +11,24 @@ namespace Gudtech\RetailOps\Api;
 interface ItemsManagerInterface
 {
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return array
      */
-    public function removeCancelItems(\Magento\Sales\Api\Data\OrderInterface $order, array $items);
+    public function removeCancelItems(OrderInterface $order, array $items);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return array
      */
-    public function removeInvoicedAndShippedItems(\Magento\Sales\Api\Data\OrderInterface $order, array $items);
+    public function removeInvoicedAndShippedItems(OrderInterface $order, array $items);
 
     /**
      * @return array
      */
     public function getCancelItems();
-    
+
     /**
      * @return array
      */

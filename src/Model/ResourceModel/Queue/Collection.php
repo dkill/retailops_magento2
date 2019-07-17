@@ -8,7 +8,7 @@ namespace Gudtech\RetailOps\Model\ResourceModel\Queue;
  */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
-    protected $_idFieldName = 'retailops_api_queue_id';
+    protected $_idFieldName = 'gudtech_retailops_queue_id';
 
     protected function _construct()
     {

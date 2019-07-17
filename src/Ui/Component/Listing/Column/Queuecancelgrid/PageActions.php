@@ -13,8 +13,8 @@ class PageActions extends \Magento\Ui\Component\Listing\Columns\Column
             foreach ($dataSource["data"]["items"] as & $item) {
                 $name = $this->getData("name");
                 $id = "X";
-                if (isset($item["retailops_api_queue_id"])) {
-                    $id = $item["retailops_api_queue_id"];
+                if (isset($item["gudtech_retailops_queue_id"])) {
+                    $id = $item["gudtech_retailops_queue_id"];
                 }
                 $item[$name]["view"] = [
                     "href"=>$this->getContext()->getUrl(

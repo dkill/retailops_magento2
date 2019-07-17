@@ -10,7 +10,7 @@ use \Magento\Framework\DataObject\IdentityInterface;
  */
 class Queue extends \Magento\Framework\Model\AbstractModel implements QueueInterface, IdentityInterface
 {
-    const CACHE_TAG = 'retailops_api_queue';
+    const CACHE_TAG = 'gudtech_retailops_queue';
     protected $_idFieldName = self::ID;
 
     protected function _construct()

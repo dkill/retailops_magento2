@@ -17,7 +17,7 @@ class Index extends \Gudtech\RetailOps\Controller\Adminhtml\Log
         }
 
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->setActiveMenu('RetailOps_Api::inventory');
+        $resultPage->setActiveMenu('Gudtech_RetailOps::inventory');
         $resultPage->getConfig()->getTitle()->prepend(__('Logs'));
         $resultPage->addBreadcrumb(__('RetailOps'), __('RetailOps'));
         $resultPage->addBreadcrumb(__('Inventory logs'), __('Inventory logs'));

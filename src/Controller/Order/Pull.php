@@ -2,6 +2,10 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Pull\OrderFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use \Gudtech\RetailOps\Controller\RetailOps;
 
@@ -20,7 +24,7 @@ class Pull extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
     /**
      * @var \\RetailOps\Model\Pull\OrderFactory
@@ -30,7 +34,7 @@ class Pull extends RetailOps
     /**
      * @var null|string|array
      */
-    protected $response;
+    protected $responseEvents;
 
     /**
      * @var \\RetailOps\Logger\Logger
@@ -42,17 +46,27 @@ class Pull extends RetailOps
      */
     protected $status = 200;
 
+    public function __construct(
+        Context $context,
+        OrderFactory $orderFactory,
+        Monolog $logger,
+        ScopeConfigInterface $config
+    ) {
+        $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
+        parent::__construct($context, $config);
+    }
+
     public function execute()
     {
         try {
-            $scopeConfig = $this->_objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::ENABLE)) {
+            if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
             $orderFactory = $this->orderFactory->create();
             $pageToken = $this->getRequest()->getParam('page_token');
             $postData = $this->getRequest()->getPost();
-            $countOfOrders = $scopeConfig->getValue(self::COUNT_ORDERS_PER_REQUEST);
+            $countOfOrders = $this->config->getValue(self::COUNT_ORDERS_PER_REQUEST);
             if ($countOfOrders > self::ORDERS_PER_REQUEST_MAXIMUM) {
                 $countOfOrders = self::ORDERS_PER_REQUEST_MAXIMUM;
             }
@@ -60,29 +74,19 @@ class Pull extends RetailOps
                 $countOfOrders = self::ORDERS_PER_REQUEST_MINIMUM;
             }
             $response = $orderFactory->getOrders($pageToken, $countOfOrders, $postData);
-            $this->response = $response;
+            $this->responseEvents = $response;
         } catch (\Exception $exception) {
             print $exception;
 
             $this->logger->addCritical($exception->getMessage());
-            $this->response = [];
+            $this->responseEvents = [];
             $this->status = 500;
             $this->error = $exception;
             parent::execute();
         } finally {
-            $this->getResponse()->representJson(json_encode($this->response));
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
             $this->getResponse()->setStatusCode($this->status);
             parent::execute();
         }
-    }
-
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Gudtech\RetailOps\Model\Pull\OrderFactory $orderFactory,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger
-    ) {
-        $this->orderFactory = $orderFactory;
-        $this->logger = $logger;
-        parent::__construct($context);
     }
 }

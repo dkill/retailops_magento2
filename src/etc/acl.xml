@@ -3,8 +3,8 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="RetailOps_Api::api" title="Retails logs" sortOrder="30">
-                            <resource id="RetailOps_Api::inventory" title="inventory" sortOrder="50" />
+                <resource id="Gudtech_RetailOps::api" title="Retails logs" sortOrder="30">
+                            <resource id="Gudtech_RetailOps::inventory" title="inventory" sortOrder="50" />
                 </resource>
             </resource>
         </resources>
