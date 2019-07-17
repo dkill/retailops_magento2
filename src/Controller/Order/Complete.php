@@ -30,6 +30,14 @@ class Complete extends RetailOps
      */
     protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
+    /**
+     * Complete constructor.
+     *
+     * @param Context $context
+     * @param CompleteFactory $orderFactory
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         CompleteFactory $orderFactory,

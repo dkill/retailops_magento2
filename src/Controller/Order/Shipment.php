@@ -21,7 +21,7 @@ class Shipment extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
     /**
      * @var ShipmentSubmit
@@ -40,6 +40,14 @@ class Shipment extends RetailOps
      */
     protected $events=[];
 
+    /**
+     * Shipment constructor.
+     *
+     * @param Context $context
+     * @param ShipmentSubmit $shipmentSubmit
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         ShipmentSubmit $shipmentSubmit,

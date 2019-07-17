@@ -2,12 +2,11 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
+use Gudtech\RetailOps\Controller\RetailOps;
 use Gudtech\RetailOps\Model\AcknowledgeFactory;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Controller\RetailOps;
 
 /**
  * Acknowledge controller action class.
@@ -21,7 +20,7 @@ class Acknowledge extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL.self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
     /**
      * @var \Gudtech\RetailOps\Model\Acknowledge
@@ -43,6 +42,14 @@ class Acknowledge extends RetailOps
      */
     protected $status = 200;
 
+    /**
+     * Acknowledge constructor.
+     *
+     * @param Context $context
+     * @param AcknowledgeFactory $orderFactory
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         AcknowledgeFactory $orderFactory,

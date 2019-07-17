@@ -23,12 +23,19 @@ class Update extends RetailOps
 
     protected $status = 'success';
 
+    /**
+     * Update constructor.
+     *
+     * @param Context $context
+     * @param UpdateFactory $orderFactory
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         UpdateFactory $orderFactory,
         Monolog $logger,
         ScopeConfigInterface $config
-
     ) {
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;

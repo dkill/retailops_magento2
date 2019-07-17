@@ -6,6 +6,7 @@ use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\RoRicsLinkUpcRepository;
 use Gudtech\RetailOps\Service\CalculateInventory;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use Gudtech\RetailOps\Controller\RetailOps;
@@ -89,14 +90,12 @@ class Push extends RetailOps
                 }
                 $state = ObjectManager::getInstance()->get(\Magento\Framework\App\State::class);
                 $state->emulateAreaCode(
-                    \Magento\Framework\App\Area::AREA_WEBAPI_REST,
+                    Area::AREA_WEBAPI_REST,
                     [$inventoryApi, 'setInventory'],
                     [$inventoryObjects]
                 );
             }
         } catch (\Exception $exception) {
-            print $exception;
-
             $event = [
                 'event_type' => 'error',
                 'code' => $exception->getCode(),

@@ -22,6 +22,13 @@ class GetConfig extends RetailOps
 
     private $events = [];
 
+    /**
+     * GetConfig constructor.
+     *
+     * @param Context $context
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         Monolog $logger,

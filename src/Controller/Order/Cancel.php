@@ -2,12 +2,11 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
+use Gudtech\RetailOps\Controller\RetailOps;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Order\CancelFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Controller\RetailOps;
 
 /**
  * Cancel controller action class.
@@ -21,8 +20,16 @@ class Cancel extends RetailOps
     /**
      * @var string
      */
-    protected $areaName = self::BEFOREPULL. self::SERVICENAME;
+    protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
+    /**
+     * Cancel constructor.
+     *
+     * @param Context $context
+     * @param CancelFactory $orderFactory
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         CancelFactory $orderFactory,

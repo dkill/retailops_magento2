@@ -6,8 +6,7 @@ use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Order\OrderReturn;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\RetailOps;
 
 /**
  * Return order controller class action.
@@ -24,6 +23,14 @@ class ReturnOrder extends RetailOps
 
     protected $events;
 
+    /**
+     * ReturnOrder constructor.
+     *
+     * @param Context $context
+     * @param OrderReturn $orderReturn
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         OrderReturn $orderReturn,

@@ -2,7 +2,8 @@
 
 namespace Gudtech\RetailOps\Controller;
 
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\ActionFactory;
+use Magento\Framework\App\ResponseInterface;
 
 /**
  * Router class for RetailOps API endpoints.
@@ -38,24 +39,24 @@ class Router implements \Magento\Framework\App\RouterInterface
     ];
 
     /**
-     * @var \Magento\Framework\App\ActionFactory
+     * @var ActionFactory
      */
     protected $actionFactory;
 
     /**
      * Response
      *
-     * @var \Magento\Framework\App\ResponseInterface
+     * @var ResponseInterface
      */
     protected $response;
 
     /**
-     * @param \Magento\Framework\App\ActionFactory $actionFactory
-     * @param \Magento\Framework\App\ResponseInterface $response
+     * @param ActionFactory $actionFactory
+     * @param ResponseInterface $response
      */
     public function __construct(
-        \Magento\Framework\App\ActionFactory $actionFactory,
-        \Magento\Framework\App\ResponseInterface $response
+        ActionFactory $actionFactory,
+        ResponseInterface $response
     ) {
         $this->actionFactory = $actionFactory;
         $this->response = $response;
@@ -93,10 +94,9 @@ class Router implements \Magento\Framework\App\RouterInterface
         }
 
         if (isset(self::$map[$path[1]])) {
-            $content = file_get_contents('php://input');
-            $paremeters = new \Zend\Stdlib\Parameters(json_decode($content, true));
+            $parameters = new \Zend\Stdlib\Parameters(json_decode($request->getContent(), true));
             //fix error with empty content
-            $request->setPost($paremeters);
+            $request->setPost($parameters);
             $request->setModuleName($path[0]);
             return $this->actionFactory->create(
                 self::$map[$path[1]],

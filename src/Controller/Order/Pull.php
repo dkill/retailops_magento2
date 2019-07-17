@@ -6,8 +6,7 @@ use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Pull\OrderFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\RetailOps;
 
 /**
  * Pull controller action class.
@@ -46,6 +45,14 @@ class Pull extends RetailOps
      */
     protected $status = 200;
 
+    /**
+     * Pull constructor.
+     *
+     * @param Context $context
+     * @param OrderFactory $orderFactory
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         OrderFactory $orderFactory,

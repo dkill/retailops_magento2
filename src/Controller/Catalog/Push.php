@@ -21,6 +21,13 @@ class Push extends RetailOps
 
     private $events = [];
 
+    /**
+     * Push constructor.
+     *
+     * @param Context $context
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         Monolog $logger,

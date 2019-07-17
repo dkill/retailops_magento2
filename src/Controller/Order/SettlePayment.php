@@ -21,6 +21,13 @@ class SettlePayment extends RetailOps
 
     private $events = [];
 
+    /**
+     * SettlePayment constructor.
+     *
+     * @param Context $context
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         Monolog $logger,

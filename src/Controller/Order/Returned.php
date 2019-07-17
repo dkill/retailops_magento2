@@ -21,6 +21,13 @@ class Returned extends RetailOps
 
     private $events = [];
 
+    /**
+     * Returned constructor.
+     *
+     * @param Context $context
+     * @param Monolog $logger
+     * @param ScopeConfigInterface $config
+     */
     public function __construct(
         Context $context,
         Monolog $logger,
