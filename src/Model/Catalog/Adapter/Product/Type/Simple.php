@@ -12,6 +12,9 @@ use Gudtech\RetailOps\Model\Catalog\Adapter;
 
 class Simple extends Adapter
 {
+    const VISIBILITY_VISIBLE = 'Visible';
+    const STATUS_ENABLED = 'Enabled';
+
     /**
      * @var ProductType
      */
@@ -38,7 +41,7 @@ class Simple extends Adapter
      */
     public function validateData(array &$data)
     {
-        if (empty($data['sku'])) {
+        if (empty($data['General']['SKU'])) {
             throw new InputException('Product SKU is missing.');
         }
     }
@@ -51,7 +54,6 @@ class Simple extends Adapter
     public function processData(array &$productData, Product $product)
     {
         $attributeSetId = $productData['attribute_set_id'];
-        $sku = $productData['sku'];
 
         $product->setAttributeSetId($attributeSetId);
 
@@ -65,7 +67,8 @@ class Simple extends Adapter
             }
             $type = $productData['type_id'];
             $this->checkProductTypeExists($type);
-            $product->setTypeId($type)->setSku($sku);
+            $product->setTypeId($type);
+            $product->setSku($productData['General']['SKU']);
             if (!isset($productData['stock_data']) || !is_array($productData['stock_data'])) {
                 //Set default stock_data if not exist in product data
                 $product->setStockData(['use_config_manage_stock' => 0]);
@@ -94,7 +97,31 @@ class Simple extends Adapter
     */
     protected function prepareDataForSave($product, $productData)
     {
-        $product->addData($productData);
+        $product->setName(trim($productData['General']['Name']));
+        $product->setDescription(trim($productData['General']['Description']));
+        $product->setShortDescription(trim($productData['General']['Short Description']));
+        $product->setUrlKey(trim($productData['General']['Url Key']));
+
+        if ($productData['General']['Visibility'] == self::VISIBILITY_VISIBLE) {
+            $product->setVisibilty();
+        } else {
+            $product->setVisibility();
+        }
+
+        if ($productData['General']['Visibility'] == self::STATUS_ENABLED) {
+            $product->setVisibilty();
+        } else {
+            $product->setVisibility();
+        }
+
+
+        $product->setMetaDescription(trim($productData['Meta Information']['Meta Description']));
+        $product->setMetaKeywords(trim($productData['Meta Information']['Meta Keywords']));
+        $product->setMetaTitle(trim($productData['Meta Information']['Meta Title']));
+
+        foreach ($productData['Additional Attributes']['Attributes'] as $attribute) {
+
+        }
 
         if (isset($productData['website_ids']) && is_array($productData['website_ids'])) {
             $product->setWebsiteIds($productData['website_ids']);

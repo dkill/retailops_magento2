@@ -89,15 +89,8 @@ class Push extends AbstractController
             foreach ($productData as $data) {
                 try {
                     $dataObj = new Varien_Object($data);
-                    Mage::dispatchEvent('retailops_catalog_push_data_process_before', array('data' => $dataObj));
                     $data = $dataObj->getData();
-                    if (isset($data['url_key']))
-                    {
-                        Mage::log($data['url_key'],null,'catelogPush.log',true);
-                        // $data['save_rewrites_history'] = true;
-                    }
                     $this->catalogPush->processData($data);
-                    //Mage::dispatchEvent('retailops_catalog_push_data_process_after', array('data' => $dataObj));
                 } catch (RetailOps_Api_Model_Catalog_Exception $e) {
                     $this->_addError($e);
                 }

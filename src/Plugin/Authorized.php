@@ -2,9 +2,13 @@
 
 namespace Gudtech\RetailOps\Plugin;
 
+use Gudtech\RetailOps\Model\Logger\Monolog;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\AuthenticationException;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Webapi\ErrorProcessor;
 
 /**
  * Authorized plugin class.
@@ -16,26 +20,43 @@ class Authorized
     const INTEGRATION_KEY = 'integration_auth_token';
 
     /**
-     * @var \Magento\Framework\App\ResponseInterface
+     * @var ResponseInterface
      */
     protected $response;
 
     /**
-     * @var \Magento\Framework\Webapi\ErrorProcessor
+     * @var ErrorProcessor
      */
     protected $errorProcessor;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
+    /**
+     * Authorized constructor.
+     * @param Context $context
+     * @param ScopeConfig $scopeConfig
+     */
+    public function __construct(Context $context, ScopeConfig $scopeConfig)
+    {
+        $this->response = $context->getResponse();
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * @param $subject
+     * @param $proceed
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     */
     public function aroundDispatch($subject, $proceed, $request)
     {
         try {
-            $key = $request->getPost(self::INTEGRATION_KEY);
-            $valid_key = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
-            if (!$key || $valid_key !== $key) {
+            $requestKey = $request->getPost(self::INTEGRATION_KEY);
+            $configKey = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
+            if (!$requestKey || $configKey !== $requestKey) {
                 throw new \Magento\Framework\Exception\AuthenticationException(
                     __('Incorrect authorisation, API key not valid.')
                 );
@@ -50,15 +71,9 @@ class Authorized
                 $this->response->setContent(__('Error occur while do request'));
                 $this->response->setStatusCode('500');
             }
-            $logger = ObjectManager::getInstance()->get(\Gudtech\RetailOps\Model\Logger\Monolog::class);
+            $logger = ObjectManager::getInstance()->get(Monolog::class);
             $logger->addCritical('Error in retailops:'.$exception->getMessage(), (array)$request->getPost());
             return $this->response;
         }
-    }
-
-    public function __construct(Context $context, \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
-    {
-        $this->response = $context->getResponse();
-        $this->scopeConfig = $scopeConfig;
     }
 }
