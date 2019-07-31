@@ -6,13 +6,13 @@ use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Order\OrderReturn;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 
 /**
  * Return order controller class action.
  *
  */
-class ReturnOrder extends RetailOps
+class ReturnOrder extends AbstractController
 {
     const ENABLE = 'retailops/retailops_feed/order_return';
 

@@ -2,7 +2,7 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Order\CompleteFactory;
 use Magento\Framework\App\Action\Context;
@@ -12,7 +12,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * Complete controller action class.
  *
  */
-class Complete extends RetailOps
+class Complete extends AbstractController
 {
     const SERVICENAME = 'order_complete';
     const ENABLE = 'retailops/retailops_feed/order_complete';

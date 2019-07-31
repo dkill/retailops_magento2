@@ -2,7 +2,7 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Shipment\ShipmentSubmit;
 use Magento\Framework\App\Action\Context;
@@ -12,7 +12,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * Shipment controller class action.
  *
  */
-class Shipment extends RetailOps
+class Shipment extends AbstractController
 {
     const SERVICENAME = 'shipment_submit';
     const COUNT_ORDERS_PER_REQUEST = 50;

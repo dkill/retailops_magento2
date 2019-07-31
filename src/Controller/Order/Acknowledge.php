@@ -2,7 +2,7 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 use Gudtech\RetailOps\Model\AcknowledgeFactory;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Magento\Framework\App\Action\Context;
@@ -12,7 +12,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * Acknowledge controller action class.
  *
  */
-class Acknowledge extends RetailOps
+class Acknowledge extends AbstractController
 {
     const SERVICENAME = 'order_acknowledge';
     const ENABLE = 'retailops/retailops_feed/order_acknowledge';

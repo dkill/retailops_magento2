@@ -6,13 +6,13 @@ use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Pull\OrderFactory;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 
 /**
  * Pull controller action class.
  *
  */
-class Pull extends RetailOps
+class Pull extends AbstractController
 {
     const SERVICENAME = 'order';
     const ORDERS_PER_REQUEST_MAXIMUM = 50;

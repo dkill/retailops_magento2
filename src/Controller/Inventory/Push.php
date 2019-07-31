@@ -9,13 +9,13 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 
 /**
  * Inventory push controller class
  *
  */
-class Push extends RetailOps
+class Push extends AbstractController
 {
     const PARAM = 'inventory_updates';
     const SKU = 'sku';

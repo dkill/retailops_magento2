@@ -2,7 +2,7 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Model\Order\CancelFactory;
 use Magento\Framework\App\Action\Context;
@@ -12,7 +12,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * Cancel controller action class.
  *
  */
-class Cancel extends RetailOps
+class Cancel extends AbstractController
 {
     const SERVICENAME = 'order_cancel';
     const ENABLE = 'retailops/retailops_feed/order_cancel';

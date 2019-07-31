@@ -2,7 +2,7 @@
 
 namespace Gudtech\RetailOps\Controller\Order;
 
-use Gudtech\RetailOps\Controller\RetailOps;
+use Gudtech\RetailOps\Controller\AbstractController;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -11,7 +11,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * Order returned controller class
  *
  */
-class Returned extends RetailOps
+class Returned extends AbstractController
 {
     const SERVICENAME = 'catalog';
     /**

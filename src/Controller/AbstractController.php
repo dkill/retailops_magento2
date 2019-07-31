@@ -13,7 +13,7 @@ use Magento\Framework\Exception\NotFoundException;
  * Abstract RetailOps controller class.
  *
  */
-abstract class RetailOps extends Action
+abstract class AbstractController extends Action
 {
     const BEFOREPULL = 'retailops_before_pull_';
 
