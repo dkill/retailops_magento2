@@ -1,4 +1,5 @@
 <?php
+
 namespace Gudtech\RetailOps\Model;
 
 use \Gudtech\RetailOps\Model\QueueInterface;

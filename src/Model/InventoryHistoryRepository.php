@@ -18,10 +18,12 @@ class InventoryHistoryRepository implements InventoryHistoryInterface
      * @var Resource\InventoryHistory
      */
     protected $resource;
+
     /**
      * @var Resource\Collection\InventoryHistory\CollectionFactory
      */
     protected $collectionFactory;
+
     /**
      * @var InventoryHistoryFactory
      */
@@ -31,6 +33,7 @@ class InventoryHistoryRepository implements InventoryHistoryInterface
      * @var \Gudtech\RetailOps\Api\Data\InventoryHistorySearchInterfaceFactory
      */
     protected $searchResultFactory;
+
     /**
      * @param int $historyId
      */

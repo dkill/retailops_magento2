@@ -1,10 +1,14 @@
 <?php
+
 namespace Gudtech\RetailOps\Model\Pull;
 
+use Magento\Framework\Api\FilterFactory;
+use Magento\Framework\Api\Search\FilterGroupFactory;
 use Magento\Framework\Exception\AuthenticationException;
-use \Magento\Framework\ObjectManagerInterface;
-use \Gudtech\RetailOps\Model\Api\Map\Order as OrderMap;
-use \Magento\Sales\Model\Order as MagentoOrder;
+use Magento\Framework\ObjectManagerInterface;
+use Gudtech\RetailOps\Model\Api\Map\Order as OrderMap;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order as MagentoOrder;
 
 /**
  * Order pull class.
@@ -15,9 +19,9 @@ class Order
     use \Gudtech\RetailOps\Model\Api\Traits\Filter;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
-    protected $OrderRepository;
+    protected $orderRepository;
 
     /**
      * @var int
@@ -32,7 +36,7 @@ class Order
     /**
      * @var ObjectManagerInterface
      */
-    protected $ObjectManager;
+    protected $objectManager;
 
     /**
      * @var int|null
@@ -45,22 +49,42 @@ class Order
     private $filters=[];
 
     /**
-     * @var \Magento\Framework\Api\FilterFactory
+     * @var FilterFactory
      */
     protected $filter;
 
     /**
-     * @var \Magento\Framework\Api\Search\FilterGroupFactory
+     * @var FilterGroupFactory
      */
     protected $filterGroup;
+
+    /**
+     * @var OrderMap
+     */
+    private $retailOrderMaps;
+
+    public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        ObjectManagerInterface $objectManager,
+        OrderMap $retailOrderMaps,
+        FilterFactory $filter,
+        FilterGroupFactory $filterGroupFactory
+    ) {
+        $this->orderRepository = $orderRepository;
+        $this->objectManager = $objectManager;
+        $this->retailOrderMaps = $retailOrderMaps;
+        $this->searchCriteria = $this->objectManager->create(\Magento\Framework\Api\SearchCriteria::class);
+        $this->filter = $filter;
+        $this->filterGroup = $filterGroupFactory;
+    }
 
     public function getOrders($pageToken, $maxcount = 1, $data = [])
     {
         $this->setFilters($pageToken, $maxcount, $data);
         // Create the order repo and get a list of orders matching our criteria
-        $result = $this->OrderRepository->getList($this->searchCriteria);
+        $result = $this->orderRepository->getList($this->searchCriteria);
         $this->countPages = $result->getLastPageNumber();
-        $orderItems = $this->RetailOrderMaps->getOrders($result->getItems());
+        $orderItems = $this->retailOrderMaps->getOrders($result->getItems());
         if ($this->getNextPageToken()) {
             $orders['next_page_token'] = $this->getNextPageToken();
         }
@@ -71,7 +95,7 @@ class Order
     protected function getNextPageToken()
     {
         if ($this->countPages > $this->currentPage) {
-            $service = $this->ObjectManager->get(\Gudtech\RetailOps\Service\NumberPageToken::class);
+            $service = $this->objectManager->get(\Gudtech\RetailOps\Service\NumberPageToken::class);
             $pageNumberToken = $service->encode($this->currentPage+1);
             return $pageNumberToken;
         }
@@ -184,12 +208,12 @@ class Order
             if ($pageToken === 'string') {
                 return $page;
             }
-            $service = $this->ObjectManager->get(\Gudtech\RetailOps\Service\NumberPageToken::class);
+            $service = $this->objectManager->get(\Gudtech\RetailOps\Service\NumberPageToken::class);
             $pageNumber = $service->decode($pageToken);
             if (is_numeric($pageNumber)) {
                 $page = (int)$pageNumber;
             } else {
-                $logger = $this->ObjectManager->get(\Psr\Log\LoggerInterface::class);
+                $logger = $this->objectManager->get(\Psr\Log\LoggerInterface::class);
                 $logger->addCritical($pageToken. ' is invalid');
                 throw new \Magento\Framework\Exception\AuthenticationException(__('Page token are invalid'));
             }
@@ -207,25 +231,10 @@ class Order
     private function createSortOrder($field, $direction)
     {
         // Create a sort order
-        $sortOrder = $this->ObjectManager->create(\Magento\Framework\Api\SortOrder::class);
+        $sortOrder = $this->objectManager->create(\Magento\Framework\Api\SortOrder::class);
         $sortOrder->setField($field)
             ->setDirection($direction);
 
         return [$sortOrder];
-    }
-
-    public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $OrderRepository,
-        ObjectManagerInterface $objectManager,
-        \Gudtech\RetailOps\Model\Api\Map\Order $RetailOrderMaps,
-        \Magento\Framework\Api\FilterFactory $filter,
-        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroupFactory
-    ) {
-        $this->OrderRepository = $OrderRepository;
-        $this->ObjectManager = $objectManager;
-        $this->RetailOrderMaps = $RetailOrderMaps;
-        $this->searchCriteria = $this->ObjectManager->create(\Magento\Framework\Api\SearchCriteria::class);
-        $this->filter = $filter;
-        $this->filterGroup = $filterGroupFactory;
     }
 }

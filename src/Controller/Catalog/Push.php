@@ -14,6 +14,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 class Push extends RetailOps
 {
     const SERVICENAME = 'catalog';
+
     /**
      * @var string
      */

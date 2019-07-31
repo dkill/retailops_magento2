@@ -32,6 +32,18 @@
                 </group>
             <group id="retailops_feed" type="text" translate="label" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Feeds</label>
+                <field id="catalog_push" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
+                    <label>
+                        Enable catalog push feed
+                    </label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="inventory_push" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
+                    <label>
+                        Enable inventory push feed
+                    </label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id = "order_pull" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
                     <label>
                         Enable order pull feed
@@ -47,12 +59,6 @@
                 <field id="order_acknowledge" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
                     <label>
                         Enable order acknowledge feed
-                    </label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="inventory_push" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
-                    <label>
-                        Enable inventory push feed
                     </label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
