@@ -1,6 +1,6 @@
 <?php
 
-namespace Gudtech\RetailOps\Model\Catalog\Adapter;
+namespace Gudtech\RetailOps\Model\Catalog\Adapter\Product;
 
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Catalog\Model\Product;
@@ -100,14 +100,11 @@ class Attribute extends Adapter
      */
     public function processData(array &$productData, Product $product)
     {
-        $productData['attribute_set_id'] = $this->getAttributeSetIdByName($productData['attribute_set']);
+        $product->setAttributeSetId($this->getAttributeSetIdByName($productData['Additional Attributes']['Attribute Set']));
+
         $this->processStaticAttributes($productData);
         $this->processAttributes($productData);
-        if ($product->getId() &&
-            (!isset($productData['unset_other_attribute']) || $productData['unset_other_attribute'])
-        ) {
-            $this->unsetProductAttributes($productData, $product);
-        }
+        $this->unsetProductAttributes($productData, $product);
     }
 
     /**

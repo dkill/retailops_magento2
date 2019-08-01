@@ -60,15 +60,11 @@
     <type name="Gudtech\RetailOps\Model\Catalog\Push">
         <arguments>
             <argument name="dataAdapters" xsi:type="array">
-                <item name="attribute" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Attribute</item>
-                <item name="category" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Category</item>
-                <item name="media" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Media</item>
-                <item name="option" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Option</item>
-                <item name="configurable" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Configurable</item>
-                <item name="bundle" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Bundle</item>
-                <item name="downloadable" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Downloadable</item>
-                <item name="simple" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Type\Simple</item>
-                <item name="link" xsi:type="object">RetailOps\Api\Model\Catalog\Adapter\Product\Link</item>
+                <item name="simple" xsi:type="object">Gudtech\RetailOps\Model\Catalog\Adapter\Product</item>
+                <item name="attribute" xsi:type="object">Gudtech\RetailOps\Model\Catalog\Adapter\Product\Attribute</item>
+                <item name="category" xsi:type="object">Gudtech\RetailOps\Model\Catalog\Adapter\Product\Category</item>
+                <item name="media" xsi:type="object">Gudtech\RetailOps\Model\Catalog\Adapter\Product\Media</item>
+                <item name="configurable" xsi:type="object">Gudtech\RetailOps\Model\Catalog\Adapter\Product\Type\Configurable</item>
             </argument>
         </arguments>
     </type>

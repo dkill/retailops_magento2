@@ -1,6 +1,6 @@
 <?php
 
-namespace Gudtech\RetailOps\Model\Catalog\Adapter;
+namespace Gudtech\RetailOps\Model\Catalog\Adapter\Product;
 
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\CategoryRepository;
