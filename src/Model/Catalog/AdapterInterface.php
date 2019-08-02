@@ -16,10 +16,10 @@ interface AdapterInterface
     /**
      * Prepares the data before importing.
      *
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function prepareData(array &$data);
+    public function prepareData(array &$productData);
 
     /**
      * Will be called when all data has been prepared.
@@ -31,10 +31,10 @@ interface AdapterInterface
     /**
      * Validates the data before importing.
      *
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function validateData(array &$data);
+    public function validateData(array $productData);
 
     /**
      * Will be called before data will be processed.
@@ -50,7 +50,7 @@ interface AdapterInterface
      * @param Product $product
      * @return mixed
      */
-    public function processData(array &$productData, Product $product);
+    public function processData(array $productData, Product $product);
 
     /**
      * Will be called after data has been processed.
@@ -58,5 +58,5 @@ interface AdapterInterface
      * @param array $skuToIdMap
      * @return $this
      */
-    public function afterDataProcess(array &$skuToIdMap);
+    public function afterDataProcess();
 }

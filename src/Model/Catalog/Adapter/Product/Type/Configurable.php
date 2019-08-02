@@ -8,7 +8,7 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableP
 use Magento\Eav\Model\AttributeRepository;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\Set as AttributeSet;
 use Gudtech\RetailOps\Model\Catalog\Adapter;
-use Gudtech\RetailOps\Model\Catalog\Adapter\Attribute as AttributeAdapter;
+use Gudtech\RetailOps\Model\Catalog\Adapter\Product\Attribute as AttributeAdapter;
 
 class Configurable extends Adapter
 {
@@ -39,23 +39,25 @@ class Configurable extends Adapter
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, Product $product)
+    public function processData(array $productData, Product $product)
     {
-        $sku = $productData['sku'];
+        $sku = $productData['General']['SKU'];
+
+        if (isset($productData['Configurable Attributes'])) {
+            $this->configurableProduct = $product;
+        }
+
         if (isset($productData['configurable_sku'])) {
             $this->associations[$sku] = $productData['configurable_sku'];
         }
 
-        if (isset($productData['price_changes'])) {
-            $this->configurableOptions[$sku] = $productData['price_changes'];
-        }
     }
 
     /**
      * @param array $skuToIdMap
      * @return $this|void
      */
-    public function afterDataProcess(array &$skuToIdMap)
+    public function afterDataProcess()
     {
         $failedSkus = [];
 

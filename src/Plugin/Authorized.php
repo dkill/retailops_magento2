@@ -39,7 +39,7 @@ class Authorized
      * @param Context $context
      * @param ScopeConfig $scopeConfig
      */
-    public function __construct(Context $context, ScopeConfig $scopeConfig)
+    public function __construct(Context $context, ScopeConfigInterface $scopeConfig)
     {
         $this->response = $context->getResponse();
         $this->scopeConfig = $scopeConfig;

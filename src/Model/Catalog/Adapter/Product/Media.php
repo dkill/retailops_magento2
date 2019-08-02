@@ -51,7 +51,7 @@ class Media extends Adapter
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, Product $product)
+    public function processData(array $productData, Product $product)
     {
         if ($product->getId() && (!isset($productData['unset_other_media']) || $productData['unset_other_media'])) {
             $this->clearProductGallery($product);
@@ -70,7 +70,7 @@ class Media extends Adapter
      * @param array $skuToIdMap
      * @return $this|void
      */
-    public function afterDataProcess(array &$skuToIdMap)
+    public function afterDataProcess()
     {
         if ($this->mediaDataToSave) {
             foreach ($this->mediaDataToSave as $sku => $data) {
@@ -95,7 +95,7 @@ class Media extends Adapter
         }
 
         $product->setMediaGalleryEntries($mediaGalleryItems);
-        $this->productRepository->save($product);
+        //$this->productRepository->save($product);
     }
 
     /**

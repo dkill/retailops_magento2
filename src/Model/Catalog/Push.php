@@ -4,6 +4,8 @@ namespace Gudtech\RetailOps\Model\Catalog;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\App\Area;
+use Magento\Store\Model\App\Emulation;
 use Gudtech\RetailOps\Model\Catalog;
 
 class Push extends Catalog
@@ -19,6 +21,11 @@ class Push extends Catalog
     private $productFactory;
 
     /**
+     * @var Emulation
+     */
+    private $emulation;
+
+    /**
      * Catalog push constructor.
      *
      * @param array $dataAdapters
@@ -28,10 +35,12 @@ class Push extends Catalog
     public function __construct(
         $dataAdapters = [],
         ProductRepositoryInterface $productRepository,
-        ProductFactory $productFactory
+        ProductFactory $productFactory,
+        Emulation $emulation
     ) {
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
+        $this->emulation = $emulation;
 
         parent::__construct($dataAdapters);
     }
@@ -49,13 +58,13 @@ class Push extends Catalog
     }
 
     /**
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function prepareData(array &$data)
+    public function prepareData(array &$productData)
     {
         foreach ($this->getDataAdapters() as $dataAdapter) {
-            $dataAdapter->prepareData($data);
+            $dataAdapter->prepareData($productData);
         }
 
         return $this;
@@ -74,13 +83,13 @@ class Push extends Catalog
     }
 
     /**
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function validateData(array &$data)
+    public function validateData(array $productData)
     {
         foreach ($this->getDataAdapters() as $dataAdapter) {
-            $dataAdapter->validateData($data);
+            $dataAdapter->validateData($productData);
         }
 
         return $this;
@@ -99,27 +108,32 @@ class Push extends Catalog
     }
 
     /**
-     * @param array $data
+     * @param array $productData
      * @return bool
      * @throws Exception
      */
-    public function processData(array &$data)
+    public function processData($productData)
     {
+        $this->emulation->startEnvironmentEmulation(0, Area::AREA_ADMINHTML);
+
         $product = $this->productFactory->create();
 
-        if ($productId = $product->getIdBySku($data['General']['SKU'])) {
+        if ($productId = $product->getIdBySku($productData['General']['SKU'])) {
             $product = $this->productRepository->getById($productId);
         }
 
         foreach ($this->getDataAdapters() as $dataAdapter) {
-            $dataAdapter->processData($data, $product);
+            $dataAdapter->processData($productData, $product);
         }
 
         if ($product->getOptions()) {
             $product->getOptionInstance()->unsetOptions();
         }
 
+        $this->productRepository->save(($product));
         $product->clearInstance();
+
+        $this->emulation->stopEnvironmentEmulation();
 
         return true;
     }

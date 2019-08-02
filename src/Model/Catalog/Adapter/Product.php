@@ -21,7 +21,7 @@ class Product extends Adapter
 
     const VISIBILITY_ATTRIBUTE_MAPPING = [
         'Visible' => Visibility::VISIBILITY_BOTH,
-        'Invisible' => Visibility::VISIBILITY_NONE
+        'Invisible' => Visibility::VISIBILITY_NOT_VISIBLE
     ];
 
     private $productRepository;
@@ -40,12 +40,12 @@ class Product extends Adapter
     }
 
     /**
-     * @param array $data
+     * @param array $productData
      * @throws InputException
      */
-    public function validateData(array &$data)
+    public function validateData(array $productData)
     {
-        if (empty($data['General']['SKU'])) {
+        if (empty($productData['General']['SKU'])) {
             throw new InputException('Product SKU is missing.');
         }
     }
@@ -55,22 +55,18 @@ class Product extends Adapter
      * @param ProductModel $product
      * @return mixed
      */
-    public function processData(array &$productData, ProductModel $product)
+    public function processData(array $productData, ProductModel $product)
     {
-        if (!$product->getId()) {
-            $product->setTypeId(ProductType::TYPE_SIMPLE);
-            $product->setSku($productData['General']['SKU']);
-        }
+        $product->setTypeId(ProductType::TYPE_SIMPLE);
+        $product->setSku($productData['General']['SKU']);
+        $product->setStatus(self::STATUS_ATTRIBUTE_MAP[$productData['General']['Status']]);
+        $product->setVisibility(self::VISIBILITY_ATTRIBUTE_MAPPING[$productData['General']['Visibility']]);
 
         $this->prepareDataForSave($product, $productData);
 
         if (is_array($errors = $product->validate())) {
             throw new \LogicException(implode($errors));
         }
-
-        $product = $this->productRepository->save($product);
-
-        return $product->getId();
     }
 
     /**

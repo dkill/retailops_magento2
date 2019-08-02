@@ -19,10 +19,10 @@ abstract class Adapter implements AdapterInterface
     /**
      * Prepares the data before importing.
      *
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function prepareData(array &$data)
+    public function prepareData(array &$productData)
     {
         return $this;
     }
@@ -40,10 +40,10 @@ abstract class Adapter implements AdapterInterface
     /**
      * Validates the data before importing.
      *
-     * @param array $data
+     * @param array $productData
      * @return $this
      */
-    public function validateData(array &$data)
+    public function validateData(array $productData)
     {
         return $this;
     }
@@ -63,13 +63,13 @@ abstract class Adapter implements AdapterInterface
      * @param Product $product
      * @return mixed
      */
-    abstract public function processData(array &$productData, Product $product);
+    abstract public function processData(array $productData, Product $product);
 
     /**
      * @param array $skuToIdMap
      * @return $this
      */
-    public function afterDataProcess(array &$skuToIdMap)
+    public function afterDataProcess()
     {
         return $this;
     }

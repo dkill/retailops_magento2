@@ -8,21 +8,64 @@ use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Gudtech\RetailOps\Model\Catalog\Adapter;
+use phpDocumentor\Reflection\Types\Array_;
+use tests\unit\Util\TestDataArrayBuilder;
 
 class Category extends Adapter
 {
+    /**
+     * Default category settings to create a new category with.
+     *
+     * @var array
+     */
+    const CATEGORY_DEFAULT_SETTINGS = [
+        'is_anchor' => true,
+        'is_active' => true,
+        'available_sort_by' => 'new_from_date',
+        'default_sort_by' => 'new_from_date'
+    ];
+
+    /**
+     * Variable which is used as delimiter for the category paths
+     *
+     * @var string
+     */
+    const CATEGORY_PATH_DELIMITER = "/";
+
+    /**
+     * @var array
+     */
     private $categories;
 
     /**
      * Array of already processed category indexes to avoid double save
+     *
      * @var array
      */
     private $processedCategories = [];
 
+    /**
+     * @var CategoryCollection
+     */
     private $categoryCollection;
+
+    /**
+     * @var CategoryRepository
+     */
     private $categoryRepository;
+
+    /**
+     * @var CategoryFactory
+     */
     private $categoryFactory;
 
+    /**
+     * Category constructor.
+     *
+     * @param CategoryCollection $categoryCollection
+     * @param CategoryFactory $categoryFactory
+     * @param CategoryRepository $categoryRepository
+     */
     public function __construct(
         CategoryCollection $categoryCollection,
         CategoryFactory $categoryFactory,
@@ -37,49 +80,81 @@ class Category extends Adapter
 
     /**
      * @param array $productData
+     * @return $this|Adapter
+     */
+    public function prepareData(array &$productData)
+    {
+        if (isset($productData['Categories']['Category'])) {
+            foreach ($productData['Categories']['Category'] as &$categoryData) {
+                if ($categoryData['Category Path']) {
+                    $categoryData['Category Path'] = trim(preg_replace("/\[\[(.*)\]\]/","", $categoryData['Category Path']));
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $productData
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, Product $product)
+    public function processData(array $productData, Product $product)
     {
         $assignedCategories = [];
 
-        if (isset($productData['categories'])) {
-            foreach ($productData['categories'] as $categoriesData) {
-                $categoryPath = [];
-                foreach ($categoriesData as $categoryData) {
-                    $parentCategoryPath = $categoryPath;
-                    $categoryPath[] = $categoryData['name'];
-                    $index = $this->getCategoryPathIndex($categoryPath);
-                    if (!in_array($index, $this->processedCategories)) {
-                        if (!isset($this->categories[$index])) {
-                            $parentIndex = $this->getCategoryPathIndex($parentCategoryPath);
-                            $parentId = isset($this->categories[$parentIndex]) ? $this->categories[$parentIndex] : 1;
+        if (isset($productData['Categories']['Category'])) {
+            foreach ($productData['Categories']['Category'] as $categoryData) {
+                if ($categoryData['Category Path']) {
 
-                            $category = $this->categoryFactory->create($categoryData);
-                            $category = $this->categoryRepository->save($category);
+                    $categories = explode("|",  $categoryData['Category Path']);
 
-                            $this->categories[$index] = $category->getId();
-                        } else {
-                            $categoryId = $this->categories[$index];
+                    foreach ($categories as $category) {
 
-                            $category = $this->categoryRepository->get($categoryId);
-                            $category->addData($categoryData);
+                        $categoryPath = [];
+                        $categoryPaths = explode(self::CATEGORY_PATH_DELIMITER, $category);
 
-                            $this->categoryRepository->save($category);
+                        foreach ($categoryPaths as $categoryName) {
+
+                            $categoryName = trim($categoryName);
+                            $parentCategoryPath = $categoryPath;
+                            $categoryPath[] = $categoryName;
+
+                            $index = $this->getCategoryPathIndex($categoryPath);
+
+                            if (!in_array($index, $this->processedCategories)) {
+                                if (!isset($this->categories[$index])) {
+                                    $parentIndex = $this->getCategoryPathIndex($parentCategoryPath);
+                                    $parentId = isset($this->categories[$parentIndex]) ? $this->categories[$parentIndex] : 1;
+
+                                    $category = $this->categoryFactory->create(self::CATEGORY_DEFAULT_SETTINGS);
+                                    $category->setName($categoryName);
+                                    $category->setParentId($parentId);
+                                    $category->setIsActive(true);
+                                    $category = $this->categoryRepository->save($category);
+
+                                    $this->categories[$index] = $category->getId();
+                                } else {
+                                    $categoryId = $this->categories[$index];
+
+                                    $category = $this->categoryRepository->get($categoryId);
+                                    $category->addData($categoryData);
+
+                                    $this->categoryRepository->save($category);
+                                }
+                                $this->processedCategories[] = $index;
+                            }
+
+                            $assignedCategories[] = $this->categories[$index];
                         }
-                        $this->processedCategories[] = $index;
-                    }
-                    if (!empty($categoryData['link'])) {
-                        $categoryId = $this->categories[$index];
-                        $assignedCategories[] = $categoryId;
                     }
                 }
             }
-            if (empty($productData['unset_other_categories']) || !$productData['unset_other_categories']) {
-                $assignedCategories = array_merge($assignedCategories, $product->getCategoryIds());
-            }
-            $productData['category_ids'] = $assignedCategories;
+
+            $assignedCategories = array_merge($assignedCategories, $product->getCategoryIds());
+
+            $product->setCategoryIds($assignedCategories);
         }
     }
 

@@ -63,8 +63,8 @@ class Push extends AbstractController
             }
         }
 
-        if (isset($feedData['data']['Magento Configurable Product'])) {
-            foreach($feedData['data']['Magento Configurable Product'] as $item) {
+        if (isset($feedData['data']['Magento Simple Product'])) {
+            foreach($feedData['data']['Magento Simple Product'] as $item) {
                 $productData[] = $item["feed_data"];
             }
         }
@@ -72,11 +72,9 @@ class Push extends AbstractController
         try {
             $this->catalogPush->beforeDataPrepare();
 
-            foreach ($productData as $key => $data) {
+            foreach ($productData as $key => &$data) {
                 try {
-                    $dataObj = new Varien_Object($data);
-                    $data = $dataObj->getData();
-                    $processedSkus[] = $data['sku'];
+                    $processedSkus[] = $data['General']['SKU'];
                     $this->catalogPush->prepareData($data);
                 } catch (RetailOps_Api_Model_Catalog_Exception $e) {
                     unset($productData[$key]);
@@ -86,10 +84,8 @@ class Push extends AbstractController
             $this->catalogPush->afterDataPrepare();
             $this->catalogPush->beforeDataProcess();
 
-            foreach ($productData as $data) {
+            foreach ($productData as &$data) {
                 try {
-                    $dataObj = new Varien_Object($data);
-                    $data = $dataObj->getData();
                     $this->catalogPush->processData($data);
                 } catch (RetailOps_Api_Model_Catalog_Exception $e) {
                     $this->_addError($e);
@@ -103,7 +99,7 @@ class Push extends AbstractController
         foreach ($processedSkus as $sku) {
             $r = array();
             $r['sku'] = $sku;
-            $r['status'] = RetailOps_Api_Helper_Data::API_STATUS_SUCCESS;
+            //$r['status'] = RetailOps_Api_Helper_Data::API_STATUS_SUCCESS;
             if (!empty($this->_errors[$sku])) {
                 $r['status'] = RetailOps_Api_Helper_Data::API_STATUS_FAIL;
                 $r['errors'] = $this->_errors[$sku];

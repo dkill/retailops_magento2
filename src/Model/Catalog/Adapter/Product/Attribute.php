@@ -14,6 +14,7 @@ use Magento\Eav\Model\ResourceModel\Entity\Attribute\Set\Collection as Attribute
 use Magento\Eav\Setup\EavSetup;
 use Magento\Framework\Exception\InputException;
 use Gudtech\RetailOps\Model\Catalog\Adapter;
+use Magento\Framework\Phrase;
 
 class Attribute extends Adapter
 {
@@ -23,6 +24,29 @@ class Attribute extends Adapter
      * @var array
      */
     const SYSTEM_ATTRIBUTES = ['has_options', 'required_options', 'media_gallery'];
+
+    const ATTRIBUTE_GROUP_NAME = 'Product Details';
+
+    /**
+     * Holds RetailOps attribute groups to process statically.
+     *
+     * @var array
+     */
+    const STATIC_ATTRIBUTE_GROUPS = [
+        'General',
+        'Meta Information',
+        'Prices'
+    ];
+
+    /**
+     * Mapping of RetailOps attributes to Magento attribute codes.
+     *
+     * @var array
+     */
+    const ATTRIBUTE_MAP = [
+        'manufacturers_suggested_retail_price' => 'msrp',
+        'meta_keywords' => 'meta_keyword'
+    ];
 
     private $simpleAttributes = [];
     private $sourceAttributes = [];
@@ -78,7 +102,6 @@ class Attribute extends Adapter
     {
         $this->prepareAttributeSet($data);
         $this->prepareAttributes($data);
-        $this->processAttributes($data, true);
 
         return $this;
     }
@@ -98,12 +121,12 @@ class Attribute extends Adapter
      * @param Product $product
      * @return mixed|void
      */
-    public function processData(array &$productData, Product $product)
+    public function processData(array $productData, Product $product)
     {
         $product->setAttributeSetId($this->getAttributeSetIdByName($productData['Additional Attributes']['Attribute Set']));
 
-        $this->processStaticAttributes($productData);
-        $this->processAttributes($productData);
+        $this->processStaticAttributes($productData, $product);
+        $this->processAttributes($productData, $product);
         $this->unsetProductAttributes($productData, $product);
     }
 
@@ -141,7 +164,7 @@ class Attribute extends Adapter
     private function getAttributeSetGroups()
     {
         $groups = [];
-        foreach ($this->attritbuteGroupCollection as $group) {
+        foreach ($this->attributeGroupCollection as $group) {
             if (!isset($groups[$group->getAttributeSetId()])) {
                 $groups[$group->getAttributeSetId()] = [];
             }
@@ -165,6 +188,7 @@ class Attribute extends Adapter
      */
     private function initAttributes()
     {
+        $this->attributeCollection->clear();
         $this->attributeCollection->setEntityTypeFilter($this->getEntityTypeId());
         $this->attributeCollection->addFieldToSelect('*');
 
@@ -204,17 +228,17 @@ class Attribute extends Adapter
      * @param $data
      * @return mixed
      */
-    private function prepareAttributeSet(array &$data)
+    private function prepareAttributeSet(array $data)
     {
-        if (!empty($data['attribute_set'])) {
-            $attributeSet = $data['attribute_set'];
+        if (!empty($data['Additional Attributes']['Attribute Set'])) {
+            $attributeSet = $data['Additional Attributes']['Attribute Set'];
             $attributeSetId = $this->getAttributeSetIdByName($attributeSet);
             if ($attributeSetId === false) {
-                $attributeSetId = $this->createAttributeSet($attributeSet, $data['sku']);
+                $attributeSetId = $this->createAttributeSet($attributeSet, $data['General']['SKU']);
                 $this->attributeSets[$attributeSetId] = $attributeSet;
             }
         } else {
-            throw new InputException("Attribute set not provided for SKU: " . $data['sku']);
+            throw new InputException(new Phrase("Attribute set not provided for SKU: " . $data['General']['SKU']));
         }
 
         $data['attribute_set_id'] = $attributeSetId;
@@ -256,50 +280,56 @@ class Attribute extends Adapter
      */
     protected function prepareAttributes(array &$data)
     {
-        $attributeSetId = $data['attribute_set_id'];
+        $attributeSetId = $this->getAttributeSetIdByName($data['Additional Attributes']['Attribute Set']);
 
-        if (isset($data['attributes'])) {
-            foreach ($data['attributes'] as $attributeData) {
-                if (!in_array($attributeData['attribute_code'], $this->processedAttributes)) {
-                    if (!$this->getAttributeId($attributeData['attribute_code'])) {
-                        if (!$attributeData['no_update_if_exists']) {
-                            foreach ($attributeData as $field => $value) {
-                                $this->eavSetup->updateAttribute(
-                                    $this->getEntityTypeId(),
-                                    $attributeData['attribute_code'],
-                                    $field,
-                                    $value
-                                );
-                            }
-                        }
-                    } else {
+        if (isset($data['Additional Attributes']['Attributes'])) {
+            foreach ($data['Additional Attributes']['Attributes'] as $attributeData) {
+                $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
+
+                if (!in_array($attributeCode, $this->processedAttributes)) {
+                    if (!$this->getAttributeId($attributeCode)) {
+
+                        $attributeOptions = [
+                            'label' => $attributeData['Attribute']['Name'],
+                            'required' => false,
+                            'user_defined' => true
+                        ];
+
                         $this->eavSetup->addAttribute(
                             $this->getEntityTypeId(),
-                            $attributeData['attribute_code'],
-                            $attributeData
+                            $attributeCode,
+                            $attributeOptions
                         );
 
                         $this->initAttributes();
+
+                    } else {
+                        foreach ($attributeData as $field => $value) {
+                            $this->eavSetup->updateAttribute(
+                                $this->getEntityTypeId(),
+                                $attributeCode,
+                                $field,
+                                $value
+                            );
+                        }
                     }
-                    $this->processedAttributes[] = $attributeData['attribute_code'];
+                    $this->processedAttributes[] = $attributeCode;
                 }
 
-                $attributeId = $this->getAttributeId($attributeData['attribute_code']);
-                $attributeGroup = $attributeData['group_name'];
-                $attributeGroupId = $this->getAttributeSetGroupId($attributeSetId, $attributeGroup);
+                $attributeId = $this->getAttributeId($attributeCode);
+                $attributeGroupId = $this->getAttributeSetGroupId($attributeSetId, self::ATTRIBUTE_GROUP_NAME);
 
                 if (!$attributeGroupId) {
-                    $this->eavSetup->addAttributeGroup($this->getEntityTypeId(), $attributeSetId, $attributeGroup);
-                    $attributeGroupId = $this->getAttributeSetGroupId($attributeSetId, $attributeGroup);
+                    $this->eavSetup->addAttributeGroup($this->getEntityTypeId(), $attributeSetId, self::ATTRIBUTE_GROUP_NAME);
+                    $attributeGroupId = $this->getAttributeSetGroupId($attributeSetId, self::ATTRIBUTE_GROUP_NAME);
                 }
 
-                $sortOrder = isset($attributeData['sort_order']) ? $attributeData['sort_order'] : 0;
                 $this->eavSetup->addAttributeToSet(
                     $this->getEntityTypeId(),
                     $attributeSetId,
                     $attributeGroupId,
                     $attributeId,
-                    $sortOrder
+                    0
                 );
             }
         }
@@ -323,54 +353,74 @@ class Attribute extends Adapter
     }
 
     /**
-     * @param $productData
+     * @param array $productData
+     * @param Product $product
      * @param bool $collectOptions
      */
-    private function processAttributes(&$productData, $collectOptions = false)
+    private function processAttributes(array $productData, $product, $collectOptions = false)
     {
-        if (isset($productData['attributes'])) {
-            foreach ($productData['attributes'] as $attributeData) {
-                $code = $attributeData['attribute_code'];
-                $attributeId = array_search($code, $this->sourceAttributes);
-                if ($attributeId !== false && isset($attributeData['value'])) {
-                    $values = (array) $attributeData['value'];
+        if (isset($productData['Additional Attributes']['Attributes'])) {
+            foreach ($productData['Additional Attributes']['Attributes'] as $attributeData) {
+                $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
+                $attributeId = array_search($attributeCode, $this->sourceAttributes);
+                if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
+                    $values = (array) $attributeData['Attribute']['Value'];
                     if ($collectOptions) {
                         foreach ($values as $value) {
-                            if (!isset($this->attributeOptions[$code][$value])) {
+                            if (!isset($this->attributeOptions[$attributeCode][$value])) {
                                 $this->newAttributeOptions[$attributeId][] = $value;
-                                $this->attributeOptions[$code][$value] = true;
+                                $this->attributeOptions[$attributeCode][$value] = true;
                             }
                         }
                     } else {
                         $valuesIds = [];
                         foreach ($values as $value) {
-                            if (isset($this->attributeOptions[$code][$value])) {
-                                $valuesIds[] = $this->attributeOptions[$code][$value];
+                            if (isset($this->attributeOptions[$attributeCode][$value])) {
+                                $valuesIds[] = $this->attributeOptions[$attributeCode][$value];
                             }
                         }
                         if (count($valuesIds) == 1) {
                             $valuesIds = current($valuesIds);
                         }
-                        $productData[$code] = $valuesIds;
+
+                        $product->setData($attributeCode, $valuesIds);
                     }
                 } elseif (isset($attributeData['value'])) {
-                    $productData[$code] = $attributeData['value'];
+                    $product->setData($attributeCode, $attributeData['value']);
+                }
+
+                $attributeId = array_search($attributeCode, $this->simpleAttributes);
+
+                if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
+                    $product->setData($attributeCode, $attributeData['Attribute']['Value']);
                 }
             }
         }
     }
 
     /**
-     * @param $productData
+     * @param array $productData
+     * @param Product $product
      */
-    protected function processStaticAttributes(&$productData)
+    protected function processStaticAttributes(array $productData, $product)
     {
-        foreach ($productData as $code => $value) {
-            $attributeId = array_search($code, $this->sourceAttributes);
-            if ($attributeId !== false) {
-                if (isset($this->attributeOptions[$code][$value])) {
-                    $realValue = $this->attributeOptions[$code][$value];
-                    $productData[$code] = $realValue;
+        foreach (self::STATIC_ATTRIBUTE_GROUPS as $staticGroup) {
+            foreach ($productData[$staticGroup] as $attributeName => $value) {
+
+                $attributeCode = $this->getAttributeCodeByName($attributeName);
+                $value = trim($value);
+
+                $attributeId = array_search($attributeCode, $this->sourceAttributes);
+                if ($attributeId !== false) {
+                    if (isset($this->attributeOptions[$attributeCode][$value])) {
+                        $product->setData($attributeCode, $this->attributeOptions[$attributeCode][$value]);
+                    }
+                }
+                
+                $attributeId = array_search($attributeCode, $this->simpleAttributes);
+
+                if ($attributeId !== false) {
+                    $product->setData($attributeCode, $value);
                 }
             }
         }
@@ -410,16 +460,27 @@ class Attribute extends Adapter
      * @param array $productData
      * @param Product $product
      */
-    protected function unsetProductAttributes(array &$productData, Product $product)
+    protected function unsetProductAttributes(array $productData, Product $product)
     {
         $usedAttributes = [];
-        if (isset($productData['attributes'])) {
-            foreach ($productData['attributes'] as $attributeData) {
-                $usedAttributes[] = $attributeData['attribute_code'];
+        if (isset($productData['Additional Attributes']['Attributes'])) {
+            foreach ($productData['Additional Attributes']['Attributes'] as $attributeData) {
+                $usedAttributes[] = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
             }
         }
+
+        foreach (self::STATIC_ATTRIBUTE_GROUPS as $staticGroup) {
+            foreach ($productData[$staticGroup] as $attributeName => $value) {
+                $usedAttributes[] = $this->getAttributeCodeByName($attributeName);
+            }
+        }
+
         $usedAttributes = array_merge(array_keys($productData), $usedAttributes);
-        $originalAttributes = array_keys($product->getOrigData());
+        if ($product->getId()) {
+            $originalAttributes = array_keys($product->getOrigData());
+        } else {
+            $originalAttributes = [];
+        }
         $originalDataAttributeKeys = array_intersect($originalAttributes, $this->getAttributes());
         $attributesToUnset = array_diff($originalDataAttributeKeys, $usedAttributes, self::SYSTEM_ATTRIBUTES);
 
@@ -441,5 +502,22 @@ class Attribute extends Adapter
             $result[$item[$valueField]]  = $item[$labelField];
         }
         return $result;
+    }
+
+    /**
+     * Converts an attribute label to a valid attribute code.
+     *
+     * @param $name
+     * @return string
+     */
+    private function getAttributeCodeByName($name)
+    {
+        $attributeCode = strtolower(str_replace(" ", "_", trim($name)));
+
+        if (isset(self::ATTRIBUTE_MAP[$attributeCode])) {
+            return self::ATTRIBUTE_MAP[$attributeCode];
+        }
+
+        return $attributeCode;
     }
 }
