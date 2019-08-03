@@ -11,6 +11,7 @@ use Magento\Framework\Exception\InputException;
 use Magento\Catalog\Model\Product\Visibility;
 use Gudtech\RetailOps\Model\Catalog\Adapter;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 class Product extends Adapter
 {
@@ -57,7 +58,11 @@ class Product extends Adapter
      */
     public function processData(array $productData, ProductModel $product)
     {
-        $product->setTypeId(ProductType::TYPE_SIMPLE);
+        if (isset($productData['Configurable Attributes'])) {
+            $product->setTypeId(Configurable::TYPE_CODE);
+        } else {
+            $product->setTypeId(ProductType::TYPE_SIMPLE);
+        }
         $product->setSku($productData['General']['SKU']);
         $product->setStatus(self::STATUS_ATTRIBUTE_MAP[$productData['General']['Status']]);
         $product->setVisibility(self::VISIBILITY_ATTRIBUTE_MAPPING[$productData['General']['Visibility']]);

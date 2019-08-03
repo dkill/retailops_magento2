@@ -130,8 +130,7 @@ class Push extends Catalog
             $product->getOptionInstance()->unsetOptions();
         }
 
-        $this->productRepository->save(($product));
-        $product->clearInstance();
+        $this->productRepository->save($product);
 
         $this->emulation->stopEnvironmentEmulation();
 

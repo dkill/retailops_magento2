@@ -84,10 +84,16 @@ class Category extends Adapter
      */
     public function prepareData(array &$productData)
     {
+        /**
+         * @todo Cleanup Feed in RetailOps so that it doesn't send over the additional data in [[]] which we are not
+         * processing. Once the feed has been cleaned up, this code can be removed.
+         */
         if (isset($productData['Categories']['Category'])) {
             foreach ($productData['Categories']['Category'] as &$categoryData) {
                 if ($categoryData['Category Path']) {
-                    $categoryData['Category Path'] = trim(preg_replace("/\[\[(.*)\]\]/","", $categoryData['Category Path']));
+                    $categoryData['Category Path'] = trim(
+                        preg_replace("/\[\[(.*)\]\]/","", $categoryData['Category Path'])
+                    );
                 }
             }
         }

@@ -98,11 +98,12 @@ class Attribute extends Adapter
      * @param array $data
      * @return $this
      */
-    public function prepareData(array &$data)
+    public function prepareData(array &$productData)
     {
-        $this->prepareAttributeSet($data);
-        $this->prepareAttributes($data);
-
+        $this->prepareAttributeSet($productData);
+        $this->prepareAttributes($productData);
+        $this->prepareAttributeOptions($productData);
+        $this->prepareAttributeValues($productData);
         return $this;
     }
 
@@ -291,6 +292,8 @@ class Attribute extends Adapter
 
                         $attributeOptions = [
                             'label' => $attributeData['Attribute']['Name'],
+                            'type' => $attributeData['Attribute']['Type'] == 'dropdown' ? 'int': 'varchar',
+                            'input' => $attributeData['Attribute']['Type'] == 'dropdown' ? 'select': 'text',
                             'required' => false,
                             'user_defined' => true
                         ];
@@ -336,6 +339,42 @@ class Attribute extends Adapter
     }
 
     /**
+     * @param array $productData
+     */
+    protected function prepareAttributeOptions(array &$productData)
+    {
+        if (isset($productData['Additional Attributes']['Attributes'])) {
+            foreach ($productData['Additional Attributes']['Attributes'] as $attributeData) {
+                $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
+                $attributeId = array_search($attributeCode, $this->sourceAttributes);
+                if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
+
+                    $values = (array)$attributeData['Attribute']['Value'];
+                    foreach ($values as $value) {
+                        $value = trim($value);
+                        $optionId = array_search($value, $this->attributeOptions[$attributeCode]);
+                        //print_r($this->attributeOptions[$attributeCode]);
+                        print $optionId;
+                        if ($optionId === false) {
+                            print $value ."\n";
+                            $this->newAttributeOptions[$attributeId][] = $value;
+                            $this->attributeOptions[$attributeCode][] = $value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array $productData
+     */
+    protected function prepareAttributeValues(array &$productData)
+    {
+
+    }
+
+    /**
      * @param $attributeCode
      * @return bool
      */
@@ -357,41 +396,30 @@ class Attribute extends Adapter
      * @param Product $product
      * @param bool $collectOptions
      */
-    private function processAttributes(array $productData, $product, $collectOptions = false)
+    private function processAttributes(array $productData, Product &$product)
     {
         if (isset($productData['Additional Attributes']['Attributes'])) {
             foreach ($productData['Additional Attributes']['Attributes'] as $attributeData) {
                 $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
                 $attributeId = array_search($attributeCode, $this->sourceAttributes);
                 if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
+                    //print_r($this->attributeOptions[$attributeCode]);
                     $values = (array) $attributeData['Attribute']['Value'];
-                    if ($collectOptions) {
-                        foreach ($values as $value) {
-                            if (!isset($this->attributeOptions[$attributeCode][$value])) {
-                                $this->newAttributeOptions[$attributeId][] = $value;
-                                $this->attributeOptions[$attributeCode][$value] = true;
-                            }
-                        }
-                    } else {
-                        $valuesIds = [];
-                        foreach ($values as $value) {
-                            if (isset($this->attributeOptions[$attributeCode][$value])) {
-                                $valuesIds[] = $this->attributeOptions[$attributeCode][$value];
-                            }
-                        }
-                        if (count($valuesIds) == 1) {
-                            $valuesIds = current($valuesIds);
-                        }
+                    $valuesIds = [];
+                    foreach ($values as $value) {
+                        $optionId = array_search(trim($value),$this->attributeOptions[$attributeCode]);
 
-                        $product->setData($attributeCode, $valuesIds);
+                        //print $optionId ."\n";
+
+                        if ($optionId) {
+                            $valuesIds[] = $optionId;
+                        }
                     }
-                } elseif (isset($attributeData['value'])) {
-                    $product->setData($attributeCode, $attributeData['value']);
-                }
-
-                $attributeId = array_search($attributeCode, $this->simpleAttributes);
-
-                if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
+                    if (count($valuesIds) == 1) {
+                        $valuesIds = current($valuesIds);
+                    }
+                    $product->setData($attributeCode, $valuesIds);
+                } elseif (isset($attributeData['Attribute']['Value'])) {
                     $product->setData($attributeCode, $attributeData['Attribute']['Value']);
                 }
             }
@@ -412,14 +440,21 @@ class Attribute extends Adapter
 
                 $attributeId = array_search($attributeCode, $this->sourceAttributes);
                 if ($attributeId !== false) {
-                    if (isset($this->attributeOptions[$attributeCode][$value])) {
-                        $product->setData($attributeCode, $this->attributeOptions[$attributeCode][$value]);
-                    }
-                }
-                
-                $attributeId = array_search($attributeCode, $this->simpleAttributes);
+                    $values = (array) $value;
+                    $valuesIds = [];
+                    foreach ($values as $value) {
+                        $optionId = array_search($value,$this->attributeOptions[$attributeCode]);
 
-                if ($attributeId !== false) {
+                        if ($optionId) {
+                            $valuesIds[] = $optionId;
+                        }
+                    }
+                    if (count($valuesIds) == 1) {
+                        $valuesIds = current($valuesIds);
+                    }
+
+                    $product->setData($attributeCode, $valuesIds);
+                } else {
                     $product->setData($attributeCode, $value);
                 }
             }
