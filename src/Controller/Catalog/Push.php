@@ -21,7 +21,15 @@ class Push extends AbstractController
      */
     protected $areaName = self::BEFOREPULL . self::SERVICENAME;
 
+    /**
+     * @var array
+     */
     private $events = [];
+
+    /**
+     * @var null|string|array
+     */
+    private $responseEvents = [];
 
     /**
      * @var CatalogPush
@@ -29,7 +37,7 @@ class Push extends AbstractController
     private $catalogPush;
 
     /**
-     * Push constructor.
+     * Push constructor.$catalogPush
      *
      * @param Context $context
      * @param Monolog $logger
@@ -50,35 +58,37 @@ class Push extends AbstractController
 
     public function execute()
     {
-        $result = [];
-        $result['records'] = [];
-        $processedSkus = [];
-        $productData = [];
-
-        $feedData = $this->getRequest()->getPost('template_output');
-
-        if (isset($feedData['data']['Magento Configurable Product'])) {
-            foreach($feedData['data']['Magento Configurable Product'] as $item) {
-                $productData[] = $item["feed_data"];
-            }
-        }
-
-        if (isset($feedData['data']['Magento Simple Product'])) {
-            foreach($feedData['data']['Magento Simple Product'] as $item) {
-                $productData[] = $item["feed_data"];
-            }
-        }
-
         try {
+
+            $result = [];
+            $result['records'] = [];
+            $processedSkus = [];
+            $productData = [];
+
+            $feedData = $this->getRequest()->getPost('template_output');
+
+            if (isset($feedData['data']['Magento Configurable Product'])) {
+                foreach($feedData['data']['Magento Configurable Product'] as $item) {
+                    $productData[] = $item["feed_data"];
+                }
+            }
+
+            if (isset($feedData['data']['Magento Simple Product'])) {
+                foreach($feedData['data']['Magento Simple Product'] as $item) {
+                    $productData[] = $item["feed_data"];
+                }
+            }
+
             $this->catalogPush->beforeDataPrepare();
 
             foreach ($productData as $key => &$data) {
                 try {
-                    $processedSkus[] = $data['General']['SKU'];
+                    $this->events[] = "Preparing data for SKU: ". $data['General']['SKU'];
                     $this->catalogPush->prepareData($data);
-                } catch (RetailOps_Api_Model_Catalog_Exception $e) {
+                } catch (\Exception $exception) {
+                    $this->logger->addCritical($exception->getMessage());
+                    $this->events[] = "Preparing data failed for SKU: ". $data['General']['SKU'] .": ". $exception->getMessage();
                     unset($productData[$key]);
-                    $this->_addError($e);
                 }
             }
             $this->catalogPush->afterDataPrepare();
@@ -86,34 +96,34 @@ class Push extends AbstractController
 
             foreach ($productData as &$data) {
                 try {
+                    $this->events[] = "Processing data for SKU: ". $data['General']['SKU'];
                     $this->catalogPush->processData($data);
-                } catch (RetailOps_Api_Model_Catalog_Exception $e) {
-                    $this->_addError($e);
+                } catch (\Exception $exception) {
+                    $this->logger->addCritical($exception->getMessage());
+                    $this->events[] = "Processing data failed for SKU: ". $data['General']['SKU'] .": ". $exception->getMessage();
                 }
             }
             $this->catalogPush->afterDataProcess();
-        } catch (Exception $e) {
-            $this->_addError(new RetailOps_Api_Model_Catalog_Exception($e->getMessage()));
-        }
 
-        foreach ($processedSkus as $sku) {
-            $r = array();
-            $r['sku'] = $sku;
-            //$r['status'] = RetailOps_Api_Helper_Data::API_STATUS_SUCCESS;
-            if (!empty($this->_errors[$sku])) {
-                $r['status'] = RetailOps_Api_Helper_Data::API_STATUS_FAIL;
-                $r['errors'] = $this->_errors[$sku];
+        } catch (\Exception $exception) {
+
+            $this->logger->addCritical($exception->getMessage());
+            $this->responseEvents = [];
+            $this->status = 500;
+            $this->error = $exception;
+            parent::execute();
+
+        } finally {
+            $this->responseEvents['events'] = [];
+            foreach ($this->events as $event) {
+                $this->responseEvents['events'][] = $event;
             }
-            $result['records'][] = $r;
-        }
 
-        $this->responseEvents['events'] = [];
-        foreach ($this->events as $event) {
-            $this->responseEvents['events'][] = $event;
+            $this->getResponse()->representJson(json_encode($this->responseEvents));
+            $this->getResponse()->setStatusCode($this->status);
+            parent::execute();
+
+            return $this->getResponse();
         }
-        $this->getResponse()->representJson(json_encode($this->responseEvents));
-        $this->getResponse()->setStatusCode('200');
-        parent::execute();
-        return $this->getResponse();
     }
 }

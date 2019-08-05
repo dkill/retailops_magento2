@@ -83,8 +83,6 @@ class Pull extends AbstractController
             $response = $orderFactory->getOrders($pageToken, $countOfOrders, $postData);
             $this->responseEvents = $response;
         } catch (\Exception $exception) {
-            print $exception;
-
             $this->logger->addCritical($exception->getMessage());
             $this->responseEvents = [];
             $this->status = 500;
