@@ -4,6 +4,8 @@ namespace Gudtech\RetailOps\Model\Catalog\Adapter\Product;
 
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute as EavAttribute;
 use Magento\Eav\Model\AttributeSetRepository;
 use Magento\Eav\Model\Entity;
@@ -25,7 +27,24 @@ class Attribute extends Adapter
      */
     const SYSTEM_ATTRIBUTES = ['has_options', 'required_options', 'media_gallery'];
 
+    /**
+     * Attribute group name to use for adding new attributes to a set.
+     *
+     * @var string
+     */
     const ATTRIBUTE_GROUP_NAME = 'Product Details';
+
+    /**
+     * Mapping of attribute values
+     *
+     * @var array
+     */
+    const ATTRIBUTE_VALUE_MAP = [
+        'visibility' => [
+            'Visible' => 'Catalog, Search',
+            'Invisible' => 'Not Visible Individually'
+        ]
+    ];
 
     /**
      * Holds RetailOps attribute groups to process statically.
@@ -348,15 +367,13 @@ class Attribute extends Adapter
                 $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
                 $attributeId = array_search($attributeCode, $this->sourceAttributes);
                 if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
-
-                    $values = (array)$attributeData['Attribute']['Value'];
+                    $values = (array) $attributeData['Attribute']['Value'];
                     foreach ($values as $value) {
-                        $value = trim($value);
+
+                        $value = $this->mapAttributeValue($attributeCode, $value);
                         $optionId = array_search($value, $this->attributeOptions[$attributeCode]);
-                        //print_r($this->attributeOptions[$attributeCode]);
-                        print $optionId;
+
                         if ($optionId === false) {
-                            print $value ."\n";
                             $this->newAttributeOptions[$attributeId][] = $value;
                             $this->attributeOptions[$attributeCode][] = $value;
                         }
@@ -403,13 +420,12 @@ class Attribute extends Adapter
                 $attributeCode = $this->getAttributeCodeByName($attributeData['Attribute']['Name']);
                 $attributeId = array_search($attributeCode, $this->sourceAttributes);
                 if ($attributeId !== false && isset($attributeData['Attribute']['Value'])) {
-                    //print_r($this->attributeOptions[$attributeCode]);
                     $values = (array) $attributeData['Attribute']['Value'];
                     $valuesIds = [];
                     foreach ($values as $value) {
-                        $optionId = array_search(trim($value),$this->attributeOptions[$attributeCode]);
 
-                        //print $optionId ."\n";
+                        $value = $this->mapAttributeValue($attributeCode, $value);
+                        $optionId = array_search($value, $this->attributeOptions[$attributeCode]);
 
                         if ($optionId) {
                             $valuesIds[] = $optionId;
@@ -420,7 +436,8 @@ class Attribute extends Adapter
                     }
                     $product->setData($attributeCode, $valuesIds);
                 } elseif (isset($attributeData['Attribute']['Value'])) {
-                    $product->setData($attributeCode, $attributeData['Attribute']['Value']);
+                    $value = $this->mapAttributeValue($attributeCode, $attributeData['Attribute']['Value']);
+                    $product->setData($attributeCode, $value);
                 }
             }
         }
@@ -436,14 +453,15 @@ class Attribute extends Adapter
             foreach ($productData[$staticGroup] as $attributeName => $value) {
 
                 $attributeCode = $this->getAttributeCodeByName($attributeName);
-                $value = trim($value);
-
+                $value = $this->mapAttributeValue($attributeCode, $value);
                 $attributeId = array_search($attributeCode, $this->sourceAttributes);
+
                 if ($attributeId !== false) {
                     $values = (array) $value;
                     $valuesIds = [];
                     foreach ($values as $value) {
-                        $optionId = array_search($value,$this->attributeOptions[$attributeCode]);
+
+                        $optionId = array_search($value, $this->attributeOptions[$attributeCode]);
 
                         if ($optionId) {
                             $valuesIds[] = $optionId;
@@ -452,7 +470,6 @@ class Attribute extends Adapter
                     if (count($valuesIds) == 1) {
                         $valuesIds = current($valuesIds);
                     }
-
                     $product->setData($attributeCode, $valuesIds);
                 } else {
                     $product->setData($attributeCode, $value);
@@ -554,5 +571,21 @@ class Attribute extends Adapter
         }
 
         return $attributeCode;
+    }
+
+    /**
+     * Map a attribute value to a value which can be processed by Magento.
+     *
+     * @param string $attributeCode
+     * @param string $value
+     * @return string
+     */
+    private function mapAttributeValue($attributeCode, $value)
+    {
+        if (isset(self::ATTRIBUTE_VALUE_MAP[$attributeCode])) {
+            $value = self::ATTRIBUTE_VALUE_MAP[$attributeCode][$value];
+        }
+
+        return trim($value);
     }
 }

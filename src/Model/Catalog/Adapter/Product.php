@@ -15,16 +15,6 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
 class Product extends Adapter
 {
-    const STATUS_ATTRIBUTE_MAP = [
-        'Enabled' => Status::STATUS_ENABLED,
-        'Disabled' => Status::STATUS_DISABLED
-    ];
-
-    const VISIBILITY_ATTRIBUTE_MAPPING = [
-        'Visible' => Visibility::VISIBILITY_BOTH,
-        'Invisible' => Visibility::VISIBILITY_NOT_VISIBLE
-    ];
-
     private $productRepository;
     private $websiteRepository;
     private $storeManager;
@@ -64,8 +54,6 @@ class Product extends Adapter
             $product->setTypeId(ProductType::TYPE_SIMPLE);
         }
         $product->setSku($productData['General']['SKU']);
-        $product->setStatus(self::STATUS_ATTRIBUTE_MAP[$productData['General']['Status']]);
-        $product->setVisibility(self::VISIBILITY_ATTRIBUTE_MAPPING[$productData['General']['Visibility']]);
 
         $this->prepareDataForSave($product, $productData);
 
@@ -102,14 +90,5 @@ class Product extends Adapter
          *     $product->setStockData($productData['stock_data']);
          * }
          */
-
-        /**
-         * Tier prices not being used
-         *
-         * if (isset($productData['tier_price']) && is_array($productData['tier_price'])) {
-         *   $product->setTierPrices($productData['tier_price']);
-         * }
-         */
-
     }
 }
