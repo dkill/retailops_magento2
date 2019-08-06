@@ -39,10 +39,14 @@ class Authorized
      * @param Context $context
      * @param ScopeConfig $scopeConfig
      */
-    public function __construct(Context $context, ScopeConfigInterface $scopeConfig)
-    {
+    public function __construct(
+        Context $context,
+        Monolog $logger,
+        ScopeConfigInterface $scopeConfig
+    ) {
         $this->response = $context->getResponse();
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,6 +58,8 @@ class Authorized
     public function aroundDispatch($subject, $proceed, $request)
     {
         try {
+            $this->logger->addInfo("Incoming request: ", (array)$request->getPost());
+
             $requestKey = $request->getPost(self::INTEGRATION_KEY);
             $configKey = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
             if (!$requestKey || $configKey !== $requestKey) {
@@ -67,12 +73,13 @@ class Authorized
                 $this->response->setContent($exception->getMessage());
                 $this->response->setStatusCode('401');
             } else {
-                print $exception;
                 $this->response->setContent(__('Error occur while do request'));
                 $this->response->setStatusCode('500');
             }
-            $logger = ObjectManager::getInstance()->get(Monolog::class);
-            $logger->addCritical('Error in retailops:'.$exception->getMessage(), (array)$request->getPost());
+            $this->logger->addCritical(
+                "Error in retailops: ". $exception->getMessage(),
+                (array)$request->getPost()
+            );
             return $this->response;
         }
     }

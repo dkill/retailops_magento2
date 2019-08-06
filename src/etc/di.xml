@@ -5,7 +5,7 @@
     <type name="Gudtech\RetailOps\Model\Api\Order\Complete">
         <arguments>
             <argument shared="false" name="shipment" xsi:type="object">\Gudtech\RetailOps\Service\Shipment\Complete</argument>
-            <argument  name="creditMemoHelper" xsi:type="object">Gudtech\RetailOps\Service\CreditMemo\CreditMemoHelper</argument>
+            <argument name="creditMemoHelper" xsi:type="object">Gudtech\RetailOps\Service\CreditMemo\CreditMemoHelper</argument>
         </arguments>
     </type>
     <type name="Gudtech\RetailOps\Model\Shipment\ShipmentSubmit">
@@ -20,25 +20,25 @@
     </type>
     <type name="Gudtech\RetailOps\Model\Api\Map\Order">
         <arguments>
-            <argument  name="upcFinder" xsi:type="object">Gudtech\RetailOps\Model\Api\Map\UpcFinder</argument>
-            <argument  name="calculateDiscount" xsi:type="object">Gudtech\RetailOps\Service\CalculateOrderDiscount</argument>
-            <argument  name="calculateAmount" xsi:type="object">Gudtech\RetailOps\Service\Order\Map\CalculateAmount</argument>
-            <argument  name="calculateItemPrice" xsi:type="object">Gudtech\RetailOps\Service\CalculateItemPrice</argument>
+            <argument name="upcFinder" xsi:type="object">Gudtech\RetailOps\Model\Api\Map\UpcFinder</argument>
+            <argument name="calculateDiscount" xsi:type="object">Gudtech\RetailOps\Service\CalculateOrderDiscount</argument>
+            <argument name="calculateAmount" xsi:type="object">Gudtech\RetailOps\Service\Order\Map\CalculateAmount</argument>
+            <argument name="calculateItemPrice" xsi:type="object">Gudtech\RetailOps\Service\CalculateItemPrice</argument>
         </arguments>
     </type>
     <type name="Gudtech\RetailOps\Model\Api\Map\UpcFinder">
         <arguments>
-            <argument  name="linkByUpcRepository" xsi:type="object">Gudtech\RetailOps\Model\RoRicsLinkUpcRepository</argument>
+            <argument name="linkByUpcRepository" xsi:type="object">Gudtech\RetailOps\Model\RoRicsLinkUpcRepository</argument>
         </arguments>
     </type>
 
     <type name="Gudtech\RetailOps\Model\Api\Order\Cancel">
         <arguments>
-            <argument  name="creditMemoHelper" xsi:type="object">Gudtech\RetailOps\Service\CreditMemo\CreditMemoHelper</argument>
+            <argument name="creditMemoHelper" xsi:type="object">Gudtech\RetailOps\Service\CreditMemo\CreditMemoHelper</argument>
         </arguments>
     </type>
 
-    <type name="Gudtech\RetailOps\Controller\RetailOps">
+    <type name="Gudtech\RetailOps\Controller\AbstractController">
         <plugin name="authorize" type="Gudtech\RetailOps\Plugin\Authorized" />
     </type>
 

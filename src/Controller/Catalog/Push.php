@@ -83,11 +83,13 @@ class Push extends AbstractController
 
             foreach ($productData as $key => &$data) {
                 try {
-                    $this->events[] = "Preparing data for SKU: ". $data['General']['SKU'];
+                    $this->logger->addInfo("Preparing data for SKU: ". $data['General']['SKU']);
                     $this->catalogPush->prepareData($data);
                 } catch (\Exception $exception) {
-                    $this->logger->addCritical($exception->getMessage());
-                    $this->events[] = "Preparing data failed for SKU: ". $data['General']['SKU'] .": ". $exception->getMessage();
+                    $this->logger->addCritical(
+                        "Preparing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage(),
+                        $this->_request->getPost()
+                    );
                     unset($productData[$key]);
                 }
             }
@@ -96,11 +98,13 @@ class Push extends AbstractController
 
             foreach ($productData as &$data) {
                 try {
-                    $this->events[] = "Processing data for SKU: ". $data['General']['SKU'];
+                    $this->logger->addInfo("Processing data for SKU: ". $data['General']['SKU']);
                     $this->catalogPush->processData($data);
                 } catch (\Exception $exception) {
-                    $this->logger->addCritical($exception->getMessage());
-                    $this->events[] = "Processing data failed for SKU: ". $data['General']['SKU'] .": ". $exception->getMessage();
+                    $this->logger->addCritical(
+                        "Processing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage(),
+                        $this->_request->getPost()
+                    );
                 }
             }
             $this->catalogPush->afterDataProcess();
