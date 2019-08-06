@@ -125,31 +125,33 @@ class Category extends Adapter
 
                             $categoryName = trim($categoryName);
                             $parentCategoryPath = $categoryPath;
-                            $categoryPath[] = $categoryName;
 
-                            $index = $this->getCategoryPathIndex($categoryPath);
+                            if ($categoryName) {
+                                $categoryPath[] = $categoryName;
+                                $index = $this->getCategoryPathIndex($categoryPath);
 
-                            if (!in_array($index, $this->processedCategories)) {
-                                if (!isset($this->categories[$index])) {
-                                    $parentIndex = $this->getCategoryPathIndex($parentCategoryPath);
-                                    $parentId = isset($this->categories[$parentIndex]) ? $this->categories[$parentIndex] : 1;
+                                if (!in_array($index, $this->processedCategories)) {
+                                    if (!isset($this->categories[$index])) {
+                                        $parentIndex = $this->getCategoryPathIndex($parentCategoryPath);
+                                        $parentId = isset($this->categories[$parentIndex]) ? $this->categories[$parentIndex] : 1;
 
-                                    $category = $this->categoryFactory->create(self::CATEGORY_DEFAULT_SETTINGS);
-                                    $category->setName($categoryName);
-                                    $category->setParentId($parentId);
-                                    $category->setIsActive(true);
-                                    $category = $this->categoryRepository->save($category);
+                                        $category = $this->categoryFactory->create(self::CATEGORY_DEFAULT_SETTINGS);
+                                        $category->setName($categoryName);
+                                        $category->setParentId($parentId);
+                                        $category->setIsActive(true);
+                                        $category = $this->categoryRepository->save($category);
 
-                                    $this->categories[$index] = $category->getId();
-                                } else {
-                                    $categoryId = $this->categories[$index];
+                                        $this->categories[$index] = $category->getId();
+                                    } else {
+                                        $categoryId = $this->categories[$index];
 
-                                    $category = $this->categoryRepository->get($categoryId);
-                                    $category->addData($categoryData);
+                                        $category = $this->categoryRepository->get($categoryId);
+                                        $category->addData($categoryData);
 
-                                    $this->categoryRepository->save($category);
+                                        $this->categoryRepository->save($category);
+                                    }
+                                    $this->processedCategories[] = $index;
                                 }
-                                $this->processedCategories[] = $index;
                             }
 
                             $assignedCategories[] = $this->categories[$index];

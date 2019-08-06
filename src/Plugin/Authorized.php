@@ -62,12 +62,17 @@ class Authorized
 
             $requestKey = $request->getPost(self::INTEGRATION_KEY);
             $configKey = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);
+
             if (!$requestKey || $configKey !== $requestKey) {
                 throw new \Magento\Framework\Exception\AuthenticationException(
                     __('Incorrect authorisation, API key not valid.')
                 );
             }
-            return $proceed($request);
+            $result = $proceed($request);
+
+            $this->logger->addInfo("Finished request");
+            return $result;
+
         } catch (\Exception $exception) {
             if ($exception instanceof AuthenticationException) {
                 $this->response->setContent($exception->getMessage());

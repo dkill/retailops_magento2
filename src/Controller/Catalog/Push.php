@@ -87,8 +87,7 @@ class Push extends AbstractController
                     $this->catalogPush->prepareData($data);
                 } catch (\Exception $exception) {
                     $this->logger->addCritical(
-                        "Preparing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage(),
-                        $this->_request->getPost()
+                        "Preparing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage()
                     );
                     unset($productData[$key]);
                 }
@@ -102,15 +101,14 @@ class Push extends AbstractController
                     $this->catalogPush->processData($data);
                 } catch (\Exception $exception) {
                     $this->logger->addCritical(
-                        "Processing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage(),
-                        $this->_request->getPost()
+                        "Processing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage()
                     );
                 }
             }
+
             $this->catalogPush->afterDataProcess();
 
         } catch (\Exception $exception) {
-
             $this->logger->addCritical($exception->getMessage());
             $this->responseEvents = [];
             $this->status = 500;
