@@ -15,11 +15,6 @@
                 <field id="password" type="text" translate="label" showInDefault="1" showInStore="1" sortOrder="20">
                     <label>RetailOps API key / Auth key</label>
                 </field>
-                <field id="statuses_inventory" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Inventory status</label>
-                    <source_model>Gudtech\RetailOps\Config\InventoryType</source_model>
-                    <can_be_empty>0</can_be_empty>
-                </field>
                 <field id="enable_log" type="select" showInDefault="1" showInStore="0" sortOrder="40" translate="label" showInWebsite="0">
                     <label>Debug log</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>

@@ -58,7 +58,7 @@ class Authorized
     public function aroundDispatch($subject, $proceed, $request)
     {
         try {
-            $this->logger->addInfo("Incoming request: ", (array)$request->getPost());
+            $this->logger->addInfo("Incoming request: ". $request->getContent());
 
             $requestKey = $request->getPost(self::INTEGRATION_KEY);
             $configKey = $this->scopeConfig->getValue(self::INTEGRATION_KEY_VALUE);

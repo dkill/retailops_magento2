@@ -3,8 +3,7 @@
 namespace Gudtech\RetailOps\Controller\Inventory;
 
 use Gudtech\RetailOps\Model\Logger\Monolog;
-use Gudtech\RetailOps\Model\RoRicsLinkUpcRepository;
-use Gudtech\RetailOps\Service\CalculateInventory;
+use Gudtech\RetailOps\Model\Inventory\Push as InventoryPush;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Area;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -17,45 +16,65 @@ use Gudtech\RetailOps\Controller\AbstractController;
  */
 class Push extends AbstractController
 {
+    /**
+     * @var string
+     */
     const PARAM = 'inventory_updates';
-    const SKU = 'sku';
-    const QUANTITY = 'calc_inventory';
+
+    /**
+     * @var string
+     */
     const SERVICENAME = 'inventory';
+
+    /**
+     * @var string
+     */
     const ENABLE = 'retailops/retailops_feed/inventory_push';
+
     /**
      * @var string
      */
     protected $areaName = self::BEFOREPULL . self::SERVICENAME;
-    protected $events = [];
-    protected $responseEvents = [];
-    protected $statusRetOps = 'success';
+
     /**
-     * @var CalculateInventory
+     * @var array
+     */
+    protected $events = [];
+
+    /**
+     * @var array
+     */
+    protected $responseEvents = [];
+
+    /**
+     * @var string
+     */
+    protected $statusRetOps = 'success';
+
+    /**
+     * @var Inventory
      */
     protected $inventory;
-    protected $association = [];
+
     /**
-     * @var RoRicsLinkUpcRepository
+     * @var array
      */
-    protected $upcRepository;
+    protected $association = [];
 
     /**
      * Push constructor.
      *
      * @param Context $context
-     * @param RoRicsLinkUpcRepository $linkUpcRepository
      * @param CalculateInventory $inventory
      * @param Monolog $logger
      * @param ScopeConfigInterface $config
      */
     public function __construct(
         Context $context,
-        RoRicsLinkUpcRepository $linkUpcRepository,
-        CalculateInventory $inventory,
+        InventoryPush $inventory,
         Monolog $logger,
         ScopeConfigInterface $config
     ) {
-        $this->upcRepository = $linkUpcRepository;
         $this->inventory = $inventory;
         $this->logger = $logger;
         parent::__construct($context, $config);
@@ -67,33 +86,12 @@ class Push extends AbstractController
             if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }
-            $inventories = $this->getRequest()->getParam(self::PARAM);
-            $inventoryObjects = [];
-            if (is_array($inventories) && count($inventories)) {
-                $inventory = [];
-                $inventories = $this->inventory->calculateInventory($inventories);
-                foreach ($inventories as $invent) {
-                    $upcs = $this->upcRepository->getProductUpcByRoUpc($invent[self::SKU]);
-                    //if for one rics_integration Id can be many products
-                    foreach ($upcs as $upc) {
-                        $object = ObjectManager::getInstance()->create(\Gudtech\RetailOps\Model\Inventory::class);
-                        $object->setUPC($upc);
-                        $object->setCount($invent[self::QUANTITY]);
-                        $inventoryObjects[] = $object;
-                    }
-                    $upcs = [];
-                }
-                $this->inventory->addInventoiesFromNotSendedOrderYet($inventoryObjects);
-                $inventoryApi = ObjectManager::getInstance()->create(\Gudtech\RetailOps\Model\Inventory\Inventory::class);
-                foreach ($inventoryObjects as $inventory) {
-                    $this->association[] = ['identifier_type' => 'sku_number', 'identifier'=>$inventory->getUPC()];
-                }
-                $state = ObjectManager::getInstance()->get(\Magento\Framework\App\State::class);
-                $state->emulateAreaCode(
-                    Area::AREA_WEBAPI_REST,
-                    [$inventoryApi, 'setInventory'],
-                    [$inventoryObjects]
-                );
+
+            $inventoryUpdates = $this->getRequest()->getParam(self::PARAM);
+
+            foreach($inventoryUpdates as $inventory) {
+                $this->logger->addInfo("Processing inventory for SKU: ". $inventory['sku']);
+                $this->inventory->processData($inventory);
             }
         } catch (\Exception $exception) {
             $event = [
@@ -107,7 +105,8 @@ class Push extends AbstractController
             $this->statusRetOps = 'error';
 
         } finally {
-            $this->responseEvents['events'] = [];
+
+           $this->responseEvents['events'] = [];
             foreach ($this->events as $event) {
                 $this->responseEvents['events'][] = $event;
             }

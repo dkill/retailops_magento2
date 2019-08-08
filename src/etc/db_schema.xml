@@ -3,16 +3,18 @@
   <table name="retailops_inventory_history" resource="default" engine="innodb" comment="retailops_inventory_history">
     <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
     <column xsi:type="int" name="product_id" padding="11" unsigned="false" nullable="false" identity="false" comment="Product id"/>
-    <column xsi:type="decimal" name="inventory_arrived" scale="4" precision="12" unsigned="false" nullable="true" comment="Inventory that send from brige"/>
-    <column xsi:type="decimal" name="inventory_in_shop" scale="4" precision="12" unsigned="false" nullable="true" comment="Inventory in shop before update stock by rics"/>
-    <column xsi:type="varchar" name="operator" nullable="true" length="1" comment="+/-"/>
-    <column xsi:type="decimal" name="inventory_add" scale="4" precision="12" unsigned="false" nullable="true" comment="Module of invetory items from bridge"/>
+    <column xsi:type="varchar" name="source_code" nullable="false" length="255" default="0" comment="Inventory source code"/>
+    <column xsi:type="int" name="retailops_quantity" padding="11" unsigned="false" nullable="false" identity="false" comment="Inventory quantity from RetailOps"/>
+    <column xsi:type="int" name="magento_quantity" padding="11" unsigned="false" nullable="false" identity="false" comment="Inventory quantity in Magento"/>
+    <column xsi:type="int" name="reserved_quantity" padding="11" unsigned="false" nullable="false" identity="false" comment="Reserved inventory quantity"/>
+    <column xsi:type="int" name="new_quantity" padding="11" unsigned="false" nullable="false" identity="false" comment="New inventory quantity"/>
     <column xsi:type="timestamp" name="date_create" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Date Create"/>
-    <column xsi:type="varchar" name="real_count" nullable="false" length="255" default="0" comment="Real count from RO"/>
-    <column xsi:type="varchar" name="reserve_count" nullable="false" length="255" default="0" comment="Rererve by script"/>
     <constraint xsi:type="primary" referenceId="PRIMARY">
       <column name="id"/>
     </constraint>
+    <index referenceId="RETAILOPS_INVENTORY_HISTORY_PRODUCT_ID" indexType="btree">
+      <column name="product_id"/>
+    </index>
   </table>
   <table name="sales_order" resource="default">
     <column xsi:type="boolean" name="retailops_send_status" nullable="false" comment="RetailOps order status"/>
@@ -52,28 +54,6 @@
     <constraint xsi:type="primary" referenceId="PRIMARY">
       <column name="entity_id"/>
     </constraint>
-  </table>
-  <table name="retailops_rics_retailops_link_upc" resource="default" engine="innodb" comment="retailops_rics_retailops_link_upc">
-    <column xsi:type="int" name="entity_id" padding="11" unsigned="false" nullable="false" identity="true" comment="ID"/>
-    <column xsi:type="varchar" name="rics_integration_id" nullable="true" length="255" comment="ID"/>
-    <column xsi:type="varchar" name="upc" nullable="true" length="255" comment="Upc's from rics"/>
-    <column xsi:type="smallint" name="retail_ops_upc" padding="6" unsigned="false" nullable="true" identity="false" comment="Upc which use in retail_ops system, boolean"/>
-    <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
-    <column xsi:type="timestamp" name="update_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Update at"/>
-    <constraint xsi:type="primary" referenceId="PRIMARY">
-      <column name="entity_id"/>
-    </constraint>
-    <constraint xsi:type="unique" referenceId="RICS_INTEGRATION_ID_RICS_INTEGRATION_ID_UPC_RETAIL_OPS_UPC">
-      <column name="rics_integration_id"/>
-      <column name="upc"/>
-      <column name="retail_ops_upc"/>
-    </constraint>
-    <index referenceId="UPC_UPC" indexType="btree">
-      <column name="upc"/>
-    </index>
-    <index referenceId="RICS_INTEGRATION_ID_RICS_INTEGRATION_ID" indexType="btree">
-      <column name="rics_integration_id"/>
-    </index>
   </table>
   <table name="gudtech_retailops_queue" resource="default" engine="innodb" comment="gudtech_retailops_queue">
     <column xsi:type="int" name="gudtech_retailops_queue_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
