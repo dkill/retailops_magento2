@@ -23,6 +23,38 @@ use Magento\Sales\Model\ResourceModel\Order\Item\CollectionFactory as OrderItemC
  */
 class Push
 {
+    const RESERVED_QUANTITY_SOURCE_CODE = ['SB'];
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
+
+    /**
+     * @var SearchCriteriaBuilderFactory
+     */
+    private $searchCriteriaBuilderFactory;
+
+    /**
+     * @var SourceItemRepositoryInterface
+     */
+    private $sourceItemRepository;
+
+    /**
+     * @var SourceItemInterfaceFactory
+     */
+    private $sourceItemFactory;
+
+    /**
+     * @var SourceItemsSaveInterface
+     */
+    private $sourceItemsSave;
+
+    /**
+     * @var SourceItemsDeleteInterface
+     */
+    private $sourceItemsDelete;
+
     /**
      * @var InventoryHistoryInterface
      */
@@ -84,9 +116,14 @@ class Push
                 $sourceItem->setSourceCode($sourceCode);
             }
 
-            $reservedQuantity = $this->getReservedQuantity($inventory['sku']);
             $currentQuantity = $sourceItem->getQuantity();
-            $newQuantity = $sourceItemData['available_quantity'] - $reservedQuantity;
+
+            if (in_array($sourceCode, self::RESERVED_QUANTITY_SOURCE_CODE)) {
+                $reservedQuantity = $this->getReservedQuantity($inventory['sku']);
+                $newQuantity = $sourceItemData['available_quantity'] - $reservedQuantity;
+            } else {
+                $newQuantity = $sourceItemData['available_quantity'];
+            }
 
             $sourceItem->setSku($inventory['sku']);
             $sourceItem->setQuantity($sourceItemData['available_quantity']);
@@ -120,15 +157,6 @@ class Push
     }
 
     /**
-     * @param array $inventories
-     * @return array
-     */
-    public function calculateInventory(array $inventories)
-    {
-        return $this->_calculateInventory->calculateInventory($inventories);
-    }
-
-    /**
      * Get Source Items Hash Table by SKU
      *
      * @param string $sku
@@ -159,6 +187,7 @@ class Push
     private function getReservedQuantity($sku)
     {
         $reservedQuantity = 0;
+
         /**
          * @var \Magento\Sales\Model\ResourceModel\Order\Item\Collection $collection
          */
