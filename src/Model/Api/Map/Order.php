@@ -239,14 +239,25 @@ class Order
     public function getPaymentTransactions($order)
     {
         $paymentMethod = $order->getPayment();
-
+        $paymentTransactions = [];
         $payment = [];
+        $storeCredit = [];
+
         $payment['payment_processing_type'] = self::$paymentProcessingType['default'];
         $payment['payment_type'] = $paymentMethod->getMethod();
         $payment['amount'] = $this->calculateAmount->calculateGrandTotal($order);
         $payment['transaction_type'] = 'charge';
+        $paymentTransactions[] = $payment;
 
-        return $this->getGiftPaymentTransaction([$payment], $order);
+        if ($order->getBaseCustomerBalanceAmount()) {
+            $storeCredit['payment_processing_type'] = self::$paymentProcessingType['reward'];
+            $storeCredit['payment_type'] = 'Store Credit';
+            $storeCredit['amount'] = $order->getBaseCustomerBalanceAmount();
+            $storeCredit['transaction_type'] = 'charge';
+            $paymentTransactions[] = $storeCredit;
+        }
+
+        return $this->getGiftPaymentTransaction($paymentTransactions, $order);
     }
 
     /**

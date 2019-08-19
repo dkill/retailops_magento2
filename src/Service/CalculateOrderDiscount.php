@@ -24,7 +24,6 @@ class CalculateOrderDiscount implements CalculateDiscountInterface
         $discount += abs($order->getBaseShippingDiscountAmount());
         $discount += abs($order->getBaseShippingDiscountTaxCompensationAmnt());
         $discount += abs($order->getBaseDiscountAmount());
-        $discount += abs($order->getBaseCustomerBalanceAmount());
 
         return $this->addRewardPoints($discount, $order);
     }
