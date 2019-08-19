@@ -249,7 +249,7 @@ class Order
         $payment['transaction_type'] = 'charge';
         $paymentTransactions[] = $payment;
 
-        if ($order->getBaseCustomerBalanceAmount()) {
+        if ($order->getBaseCustomerBalanceAmount() > 0) {
             $storeCredit['payment_processing_type'] = self::$paymentProcessingType['reward'];
             $storeCredit['payment_type'] = 'Store Credit';
             $storeCredit['amount'] = (float)$order->getBaseCustomerBalanceAmount();
