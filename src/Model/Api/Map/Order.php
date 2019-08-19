@@ -3,7 +3,13 @@
 namespace Gudtech\RetailOps\Model\Api\Map;
 
 use Magento\Framework\App\ObjectManager;
-use \Gudtech\RetailOps\Model\Api\Map\Order as OrderMap;
+use Gudtech\RetailOps\Model\Api\Map\Order as OrderMap;
+use Gudtech\RetailOps\Service\CalculateDiscountInterface;
+use Gudtech\RetailOps\Service\CalculateItemPriceInterface;
+use Gudtech\RetailOps\Api\Order\Map\CalculateAmountInterface;
+use Magento\Sales\Api\Data\OrderAddressInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 
 /**
  * Map order class.
@@ -13,14 +19,10 @@ class Order
 {
     const CONFIGURABLE = 'configurable';
     const AUTH_STATUS = 'processing';
+
     //order pull to
     const ORDER_PULL_STATUS = 2;
     const ORDER_NO_SEND_STATUS = 0;
-
-    /**
-     * @var \Gudtech\RetailOps\Api\Order\Map\UpcFinderInterface
-     */
-    protected $upcFinder;
 
     /**
      * @var \Gudtech\RetailOps\Service\CalculateDiscountInterface
@@ -31,6 +33,7 @@ class Order
      * @var \Gudtech\RetailOps\Service\Order\Map\RewardPointsInterface
      */
     protected $rewardPoints;
+
     /**
      * Status for retailops
      * @var array $retailopsItemStatus
@@ -53,6 +56,23 @@ class Order
      * @var \Gudtech\RetailOps\Api\Order\Map\CalculateAmountInterface
      */
     public $calculateAmount;
+
+    /**
+     * Order map constructor.
+     *
+     * @param CalculateDiscountInterface $calculateDiscount
+     * @param CalculateItemPriceInterface $calculateItemPrice
+     * @param CalculateAmountInterface $calculateAmount
+     */
+    public function __construct(
+        CalculateDiscountInterface $calculateDiscount,
+        CalculateItemPriceInterface $calculateItemPrice,
+        CalculateAmountInterface $calculateAmount
+    ) {
+        $this->calculateDiscount = $calculateDiscount;
+        $this->calculateItemPrice = $calculateItemPrice;
+        $this->calculateAmount = $calculateAmount;
+    }
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface[] $orders
@@ -101,50 +121,41 @@ class Order
         }
         //@todo how send orders with coupon code and gift cart
         $prepareOrder['payment_transactions'] = $instance->getPaymentTransactions($order);
-        $prepareOrder['customer_info'] = $instance->getCustmoerInfo($order);
+        $prepareOrder['customer_info'] = $instance->getCustomerInfo($order);
         $prepareOrder['ip_address'] = $order->getRemoteIp();
         return $instance->clearNullValues($prepareOrder);
-    }
-
-    public function __construct(
-        \Gudtech\RetailOps\Api\Order\Map\UpcFinderInterface $upcFinder,
-        \Gudtech\RetailOps\Service\CalculateDiscountInterface $calculateDiscount,
-        \Gudtech\RetailOps\Service\CalculateItemPriceInterface $calculateItemPrice,
-        \Gudtech\RetailOps\Api\Order\Map\CalculateAmountInterface $calculateAmount
-    ) {
-        $this->upcFinder = $upcFinder;
-        $this->calculateDiscount = $calculateDiscount;
-        $this->calculateItemPrice = $calculateItemPrice;
-        $this->calculateAmount = $calculateAmount;
     }
 
     private function getCurrencyValues($order)
     {
         $values = [];
         $values['shipping_amt'] = $this->calculateAmount->calculateShipping($order);
-//        $values['tax_amt'] = (float)$order->getTaxAmount();
+        // $values['tax_amt'] = (float)$order->getTaxAmount();
         $values['discount_amt'] = $this->calculateDiscount->calculate($order);
         return $values;
     }
 
     /**
-     * @var $address \Magento\Sales\Api\Data\OrderAddressInterface
+     * @param OrderInterface $order
+     * @param OrderAddressInterface $orderAddress
+     * @return array
      */
-    private function getAddress($order, $address)
+    private function getAddress($order, $orderAddress)
     {
-        $addr = [];
-        $addr['state_match'] = $address->getRegion();
-        $addr['country_match'] = $address->getCountryId();
-        $addr['last_name'] = $address->getLastname();
+        $address = [];
+        $address['first_name'] = $address->getFirstname();
+        $address['last_name'] = $address->getLastname();
+        $address['address1'] = is_array($address->getStreet()) ? $address->getStreet()[0] : $address->getStreet();
         if (is_array($address->getStreet()) && count($address->getStreet()) > 1) {
-            $addr['address2'] = $address->getStreet()[1];
+            $address['address2'] = $address->getStreet()[1];
         }
-        $addr['city'] = $address->getCity();
-        $addr['postal_code'] = $address->getPostcode();
-        $addr['address1'] = is_array($address->getStreet()) ? $address->getStreet()[0] : $address->getStreet();
-        $addr['company'] = $address->getCompany();
-        $addr['first_name'] = $address->getFirstname();
-        return $addr;
+        $address['city'] = $address->getCity();
+        $address['postal_code'] = $address->getPostcode();
+        $address['state_match'] = $address->getRegion();
+        $address['country_match'] = $address->getCountryId();
+        $address['company'] = $address->getCompany();
+
+        return $address;
     }
 
     /**
@@ -157,55 +168,45 @@ class Order
         $item = [];
         $orderItems = $order->getItems();
         foreach ($orderItems as $orderItem) {
+
             if ($orderItem->getParentItem()) {
                 continue;
             }
-            /**
-             * @var $childProducts \Magento\Sales\Api\Data\OrderItemInterface[]
-             */
-            $childProducts = $orderItem->getChildrenItems();
-            if (count($childProducts)) {
-                $childProduct = reset($childProducts);
-                $product = $childProduct->getProduct();
-            } else {
-                $childProduct = $orderItem;
-                $product = $orderItem->getProduct();
-            }
+
             $item['channel_item_refnum'] = $orderItem->getId();
-            $item['sku'] = $this->getUpcForRetailOps($childProduct, $product);
-//            $item['sku_description'] = sprintf('in magento system is UPC: %s', $item['sku']);
+            $item['sku'] = $orderItem->getSku();
+            $item['sku_description'] = $orderItem->getName();
             $item['item_type'] = $this->getItemType($orderItem);
             $item['currency_values'] = $this->getItemCurrencyValues($orderItem);
             $item['quantity'] = $this->getQuantity($orderItem);
+
             $items[] = $item;
         }
         return $items;
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
-     * @param \Magento\Catalog\Api\Data\ProductInterface|null $product
-     * @return null|string
+     * @param OrderItemInterface $item
+     * @return int
      */
-    protected function getUpcForRetailOps(
-        \Magento\Sales\Api\Data\OrderItemInterface $orderItem,
-        \Magento\Catalog\Api\Data\ProductInterface $product = null
-    ) {
-        return $this->upcFinder->getUpc($orderItem, $product);
-    }
-
-    protected function getQuantity($item)
+    private function getQuantity($item)
     {
         if ($item->getParentItem()) {
             $item = $item->getParentItem();
         }
+
         $qty = $item->getQtyOrdered() - $item->getQtyRefunded() - $item->getQtyCanceled();
+
         return (int)$qty;
     }
 
-    protected function getItemType($item)
+    /**
+     * @param OrderItemInterface $item
+     * @return string
+     */
+    private function getItemType($item)
     {
-        //@todo after design shiiping with retaiops add logic for orders
+        //@todo after design shipping with retaiops add logic for orders
         return 'ship';
     }
 
@@ -227,6 +228,7 @@ class Order
         //calculate items price before RO fix discount error
         $itemCurrency['unit_price'] = $this->calculateItemPrice->calculate($item);
         $itemCurrency['unit_tax'] = $this->calculateItemPrice->calculateItemTax($item);
+
         return $itemCurrency;
     }
 
@@ -236,13 +238,15 @@ class Order
      */
     public function getPaymentTransactions($order)
     {
-        $paymentR = [];
-        $payment = $order->getPayment();
-        $paymentR['payment_processing_type'] = self::$paymentProcessingType['default'];
-        $paymentR['payment_type'] = $payment->getMethod();
-        $paymentR['amount'] = $this->calculateAmount->calculateGrandTotal($order);
-        $paymentR['transaction_type'] = 'charge';
-        return $this->getGiftPaymentTransaction([$paymentR], $order);
+        $paymentMethod = $order->getPayment();
+
+        $payment = [];
+        $payment['payment_processing_type'] = self::$paymentProcessingType['default'];
+        $payment['payment_type'] = $paymentMethod->getMethod();
+        $payment['amount'] = $this->calculateAmount->calculateGrandTotal($order);
+        $payment['transaction_type'] = 'charge';
+
+        return $this->getGiftPaymentTransaction([$payment], $order);
     }
 
     /**
@@ -259,6 +263,7 @@ class Order
             $paymentG['amount'] = (float)$order->getBaseGiftCardsAmount();
             $payments[] = $paymentG;
         }
+
         return $payments;
     }
 
@@ -266,16 +271,17 @@ class Order
      * @param  \Magento\Sales\Model\Order $order
      * @return array
      */
-    public function getCustmoerInfo($order)
+    private function getCustomerInfo($order)
     {
-        $customerR = [];
-        $customerR['email_address'] = $order->getCustomerEmail();
+        $customer = [];
+        $customer['email_address'] = $order->getCustomerEmail();
         if ($order->getCustomerIsGuest()) {
-            $customerR['full_name'] = 'Guest';
+            $customer['full_name'] = 'Guest';
         } else {
-            $customerR['full_name'] = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+            $customer['full_name'] = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
         }
-        return $customerR;
+
+        return $customer;
     }
 
     /**

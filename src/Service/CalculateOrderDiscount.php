@@ -11,7 +11,7 @@ class CalculateOrderDiscount implements CalculateDiscountInterface
     /**
      * @var Order\Map\RewardPointsInterface
      */
-    protected $_rewardPoints;
+    private $rewardPoints;
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order
@@ -20,10 +20,12 @@ class CalculateOrderDiscount implements CalculateDiscountInterface
     public function calculate(\Magento\Sales\Api\Data\OrderInterface $order):float
     {
         $discount = 0;
-        $discount +=(float)$order->getBaseDiscountTaxCompensationAmount();
-        $discount +=(float)$order->getBaseShippingDiscountAmount();
-        $discount +=(float)$order->getBaseShippingDiscountTaxCompensationAmnt();
-        $discount +=(float)$order->getBaseCustomerBalanceAmount();
+        $discount += abs($order->getBaseDiscountTaxCompensationAmount());
+        $discount += abs($order->getBaseShippingDiscountAmount());
+        $discount += abs($order->getBaseShippingDiscountTaxCompensationAmnt());
+        $discount += abs($order->getBaseDiscountAmount());
+        $discount += abs($order->getBaseCustomerBalanceAmount());
+
         return $this->addRewardPoints($discount, $order);
     }
 
