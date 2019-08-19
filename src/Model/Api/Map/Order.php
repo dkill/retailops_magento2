@@ -143,17 +143,17 @@ class Order
     private function getAddress($order, $orderAddress)
     {
         $address = [];
-        $address['first_name'] = $address->getFirstname();
-        $address['last_name'] = $address->getLastname();
-        $address['address1'] = is_array($address->getStreet()) ? $address->getStreet()[0] : $address->getStreet();
-        if (is_array($address->getStreet()) && count($address->getStreet()) > 1) {
-            $address['address2'] = $address->getStreet()[1];
+        $address['first_name'] = $orderAddress->getFirstname();
+        $address['last_name'] = $orderAddress->getLastname();
+        $address['address1'] = is_array($orderAddress->getStreet()) ? $orderAddress->getStreet()[0] : $orderAddress->getStreet();
+        if (is_array($orderAddress->getStreet()) && count($orderAddress->getStreet()) > 1) {
+            $address['address2'] = $orderAddress->getStreet()[1];
         }
-        $address['city'] = $address->getCity();
-        $address['postal_code'] = $address->getPostcode();
-        $address['state_match'] = $address->getRegion();
-        $address['country_match'] = $address->getCountryId();
-        $address['company'] = $address->getCompany();
+        $address['city'] = $orderAddress->getCity();
+        $address['postal_code'] = $orderAddress->getPostcode();
+        $address['state_match'] = $orderAddress->getRegion();
+        $address['country_match'] = $orderAddress->getCountryId();
+        $address['company'] = $orderAddress->getCompany();
 
         return $address;
     }
