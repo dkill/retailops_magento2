@@ -161,6 +161,6 @@ class Acknowledge
             }
         }
 
-        return $this->setOrderIdByIncrementId($this->orderIds);
+        return $this->setOrderIdByIncrementId($orderIds);
     }
 }
