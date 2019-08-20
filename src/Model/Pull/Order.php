@@ -116,7 +116,7 @@ class Order
             $filter = $this->createFilter(
                 'retailops_send_status',
                 'in',
-                [OrderMap::ORDER_NO_SEND_STATUS, OrderMap::ORDER_PULL_STATUS]
+                [OrderMap::ORDER_STATUS_PENDING, OrderMap::ORDER_STATUS_PULLED]
             );
             $this->addFilter('retail_status', $filter);
             $page = $this->getCurrentPage($pageToken);

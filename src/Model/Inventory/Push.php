@@ -204,7 +204,7 @@ class Push
         );
         $collection->getSelect()->where(
             'so.retailops_send_status=?',
-            \Gudtech\RetailOps\Model\Api\Map\Order::ORDER_NO_SEND_STATUS
+            \Gudtech\RetailOps\Model\Api\Map\Order::ORDER_STATUS_PENDING
         );
         $collection->getSelect()->where('main_table.sku = ?', $sku);
         $collection->getSelect()->where(

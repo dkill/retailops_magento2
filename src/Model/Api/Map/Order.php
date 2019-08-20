@@ -3,7 +3,6 @@
 namespace Gudtech\RetailOps\Model\Api\Map;
 
 use Magento\Framework\App\ObjectManager;
-use Gudtech\RetailOps\Model\Api\Map\Order as OrderMap;
 use Gudtech\RetailOps\Service\CalculateDiscountInterface;
 use Gudtech\RetailOps\Service\CalculateItemPriceInterface;
 use Gudtech\RetailOps\Api\Order\Map\CalculateAmountInterface;
@@ -17,12 +16,13 @@ use Magento\Sales\Api\Data\OrderItemInterface;
  */
 class Order
 {
-    const CONFIGURABLE = 'configurable';
-    const AUTH_STATUS = 'processing';
-
-    //order pull to
-    const ORDER_PULL_STATUS = 2;
-    const ORDER_NO_SEND_STATUS = 0;
+    /**
+     * RetailOps order status
+     *
+     * @var integer
+     */
+    const ORDER_STATUS_PENDING = 0;
+    const ORDER_STATUS_PULLED = 1;
 
     /**
      * @var \Gudtech\RetailOps\Service\CalculateDiscountInterface
@@ -86,8 +86,9 @@ class Order
              * @var \Magento\Sales\Api\Data\OrderInterface $order
              */
             foreach ($orders as $order) {
-                $prepareOrders[] = Order::prepareOrder($order, $this);
-                $order->setData('retailops_send_status', OrderMap::ORDER_PULL_STATUS);
+                $prepareOrders[] = $this->prepareOrder($order);
+                $order->setData('retailops_send_status', self::ORDER_STATUS_PULLED);
+                $order->addStatusToHistory($order->getStatus(), "Exported to RetailOps for processing");
                 $order->save();
             }
 
@@ -97,22 +98,21 @@ class Order
     }
 
     /**
-     * @param $order
-     * @param Order $instance
+     * @param OrderInterface $order
      * @return mixed
      */
-    public static function prepareOrder(\Magento\Sales\Api\Data\OrderInterface $order, $instance)
+    private function prepareOrder(OrderInterface $order)
     {
         $prepareOrder = [];
         $prepareOrder['channel_order_refnum'] = $order->getIncrementId();
         $prepareOrder['currency_code'] = $order->getOrderCurrencyCode();
-        $prepareOrder['currency_values'] = $instance->getCurrencyValues($order);
+        $prepareOrder['currency_values'] = $this->getCurrencyValues($order);
         $prepareOrder['channel_date_created'] = (new \DateTime($order->getCreatedAt(), new \DateTimeZone('UTC')))
             ->format('c');
-        $prepareOrder['billing_address'] = $instance->getAddress($order, $order->getBillingAddress());
-        $prepareOrder['shipping_address'] = $instance->getAddress($order, $order->getShippingAddress());
-        $prepareOrder['order_items'] = $instance->getOrderItems($order);
-        $prepareOrder['ship_service_code'] = $order->getShippingMethod();
+        $prepareOrder['billing_address'] = $this->getAddress($order, $order->getBillingAddress());
+        $prepareOrder['shipping_address'] = $this->getAddress($order, $order->getShippingAddress());
+        $prepareOrder['order_items'] = $this->getOrderItems($order);
+        $prepareOrder['ship_service_code'] = $order->getShippingDescription();
         //add gift message if available
         if ($order->getGiftMessageAvailable()) {
             $giftHelper = ObjectManager::getInstance()->get(\Magento\GiftMessage\Helper\Message::class);
@@ -120,10 +120,10 @@ class Order
             $prepareOrder['gift_message'] = $message;
         }
         //@todo how send orders with coupon code and gift cart
-        $prepareOrder['payment_transactions'] = $instance->getPaymentTransactions($order);
-        $prepareOrder['customer_info'] = $instance->getCustomerInfo($order);
+        $prepareOrder['payment_transactions'] = $this->getPaymentTransactions($order);
+        $prepareOrder['customer_info'] = $this->getCustomerInfo($order);
         $prepareOrder['ip_address'] = $order->getRemoteIp();
-        return $instance->clearNullValues($prepareOrder);
+        return $this->clearNullValues($prepareOrder);
     }
 
     private function getCurrencyValues($order)
