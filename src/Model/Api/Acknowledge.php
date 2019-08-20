@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Model\Api;
 
+use Magento\Sales\Api\Data\OrderInterface;
+
 /**
  * Acknowlegde class.
  *
@@ -10,12 +12,12 @@ class Acknowledge
 {
     use Traits\Filter;
 
-    const ACK_STATUS = 1;
-
     /**
-     * @var array
+     * Order status for acknowledged orders.
+     *
+     * @var integer
      */
-    protected $orderIds =[];
+    const ORDER_STATUS_ACKNOWLEDGED = 2;
 
     /**
      * In this array we save data, such as
@@ -62,41 +64,44 @@ class Acknowledge
     {
         try {
             $orderIds = $this->getOrderIds($orders);
+
             if (!count($orderIds)) {
-                throw new \LogicException(__('Don\'t have any numbers of orders'));
+                throw new \LogicException(__("Don't have any numbers of orders"));
             }
+
             $filter = $this->createFilter('entity_id', 'in', array_keys($orderIds));
             $this->searchCriteria->setFilterGroups([$this->createFilterGroups([$filter])]);
             $result = $this->orderRepository->getList($this->searchCriteria);
             if ($result) {
                 foreach ($result as $order) {
-                    if (isset($this->orderIds[$order->getId()])) {
-                        $order->setData('retailops_send_status', self::ACK_STATUS);
-                        if ($this->orderIds[$order->getId()] !== 0) {
-                            $order->setData('retailops_order_id', $this->orderIds[$order->getId()]);
+                    if (isset($orderIds[$order->getId()])) {
+
+                        $order->setData('retailops_send_status', self::ORDER_STATUS_ACKNOWLEDGED);
+                        $order->setStatus('retailops_processing');
+
+                        if ($orderIds[$order->getId()] !== 0) {
+                            $order->setData('retailops_order_id', $orderIds[$order->getId()]);
+                            $order->addStatusToHistory(
+                                $order->getStatus(),
+                                "Acknowledged by RetailOps for processing. Order ID in RetailOps: ". $orderIds
+                            );
+                        } else {
+                            $order->addStatusToHistory(
+                                $order->getStatus(),
+                                "Acknowledged by RetailOps for processing."
+                            );
                         }
                         $order->save();
-                        unset($this->orderIds[$order->getId()]);
                     }
 
                 }
-                //if stay order_id, seems we don't have this orders in our system
-                if (count($this->orderIds)) {
-                    $this->setEvent(
-                        'warning',
-                        null,
-                        __('Seems we don\'t have this orders'),
-                        'order_refnum',
-                        array_keys($this->orderIds)
-                    );
-                }
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             $event = [];
             $event['event_type'] = 'error';
-            $event['code'] = $e->getCode();
-            $event['message'] = $e->getMessage();
-            $event['diagnostic_data'] = $e->getTrace();
+            $event['code'] = $exception->getCode();
+            $event['message'] = $exception->getMessage();
+            $event['diagnostic_data'] = $exception->getTrace();
             if (isset($order)) {
                 $event['associations'] = [
                     'identifier_type' => 'order_refnum',
@@ -142,19 +147,20 @@ class Acknowledge
     protected function getOrderIds($orders)
     {
         if (!is_array($orders) || !count($orders)) {
-            throw new \LogicException(__('Don\'t have any order\'s id in resquest'));
+            throw new \LogicException(__("Don't have any order ids in request"));
         }
+
+        $orderIds = [];
 
         foreach ($orders as $order) {
             if (isset($order['channel_order_refnum'])) {
-                $this->orderIds[$order['channel_order_refnum']] = 0;
+                $orderIds[$order['channel_order_refnum']] = 0;
                 if (isset($order['retailops_order_id'])) {
-                    $this->orderIds[$order['channel_order_refnum']] = $order['retailops_order_id'];
+                    $orderIds[$order['channel_order_refnum']] = $order['retailops_order_id'];
                 }
             }
         }
-        $this->orderIds = $this->setOrderIdByIncrementId($this->orderIds);
-//        $this->setOrderIdByIncrementId($this->linkOrderRetail);
-        return $this->orderIds;
+
+        return $this->setOrderIdByIncrementId($this->orderIds);
     }
 }
