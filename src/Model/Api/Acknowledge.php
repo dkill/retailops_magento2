@@ -83,7 +83,7 @@ class Acknowledge
                             $order->setData('retailops_order_id', $orderIds[$order->getId()]);
                             $order->addStatusToHistory(
                                 $order->getStatus(),
-                                "Acknowledged by RetailOps for processing. Order ID in RetailOps: ". $orderIds
+                                "Acknowledged by RetailOps for processing. Order ID in RetailOps: ". $orderIds[$order->getId()]
                             );
                         } else {
                             $order->addStatusToHistory(
