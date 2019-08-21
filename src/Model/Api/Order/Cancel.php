@@ -112,8 +112,13 @@ class Cancel
      */
     private function cancelOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
+
         if (!$order->canCancel()) {
-            return  $this->allRefund($order);
+
+            $order->addStatusToHistory($order->getStatus(), "Cancelled by RetailOps");
+            $order->save();
+
+            return $this->allRefund($order);
         }
 
         $order->cancel();
