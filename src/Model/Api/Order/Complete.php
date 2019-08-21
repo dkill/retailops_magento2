@@ -96,17 +96,17 @@ class Complete
         $this->response['status'] = 'success';
 
         if (!isset($postData['channel_order_refnum'])) {
-            throw new \LogicException(__('Don\'t have any order refnum'));
+            throw new \LogicException(__("Don't have any order refnum"));
         }
 
         $orderId = $this->getOrderIdByIncrement($postData['channel_order_refnum']);
+
         $shipment = $this->shipment;
         $shipment->setOrder($this->getOrder($orderId));
-        //create invoice, with shipments items
         $shipment->setUnShippedItems($postData);
         $shipment->setTrackingAndShipmentItems($postData);
         $unShipmentItems = $shipment->getUnShippmentItems();
-        //check, if we can do cancel for some items
+
         $needCreditMemoItems = $this->itemsManager->removeCancelItems($this->getOrder($orderId), $unShipmentItems);
         $this->createCreditMemoIfNeed($this->getOrder($orderId), $needCreditMemoItems);
 

@@ -76,16 +76,6 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="retailops_advanced" type="text" translate="label" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Cancel queue</label>
-                <field id = "cancel_queue" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
-                    <label>
-                        Use feed cancel
-                    </label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[if you disable this option, cancel feed will be work as prepared (cancel, refund ) with order]]></comment>
-                </field>
-            </group>
         </section>
     </system>
 </config>

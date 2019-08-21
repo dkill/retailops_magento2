@@ -23,6 +23,32 @@ class Cancel
      */
     protected $historyRetail;
 
+    /**
+     * Cancel constructor.
+     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+     * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
+     * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
+     * @param \Magento\Framework\Api\FilterFactory $filter
+     * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
+     */
+    public function __construct(
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \Gudtech\RetailOps\Model\Logger\Monolog $logger,
+        \Magento\Framework\Api\SearchCriteria $searchCriteria,
+        \Magento\Framework\Api\FilterFactory $filter,
+        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
+        \Gudtech\RetailOps\Model\Order\Status\History $historyRetail,
+        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
+    ) {
+        $this->orderRepository = $orderRepository;
+        $this->logger = $logger;
+        $this->searchCriteria = $searchCriteria;
+        $this->filter = $filter;
+        $this->filterGroup = $filterGroup;
+        $this->historyRetail = $historyRetail;
+        $this->creditMemoHelper = $creditMemoHelper;
+    }
+
     public function cancel($orderInfo)
     {
         try {
@@ -78,32 +104,6 @@ class Cancel
     }
 
     /**
-     * Cancel constructor.
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
-     * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
-     * @param \Magento\Framework\Api\FilterFactory $filter
-     * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
-     */
-    public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger,
-        \Magento\Framework\Api\SearchCriteria $searchCriteria,
-        \Magento\Framework\Api\FilterFactory $filter,
-        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
-        \Gudtech\RetailOps\Model\Order\Status\History $historyRetail,
-        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
-    ) {
-        $this->orderRepository = $orderRepository;
-        $this->logger = $logger;
-        $this->searchCriteria = $searchCriteria;
-        $this->filter = $filter;
-        $this->filterGroup = $filterGroup;
-        $this->historyRetail = $historyRetail;
-        $this->creditMemoHelper = $creditMemoHelper;
-    }
-
-    /**
      * cancels an order
      *
      * @param   \Magento\Sales\Api\Data\OrderInterface $order
@@ -113,11 +113,11 @@ class Cancel
     private function cancelOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         if (!$order->canCancel()) {
-//            throw new \LogicException(__('Order cannot be Canceled'));
             return  $this->allRefund($order);
         }
 
         $order->cancel();
+        $order->addStatusToHistory($order->getStatus(), "Cancelled by RetailOps");
         $order->save();
     }
 

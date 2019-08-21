@@ -2,6 +2,7 @@
 
 namespace Gudtech\RetailOps\Model\Order;
 
+use Gudtech\RetailOps\Model\Api\Order\Cancel as OrderCancel;
 use Magento\Framework\App\ObjectManager;
 
 /**
@@ -10,40 +11,34 @@ use Magento\Framework\App\ObjectManager;
  */
 class Cancel
 {
-    const QUEUE = 'retailops/retailops_advanced/cancel_queue';
     /**
-     * @var \Gudtech\RetailOps\Model\Api\Order\Cancel
+     * @var OrderCancel
      */
     protected $cancelOrder;
 
     /**
-     * @var \Gudtech\RetailOps\Model\Queue\Cancel
+     * Cancel constructor.
+     *
+     * @param OrderCancel $cancelOrder
      */
-    protected $cancelQueue;
-
-    public function cancelOrder($postData)
-    {
-        if ($postData['order']) {
-            $scopeConfig = ObjectManager::getInstance()->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-            if (!$scopeConfig->getValue(self::QUEUE)) {
-                $response = $this->cancelOrder->cancel($postData['order']);
-            } else {
-                $response = $this->cancelQueue->cancel($postData['order']);
-            }
-            return $response;
-        }
-        return [];
+    public function __construct(
+        OrderCancel $cancelOrder
+    ) {
+        $this->cancelOrder = $cancelOrder;
     }
 
     /**
-     * Cancel constructor.
-     * @param \\Gudtech\RetailOps\Model\Api\Order\Cancel $cancelOrder
+     * Cancel the order
+     *
+     * @param $postData
+     * @return array
      */
-    public function __construct(
-        \Gudtech\RetailOps\Model\Api\Order\Cancel $cancelOrder,
-        \Gudtech\RetailOps\Model\Api\Queue\Cancel $cancelQueue
-    ) {
-        $this->cancelOrder = $cancelOrder;
-        $this->cancelQueue = $cancelQueue;
+    public function cancelOrder($postData)
+    {
+        if ($postData['order']) {
+            $response = $this->cancelOrder->cancel($postData['order']);
+            return $response;
+        }
+        return [];
     }
 }

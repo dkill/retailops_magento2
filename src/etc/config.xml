@@ -16,9 +16,6 @@
             <retailops_feed>
                 <inventory_push>1</inventory_push>
             </retailops_feed>
-            <retailops_advanced>
-                <cancel_queue>1</cancel_queue>
-            </retailops_advanced>
         </retailops>
     </default>
 </config>

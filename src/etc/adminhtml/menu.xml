@@ -9,8 +9,5 @@
         <add id="Gudtech_RetailOps::log_inventory" title="RetailOps Api logger" module="Gudtech_RetailOps"
              parent="Gudtech_RetailOps::inventory" action="gudtech_retailops/log/index"
              resource="Gudtech_RetailOps::inventory" sortOrder="30"/>
-        <add id="Gudtech_RetailOps::cancel_queue" title="RetailOps Cancel Queue" module="Gudtech_RetailOps"
-             parent="Magento_Reports::report_salesroot" action="gudtech_retailops/queue/cancel"
-             resource="Gudtech_RetailOps::inventory" sortOrder="100"/>
     </menu>
 </config>
