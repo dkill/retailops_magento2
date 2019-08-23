@@ -100,6 +100,7 @@ class Push extends AbstractController
                     $this->logger->addInfo("Processing data for SKU: ". $data['General']['SKU']);
                     $this->catalogPush->processData($data);
                 } catch (\Exception $exception) {
+
                     $this->logger->addCritical(
                         "Processing data failed for SKU ". $data['General']['SKU'] .": ". $exception->getMessage()
                     );

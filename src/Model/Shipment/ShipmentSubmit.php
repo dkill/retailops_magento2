@@ -68,10 +68,11 @@ class ShipmentSubmit
         try {
             $orderId = $this->getOrderIdByIncrement($postData['channel_order_refnum']);
             $order = $this->getOrder($orderId);
+
             $this->shipment->setOrder($order);
-            //create invoice, with shipments items
             $this->shipment->setUnShippedItems($postData);
             $this->shipment->setTrackingAndShipmentItems($postData);
+
             //for synchronize with complete block, add shipments key
             if (array_key_exists('shipment', $postData) && !array_key_exists('shipments', $postData)) {
                 $postData['shipments'][] = $postData['shipment'];
@@ -86,15 +87,15 @@ class ShipmentSubmit
                     $order,
                     $this->shipment->getShippmentItems()['items']
                 );
-                $this->itemsManager->canInvoiceItems($order, $needInvoiceItems);
-                $this->invoiceHelper->createInvoice($order, $needInvoiceItems);
 
+                if ($needInvoiceItems) {
+                    $this->itemsManager->canInvoiceItems($order, $needInvoiceItems);
+                    $this->invoiceHelper->createInvoice($order, $needInvoiceItems);
+                }
             }
             $this->shipment->registerShipment($postData);
         } catch (\Exception $e) {
             $this->setEventsInfo($e);
-//            $this->response['status'] = 'fail';
-
         } finally {
             $this->response['events'] = $this->events;
             return $this->response;

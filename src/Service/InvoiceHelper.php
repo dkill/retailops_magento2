@@ -4,6 +4,9 @@ namespace Gudtech\RetailOps\Service;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Sales\Model\Order\Invoice;
 
 /**
  * Invoice helper class.
@@ -16,17 +19,27 @@ class InvoiceHelper
         'paypal'=>1
     ];
     /**
-     * @var \Magento\Sales\Model\Service\InvoiceService
+     * @var InvoiceService
      */
-    protected $invoiceService;
+    private $invoiceService;
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * InvoiceHelper constructor.
+     *
+     * @param InvoiceService $invoiceService
+     */
+    public function __construct(InvoiceService $invoiceService)
+    {
+        $this->invoiceService = $invoiceService;
+    }
+
+    /**
+     * @param Order $order
      * @param $items
      * @return bool
      * @throws LocalizedException
      */
-    public function createInvoice(\Magento\Sales\Model\Order $order, $items = [])
+    public function createInvoice(Order $order, $items = [])
     {
         if (!count($items)>0) {
             return false;
@@ -37,24 +50,14 @@ class InvoiceHelper
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
             }
             if (!$invoice) {
-                throw new LocalizedException(__('We can\'t save the invoice right now.'));
+                throw new LocalizedException(__("We can't save the invoice right now."));
             }
 
-            // For verifying the API endpoints we get a quanity of 0 which does not pass this test.
-            //if (!$invoice->getTotalQty()) {
-            //    throw new \Magento\Framework\Exception\LocalizedException(
-            //        __('You can\'t create an invoice without products.')
-            //    );
-            //}
-
-            $invoice->addComment(
-                'Create for RetailOps'
-            );
-
+            $invoice->addComment('Invoiced by RetailOps');
             $invoice->register();
             $invoice->getOrder()->setIsInProcess(true);
-            return $this->saveInvoice($invoice);
 
+            return $this->saveInvoice($invoice);
         } else {
             return false;
         }
@@ -62,7 +65,7 @@ class InvoiceHelper
         return $invoice->getId() ? true : false;
     }
 
-    public function captureOnline(\Magento\Sales\Model\Order $order)
+    public function captureOnline(Order $order)
     {
         $method = $order->getPayment()->getMethod();
         if (array_key_exists($method, $this::$captureOnlinePayment)) {
@@ -73,18 +76,9 @@ class InvoiceHelper
     }
 
     /**
-     * InvoiceHelper constructor.
-     * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
+     * @param Invoice $invoice
      */
-    public function __construct(\Magento\Sales\Model\Service\InvoiceService $invoiceService)
-    {
-        $this->invoiceService = $invoiceService;
-    }
-
-    /**
-     * @param \Magento\Sales\Model\Order\Invoice $invoice
-     */
-    public function saveInvoice(\Magento\Sales\Model\Order\Invoice $invoice)
+    public function saveInvoice(Invoice $invoice)
     {
         $transactionSave = ObjectManager::getInstance()->create(
             \Magento\Framework\DB\Transaction::class

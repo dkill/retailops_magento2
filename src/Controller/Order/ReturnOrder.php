@@ -51,15 +51,15 @@ class ReturnOrder extends AbstractController
             $postData = (array)$this->getRequest()->getPost();
             $response = $this->orderReturn->returnOrder($postData);
             $this->responseEvents = $response;
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             $event = [
                 'event_type' => 'error',
-                'code' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
                 'diagnostic_data' => 'string',
                 'associations' => $this->association,
             ];
-            $this->error = $e;
+            $this->error = $exception;
             $this->events[] = $event;
             $this->statusRetOps = 'error';
 

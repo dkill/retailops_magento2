@@ -142,13 +142,6 @@ class Category extends Adapter
                                         $category = $this->categoryRepository->save($category);
 
                                         $this->categories[$index] = $category->getId();
-                                    } else {
-                                        $categoryId = $this->categories[$index];
-
-                                        $category = $this->categoryRepository->get($categoryId);
-                                        $category->addData($categoryData);
-
-                                        $this->categoryRepository->save($category);
                                     }
                                     $this->processedCategories[] = $index;
                                 }
