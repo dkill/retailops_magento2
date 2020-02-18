@@ -113,7 +113,7 @@ class Order
         $prepareOrder['shipping_address'] = $this->getAddress($order, $order->getShippingAddress());
         $prepareOrder['order_items'] = $this->getOrderItems($order);
         $prepareOrder['ship_service_code'] = $order->getShippingDescription();
-        //add gift message if available
+        // Add gift message if available
         if ($order->getGiftMessageAvailable()) {
             $giftHelper = ObjectManager::getInstance()->get(\Magento\GiftMessage\Helper\Message::class);
             $message = $giftHelper->getGiftMessage($order->getGiftMessageId());
@@ -206,7 +206,7 @@ class Order
      */
     private function getItemType($item)
     {
-        //@todo after design shipping with retaiops add logic for orders
+        // @todo after design shipping with retailops add logic for orders
         return 'ship';
     }
 

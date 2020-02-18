@@ -64,8 +64,8 @@ class Complete extends AbstractController
             /**
              * @var \Gudtech\RetailOps\Model\Order\Complete
              */
-            $orderFactrory = $this->orderFactory->create();
-            $response = $orderFactrory->updateOrder($postData);
+            $orderFactory = $this->orderFactory->create();
+            $response = $orderFactory->updateOrder($postData);
             $this->responseEvents = $response;
         } catch (\Exception $exception) {
             print $exception;

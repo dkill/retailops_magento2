@@ -2,18 +2,27 @@
 
 namespace Gudtech\RetailOps\Model\Api\Order;
 
+use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+use Gudtech\RetailOps\Api\Shipment\ShipmentInterface;
+use Gudtech\RetailOps\Model\Api\Traits\Filter;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Service\InvoiceHelper;
+use Gudtech\RetailOps\Service\ItemsManagerFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Service\OrderService;
+
 /**
  * Complete order class.
  *
  */
 class Complete
 {
-    use \Gudtech\RetailOps\Model\Api\Traits\Filter;
+    use Filter;
 
     const COMPLETE = 'complete';
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
@@ -64,17 +73,17 @@ class Complete
     protected $response;
 
     /**
-     * @var \Gudtech\RetailOps\Api\Shipment\ShipmentInterface
+     * @var ShipmentInterface
      */
     protected $shipment;
 
     /**
-     * @var \Gudtech\RetailOps\Service\InvoiceHelper
+     * @var InvoiceHelper
      */
     protected $invoiceHelper;
 
     /**
-     * @var \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface
+     * @var CreditMemoHelperInterface
      */
     protected $creditMemoHelper;
 
@@ -89,7 +98,36 @@ class Complete
     protected $orderManager;
 
     /**
+     * Complete constructor.
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Monolog $logger
+     * @param ShipmentInterface $shipment
+     * @param InvoiceHelper $invoiceHelper
+     * @param CreditMemoHelperInterface $creditMemoHelper
+     * @param ItemsManagerFactory $itemsManagerFactory
+     * @param OrderService $orderManagement
+     */
+    public function __construct(
+        OrderRepositoryInterface $orderRepository,
+        Monolog $logger,
+        ShipmentInterface $shipment,
+        InvoiceHelper $invoiceHelper,
+        CreditMemoHelperInterface $creditMemoHelper,
+        ItemsManagerFactory $itemsManagerFactory,
+        OrderService $orderManagement
+    ) {
+        $this->orderRepository = $orderRepository;
+        $this->logger =  $logger;
+        $this->shipment = $shipment;
+        $this->invoiceHelper = $invoiceHelper;
+        $this->creditMemoHelper = $creditMemoHelper;
+        $this->itemsManager = $itemsManagerFactory->create();
+        $this->orderManager = $orderManagement;
+    }
+
+    /**
      * @param array $postData
+     * @return array
      */
     public function completeOrder($postData)
     {
@@ -129,7 +167,7 @@ class Complete
         $this->cancel($this->getOrder($orderId));
         $this->getOrder($orderId)->setStatus(self::COMPLETE);
         $shipment->registerShipment($postData);
-        $this->removeAllUnShipedItems($this->getOrder($orderId, true));
+        $this->removeAllUnshippedItems($this->getOrder($orderId, true));
         return $this->response;
     }
 
@@ -156,7 +194,7 @@ class Complete
         }
     }
 
-    public function removeAllUnShipedItems(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function removeAllUnshippedItems(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         /**
          * @var \Magento\Sales\Api\Data\OrderItemInterface[] $items
@@ -208,33 +246,6 @@ class Complete
 
         }
         $this->events[] = $event;
-    }
-
-    /**
-     * Complete constructor.
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
-     * @param \Gudtech\RetailOps\Api\Shipment\ShipmentInterface
-     * @param \Gudtech\RetailOps\Service\InvoiceHelper $invoiceHelper
-     * @param \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
-     * @param \Magento\Sales\Model\Service\OrderService $orderManagement
-     */
-    public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger,
-        \Gudtech\RetailOps\Api\Shipment\ShipmentInterface $shipment,
-        \Gudtech\RetailOps\Service\InvoiceHelper $invoiceHelper,
-        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper,
-        \Gudtech\RetailOps\Service\ItemsManagerFactory $itemsManagerFactory,
-        \Magento\Sales\Model\Service\OrderService $orderManagement
-    ) {
-        $this->orderRepository = $orderRepository;
-        $this->logger =  $logger;
-        $this->shipment = $shipment;
-        $this->invoiceHelper = $invoiceHelper;
-        $this->creditMemoHelper = $creditMemoHelper;
-        $this->itemsManager = $itemsManagerFactory->create();
-        $this->orderManager = $orderManagement;
     }
 
     public function cancel($order)
