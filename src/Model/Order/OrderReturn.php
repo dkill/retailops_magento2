@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Model\Order;
 
+use Gudtech\RetailOps\Model\Api\Order\OrderReturn as OrderReturnApi;
+
 /**
  * Order return class.
  *
@@ -9,17 +11,27 @@ namespace Gudtech\RetailOps\Model\Order;
 class OrderReturn
 {
     /**
-     * @var \Gudtech\RetailOps\Model\Api\Order\OrderReturn
+     * @var OrderReturnApi
      */
     protected $orderReturn;
 
-    public function __construct(\Gudtech\RetailOps\Model\Api\Order\OrderReturn $orderReturn)
+    /**
+     * OrderReturn constructor.
+     *
+     * @param OrderReturnApi $orderReturn
+     */
+    public function __construct(OrderReturnApi $orderReturn)
     {
         $this->orderReturn = $orderReturn;
     }
 
+    /**
+     * Process returning the order.
+     *
+     * @param $data
+     */
     public function returnOrder($data)
     {
-        $this->orderReturn->returnData($data);
+        $this->orderReturn->returnOrder($data);
     }
 }

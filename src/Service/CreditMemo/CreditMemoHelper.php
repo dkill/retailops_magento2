@@ -65,6 +65,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
     /**
      * @param OrderItemInterface $orderItem
+     * @param $value
      * @return float
      */
     public function getQuantity(OrderItemInterface $orderItem, $value)

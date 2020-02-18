@@ -62,7 +62,7 @@ class Complete extends AbstractController
             }
             $postData = (array)$this->getRequest()->getPost();
             /**
-             * @var \Gudtech\RetailOps\Model\Order\Complete
+             * @var $orderFactory \Gudtech\RetailOps\Model\Order\Complete
              */
             $orderFactory = $this->orderFactory->create();
             $response = $orderFactory->updateOrder($postData);
