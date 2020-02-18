@@ -3,6 +3,7 @@
 namespace Gudtech\RetailOps\Model\Api\Order;
 
 use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+use Magento\Sales\Model\OrderFactory;
 
 /**
  * Return order class.
@@ -16,21 +17,41 @@ class OrderReturn
     private $creditMemoHelper;
 
     /**
+     * @var OrderFactory
+     */
+    private $orderFactory;
+
+    /**
      * OrderReturn constructor.
      *
      * @param CreditMemoHelperInterface $creditMemoHelper
      */
     public function __construct(
-      CreditMemoHelperInterface $creditMemoHelper
+        OrderFactory $orderFactory,
+        CreditMemoHelperInterface $creditMemoHelper
     ) {
+        $this->orderFactory = $orderFactory;
         $this->creditMemoHelper = $creditMemoHelper;
     }
 
     /**
-     * @param array $data
+     * @param array $postData
      */
-    public function returnOrder(array $data)
+    public function returnOrder($orderId, array $postData)
     {
-        $this->creditMemoHelper->create()
+        $order = $this->orderFactory->create()->loadByIncrementId($orderId);
+        $items = [];
+
+        foreach ($postData[$items] as $returnItem) {
+            foreach ($order->getItems() as $orderItem) {
+                if ($orderItem->getSku() == $returnItem['sku']) {
+                    $items[$orderItem->getId()] = (float) $returnItem['quantity'];
+                }
+            }
+        }
+
+        if (count($items)) {
+            return $this->creditMemoHelper->create($order, $items);
+        }
     }
 }

@@ -64,6 +64,23 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     protected $_objectManager;
 
     /**
+     * CreditMemoHelper constructor.
+     * @param CreditmemoLoader $creditmemoLoader
+     * @param CreditmemoSender $creditmemoSender
+     * @param InvoiceRepository $invoiceRepository
+     */
+    public function __construct(
+        CreditmemoLoader $creditmemoLoader,
+        CreditmemoSender $creditmemoSender,
+        InvoiceRepository $invoiceRepository
+    ) {
+        $this->creditmemoLoader = $creditmemoLoader;
+        $this->_objectManager = ObjectManager::getInstance();
+        $this->creditmemoSender = $creditmemoSender;
+        $this->invoiceRepository = $invoiceRepository;
+    }
+
+    /**
      * @param OrderItemInterface $orderItem
      * @param $value
      * @return float
@@ -261,17 +278,6 @@ class CreditMemoHelper implements CreditMemoHelperInterface
             return 0;
         }
         return 1;
-    }
-
-    public function __construct(
-        CreditmemoLoader $creditmemoLoader,
-        CreditmemoSender $creditmemoSender,
-        InvoiceRepository $invoiceRepository
-    ) {
-        $this->creditmemoLoader = $creditmemoLoader;
-        $this->_objectManager = ObjectManager::getInstance();
-        $this->creditmemoSender = $creditmemoSender;
-        $this->invoiceRepository = $invoiceRepository;
     }
 
     public function setAdjustmentPositive($amount)

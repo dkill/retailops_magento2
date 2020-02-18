@@ -26,12 +26,17 @@ class OrderReturn
     }
 
     /**
-     * Process returning the order.
+     * Process the RMA.
      *
-     * @param $data
+     * @param $postData
      */
-    public function returnOrder($data)
+    public function returnOrder($postData)
     {
-        $this->orderReturn->returnOrder($data);
+        if (!isset($postData['order']) || !isset($postData['return'])) {
+            throw new \LogicException(__("Don't have valid data"));
+        }
+
+        $orderId = $postData['order']['channel_order_refnum'];
+        $this->orderReturn->returnOrder($orderId, $postData['return']);
     }
 }
