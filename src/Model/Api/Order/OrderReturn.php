@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Model\Api\Order;
 
+use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+
 /**
  * Return order class.
  *
@@ -9,13 +11,26 @@ namespace Gudtech\RetailOps\Model\Api\Order;
 class OrderReturn
 {
     /**
-     * @param array $data
+     * @var CreditMemoHelperInterface
      */
-    public function returnData(array $data)
-    {
+    private $creditMemoHelper;
+
+    /**
+     * OrderReturn constructor.
+     *
+     * @param CreditMemoHelperInterface $creditMemoHelper
+     */
+    public function __construct(
+      CreditMemoHelperInterface $creditMemoHelper
+    ) {
+        $this->creditMemoHelper = $creditMemoHelper;
     }
 
-    public function __construct()
+    /**
+     * @param array $data
+     */
+    public function returnOrder(array $data)
     {
+        $this->creditMemoHelper->create()
     }
 }

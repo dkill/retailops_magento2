@@ -8,8 +8,14 @@ use Gudtech\RetailOps\Model\Api\Traits\Filter;
 use Gudtech\RetailOps\Model\Logger\Monolog;
 use Gudtech\RetailOps\Service\InvoiceHelper;
 use Gudtech\RetailOps\Service\ItemsManagerFactory;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
+use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order\Email\Sender\ShipmentSender;
 use Magento\Sales\Model\Service\OrderService;
+use Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader;
+use Magento\Shipping\Model\Config;
 
 /**
  * Complete order class.
@@ -35,13 +41,14 @@ class Complete
      * @var array
      */
     protected $cancelItems = [];
+
     /**
-     * @var \\Gudtech\RetailOps\Model\Logger\Monolog
+     * @var Monolog
      */
     protected $logger;
 
     /**
-     * @var \Magento\Shipping\Model\Config
+     * @var Config
      */
     protected $shippingConfig;
 
@@ -50,10 +57,13 @@ class Complete
      */
     protected $unShippmentItems = [];
 
+    /**
+     * @var array
+     */
     protected $shippmentItems = [];
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\ShipmentSender
+     * @var ShipmentSender
      */
     protected $shipmentSender;
 
@@ -63,7 +73,7 @@ class Complete
     protected $tracking;
 
     /**
-     * @var \Magento\Shipping\Controller\Adminhtml\Order\ShipmentLoader
+     * @var ShipmentLoader
      */
     protected $shipmentLoader;
 
@@ -88,12 +98,12 @@ class Complete
     protected $creditMemoHelper;
 
     /**
-     * @var \Magento\Sales\Api\Data\OrderInterface
+     * @var OrderInterface
      */
     protected $order;
 
     /**
-     * @var \Magento\Sales\Api\OrderManagementInterface
+     * @var OrderManagementInterface
      */
     protected $orderManager;
 
@@ -177,7 +187,7 @@ class Complete
             return $this->order;
         }
         /**
-         * @var \Magento\Sales\Api\Data\OrderInterface $order
+         * @var OrderInterface $order
          */
         $order = $this->orderRepository->get($orderId);
         if (!$order->getId()) {
@@ -187,23 +197,23 @@ class Complete
         return $this->order;
     }
 
-    public function createCreditMemoIfNeed(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function createCreditMemoIfNeed(OrderInterface $order, array $items)
     {
         if (count($items) > 0) {
             $this->creditMemoHelper->create($order, $items);
         }
     }
 
-    public function removeAllUnshippedItems(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function removeAllUnshippedItems(OrderInterface $order)
     {
         /**
-         * @var \Magento\Sales\Api\Data\OrderItemInterface[] $items
+         * @var OrderItemInterface[] $items
          */
         $items = $order->getItems();
         $refundedItems = [];
         foreach ($items as $item) {
             /**
-             * @var \Magento\Sales\Api\Data\OrderItemInterface $item
+             * @var OrderItemInterface $item
              */
             if ($item->getParentItem()) {
                 continue;
@@ -220,7 +230,7 @@ class Complete
      * @param $item
      * @return float
      */
-    protected function getRefundQuantity(\Magento\Sales\Api\Data\OrderItemInterface $item)
+    protected function getRefundQuantity(OrderItemInterface $item)
     {
         if ($item->getParentItem()) {
             $item = $item->getParentItem();

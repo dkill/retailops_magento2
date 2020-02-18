@@ -2,8 +2,18 @@
 
 namespace Gudtech\RetailOps\Service\CreditMemo;
 
+use Gudtech\RetailOps\Model\Api\Traits\FullFilter;
+use LogicException;
 use Magento\Framework\App\ObjectManager;
 use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Api\CreditmemoManagementInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
+use Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
+use Magento\Sales\Model\Order\InvoiceRepository;
 
 /**
  * Credit memo helper class.
@@ -11,52 +21,53 @@ use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
  */
 class CreditMemoHelper implements CreditMemoHelperInterface
 {
-    use \Gudtech\RetailOps\Model\Api\Traits\FullFilter;
+    use FullFilter;
 
     /**
      * @var float
      */
-    protected $adjustmentPositive=0;
+    protected $adjustmentPositive = 0;
 
     /**
      * @var float
      */
-    protected $refundCustomerbalanceReturnEnable=0;
+    protected $refundCustomerbalanceReturnEnable = 0;
 
     /**
      * @var float
      */
-    protected $adjustmentNegative=0;
+    protected $adjustmentNegative = 0;
 
     /**
      * @var float
      */
-    protected $shippingAmount=0;
+    protected $shippingAmount = 0;
 
     /**
-     * @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader
+     * @var CreditmemoLoader
      */
     protected $creditmemoLoader;
 
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender
+     * @var CreditmemoSender
      */
     protected $creditmemoSender;
 
     /**
-     * @var \Magento\Sales\Model\Order\InvoiceRepository
+     * @var InvoiceRepository
      */
     protected $invoiceRepository;
 
     /**
-     * @var \Magento\Framework\App\ObjectManager
+     * @var ObjectManager
      */
     protected $_objectManager;
+
     /**
-     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
+     * @param OrderItemInterface $orderItem
      * @return float
      */
-    public function getQuantity(\Magento\Sales\Api\Data\OrderItemInterface $orderItem, $value)
+    public function getQuantity(OrderItemInterface $orderItem, $value)
     {
         $value = (float)$value;
         if ($orderItem->getParentItem()) {
@@ -74,7 +85,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
         $qtyCreditMemo = $value - $delta;
         if ($qtyCreditMemo < 0 || $orderItemForCalc->getQtyOrdered() < $qtyCreditMemo) {
-            throw new \LogicException(
+            throw new LogicException(
                 'Qty of creditmemo more than quantity of invoice, item:'.$orderItemForCalc->getId()
             );
         }
@@ -83,14 +94,14 @@ class CreditMemoHelper implements CreditMemoHelperInterface
 
     /**
      * check, if we need create credit memo for product
-     * @param \Magento\Sales\Model\Order $order
+     * @param Order $order
      * @param array ['id'=>'quantity'] $items
      * @return array
      */
-    public function needCreditMemo(\Magento\Sales\Model\Order $order, $items = [])
+    public function needCreditMemo(Order $order, $items = [])
     {
         /**
-         * @var \Magento\Sales\Api\Data\OrderItemInterface[] $itemsOrder
+         * @var OrderItemInterface[] $itemsOrder
          */
         $itemsOrder = $order->getItems();
         $creditMemoItems = [];
@@ -113,11 +124,11 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return boolean
      */
-    public function create(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function create(OrderInterface $order, array $items)
     {
         $this->creditmemoLoader->setOrderId($order->getId());
         $this->creditmemoLoader->setCreditmemo($this->getPrepareCreditmemoData($order, $items));
@@ -129,16 +140,16 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         $creditmemo = $this->creditmemoLoader->load();
         if ($creditmemo) {
             if (!$creditmemo->isValidGrandTotal()) {
-                throw new \Magento\Framework\Exception\LocalizedException(
+                throw new LocalizedException(
                     __('The credit memo\'s total must be positive.')
                 );
             }
 
             /**
-             * @var \Magento\Sales\Api\CreditmemoManagementInterface $creditmemoManagement
+             * @var CreditmemoManagementInterface $creditmemoManagement
              */
             $creditmemoManagement = $this->_objectManager->create(
-                \Magento\Sales\Api\CreditmemoManagementInterface::class
+                CreditmemoManagementInterface::class
             );
             /**
              * $creditmemo, offline/online, send_email
@@ -148,11 +159,11 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return
      */
-    public function getInvoice(\Magento\Sales\Api\Data\OrderInterface $order, $items)
+    public function getInvoice(OrderInterface $order, $items)
     {
         $filter = $this->createFilter('order_id', 'eq', $order->getId());
         $this->addFilter('invoices', $filter);
@@ -171,7 +182,7 @@ class CreditMemoHelper implements CreditMemoHelperInterface
      * @param $items
      * @return array
      */
-    public function getPrepareCreditmemoData(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function getPrepareCreditmemoData(OrderInterface $order, array $items)
     {
         $prepare = [];
         $convertItems = [];
@@ -189,60 +200,60 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return int
      */
-    public function getAdjustmentPositive(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function getAdjustmentPositive(OrderInterface $order, array $items)
     {
         return $this->adjustmentPositive;
     }
 
-    public function getRefundCustomerbalanceReturnEnable(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function getRefundCustomerbalanceReturnEnable(OrderInterface $order, array $items)
     {
         return $this->refundCustomerbalanceReturnEnable;
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return int
      */
-    public function getAdjustmentNegative(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function getAdjustmentNegative(OrderInterface $order, array $items)
     {
         return $this->adjustmentNegative;
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param array $items
      * @return int
      */
-    public function getShippingAmount(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function getShippingAmount(OrderInterface $order, array $items)
     {
         return $this->shippingAmount;
     }
 
-    public function getCommentText(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function getCommentText(OrderInterface $order)
     {
         return __('Create for RetailOps response');
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param  array $items
      * @return bool
      */
-    public function setDoOffline(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function setDoOffline(OrderInterface $order, array $items)
     {
         return $this->isOfflineRefund($order);
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @return bool
      */
-    public function isOfflineRefund(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function isOfflineRefund(OrderInterface $order)
     {
         $payment = $order->getPayment();
         if ($payment && $payment->getBaseAmountPaidOnline() > 0) {
@@ -252,9 +263,9 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     }
 
     public function __construct(
-        \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader,
-        \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditmemoSender,
-        \Magento\Sales\Model\Order\InvoiceRepository $invoiceRepository
+        CreditmemoLoader $creditmemoLoader,
+        CreditmemoSender $creditmemoSender,
+        InvoiceRepository $invoiceRepository
     ) {
         $this->creditmemoLoader = $creditmemoLoader;
         $this->_objectManager = ObjectManager::getInstance();

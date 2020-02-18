@@ -2,6 +2,9 @@
 
 namespace Gudtech\RetailOps\Api\Services\CreditMemo;
 
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
+
 /**
  * Credit memo helper interface.
  *
@@ -9,16 +12,16 @@ namespace Gudtech\RetailOps\Api\Services\CreditMemo;
 interface CreditMemoHelperInterface
 {
     /**
-     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
+     * @param OrderItemInterface $orderItem
      * @param $value
      * @return float
      */
-    public function getQuantity(\Magento\Sales\Api\Data\OrderItemInterface $orderItem, $value);
+    public function getQuantity(OrderItemInterface $orderItem, $value);
 
     /**
      * @param $order
      * @param array $items
      * @return boolean;
      */
-    public function create(\Magento\Sales\Api\Data\OrderInterface $order, array $items);
+    public function create(OrderInterface $order, array $items);
 }
