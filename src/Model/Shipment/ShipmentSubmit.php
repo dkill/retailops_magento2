@@ -79,20 +79,6 @@ class ShipmentSubmit
                 unset($postData['shipment']);
             }
 
-            if (array_key_exists('items', $this->shipment->getShippmentItems()) &&
-                count($this->shipment->getShippmentItems()['items'])
-            ) {
-                //remove items, that already had invoice
-                $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems(
-                    $order,
-                    $this->shipment->getShippmentItems()['items']
-                );
-
-                if ($needInvoiceItems) {
-                    $this->itemsManager->canInvoiceItems($order, $needInvoiceItems);
-                    $this->invoiceHelper->createInvoice($order, $needInvoiceItems);
-                }
-            }
             $this->shipment->registerShipment($postData);
         } catch (\Exception $e) {
             $this->setEventsInfo($e);

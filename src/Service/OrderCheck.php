@@ -13,6 +13,16 @@ class OrderCheck implements \Gudtech\RetailOps\Api\Services\Order\CheckInterface
      */
     protected $orderRepository;
 
+    /**
+     * OrderCheck constructor.
+     *
+     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+     */
+    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository)
+    {
+        $this->orderRepository = $orderRepository;
+    }
+
     public function canInvoice(\Magento\Sales\Model\Order $order)
     {
         return $order->canInvoice();
@@ -102,10 +112,5 @@ class OrderCheck implements \Gudtech\RetailOps\Api\Services\Order\CheckInterface
             return $order;
         }
         throw new \LogicException('No order with id'.$orderId);
-    }
-
-    public function __construct(\Magento\Sales\Api\OrderRepositoryInterface $orderRepository)
-    {
-        $this->orderRepository = $orderRepository;
     }
 }

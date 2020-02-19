@@ -194,11 +194,10 @@ abstract class Shipment implements \Gudtech\RetailOps\Api\Shipment\ShipmentInter
         $transaction = \Magento\Framework\App\ObjectManager::getInstance()->create(
             \Magento\Framework\DB\Transaction::class
         );
-        $transaction->addObject(
-            $shipment
-        )->addObject(
-            $shipment->getOrder()
-        )->save();
+        $transaction
+            ->addObject($shipment)
+            ->addObject($shipment->getOrder())
+            ->save();
 
         return $this;
     }
@@ -244,6 +243,11 @@ abstract class Shipment implements \Gudtech\RetailOps\Api\Shipment\ShipmentInter
         return $this->order;
     }
 
+    /**
+     * Registers and creates the shipment.
+     *
+     * @param array $postData
+     */
     public function registerShipment(array $postData = [])
     {
         $this->setUnShippedItems($postData);

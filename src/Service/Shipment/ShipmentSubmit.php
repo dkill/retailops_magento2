@@ -38,52 +38,6 @@ class ShipmentSubmit extends \Gudtech\RetailOps\Service\Shipment
         parent::__construct($shippingConfig, $shipmentLoader, $shipmentSender);
     }
 
-    /**
-     * @param array $postData
-     */
-    public function registerShipment(array $postData = [])
-    {
-        if (!$this->getOrder()) {
-            throw new \LogicException(__('No any orders'));
-        }
-        $order = $this->getOrder();
-        if (!$this->orderCheck->canOrderShip($this->getOrder())) {
-            throw new \LogicException(__(sprintf('This order can\'t be ship, order number: %s', $this->getOrder()->getId())));
-        }
-        $this->setUnShippedItems($postData);
-        //synchonize api with Shipment abstract class
-//        if(isset($postData['shipment'])) {
-//            $postData['shipments'] = $postData['shipment'];
-//        }
-        $this->setTrackingAndShipmentItems($postData);
-
-        /**
-         * check, issset this items in order
-         */
-        $shipmentItems = $this->getShippmentItems();
-        try {
-
-            if (is_array($shipmentItems) && array_key_exists('items', $shipmentItems)) {
-                $this->issetItems($shipmentItems['items'], $order);
-            }
-            /**
-             * check, if in order we have enough products for shipment
-             */
-            $this->haveQuantityToShip($shipmentItems['items'], $order);
-
-            if ($this->orderCheck->getForcedShipmentWithInvoice($order)) {
-                $this->invoiceHelper->createInvoice($order, $this->getShippmentItems());
-            }
-        } catch (\Exception $e) {
-
-            if ($this->orderCheck->getForcedShipmentWithInvoice($order)) {
-                $this->invoiceHelper->createInvoice($this->getShippmentItems(), $order);
-            }
-
-            $this->createShipment($this->getOrder());
-        }
-    }
-
     protected function issetItems($items, \Magento\Sales\Api\Data\OrderInterface $order)
     {
         if (is_array($items) && count($items)) {
@@ -110,8 +64,10 @@ class ShipmentSubmit extends \Gudtech\RetailOps\Service\Shipment
         if (!isset($shipment['packages'])) {
             throw new \LogicException(__('No any package for orders'));
         }
-            $tracking = [];
-            $magentoTracking = $this->_getCarriersInstances();
+
+        $tracking = [];
+        $magentoTracking = $this->_getCarriersInstances();
+
         foreach ($shipment['packages'] as $package) {
             $carrierName = isset($package['carrier_name']) ? strtolower($package['carrier_name']) : null;
             if ($carrierName === null) {

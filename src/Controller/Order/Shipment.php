@@ -33,10 +33,13 @@ class Shipment extends AbstractController
      */
     protected $statusRetOps = 'success';
 
+    /**
+     * @var array
+     */
     private $responseEvents = [];
 
     /**
-     * @var array|null
+     * @var array
      */
     protected $events=[];
 
@@ -84,7 +87,6 @@ class Shipment extends AbstractController
             if (!array_key_exists('events', $this->responseEvents)) {
                 $this->responseEvents['events'] = [];
             }
-//            $this->response['status'] = $this->response['status'] ?? $this->statusRetOps;
             foreach ($this->events as $event) {
                 $this->responseEvents['events'][] = $event;
             }
