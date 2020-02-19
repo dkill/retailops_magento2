@@ -2,43 +2,48 @@
 
 namespace Gudtech\RetailOps\Model\Api\Traits;
 
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use LogicException;
+use Magento\Framework\Api\Filter as FilterApi;
+use Magento\Framework\Api\Search\FilterGroup;
+use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 trait Filter
 {
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @var \Gudtech\RetailOps\Model\Logger\Monolog
+     * @var Monolog
      */
     protected $logger;
 
     /**
-     * @var \Magento\Framework\Api\SearchCriteria
+     * @var SearchCriteria
      */
     protected $searchCriteria;
 
     /**
-     * @var \Magento\Framework\Api\Filter
+     * @var FilterApi
      */
     protected $filter;
 
     /**
-     * @var \Magento\Framework\Api\Search\FilterGroup
+     * @var FilterGroup
      */
     protected $filterGroup;
+
     /**
      * @param array $filters
      * @return mixed
      */
     public function createFilterGroups(array $filters)
     {
-        /**
-         * @var  \Magento\Framework\Api\Search\FilterGroup
-         */
         $filterGroup = $this->filterGroup->create();
         $filterGroup->setFilters($filters);
         return $filterGroup;
@@ -48,7 +53,7 @@ trait Filter
      * @param $field
      * @param $operator
      * @param $value
-     * @return \Magento\Framework\Api\Filter
+     * @return FilterApi
      */
     public function createFilter($field, $operator, $value)
     {
@@ -60,29 +65,29 @@ trait Filter
     }
 
     /**
-     * @param string|int $order
+     * @param string|int $orderIncrementId
      * @return string|null
      */
-    public function getOrderIdByIncrement($orderInc)
+    public function getOrderIdByOrderIncrementId($orderIncrementId)
     {
-        $orders[$orderInc] = 1;
-        $ordersId = array_keys($this->setOrderIdByIncrementId($orders));
+        $orders[$orderIncrementId] = 1;
+        $ordersId = array_keys($this->setOrderIdByOrderIncrementId($orders));
         if (!is_array($ordersId) || !count($ordersId)) {
-            throw new \LogicException(__('This increment id doesn\'t exists'));
+            throw new LogicException(__('This increment id doesn\'t exists'));
         }
-        $orderId = reset($ordersId);
-        return $orderId;
+        return reset($ordersId);
     }
 
     /**
-     * @param $orders
+     * @param array $orders
+     * @return array
      */
-    public function setOrderIdByIncrementId($orders = [])
+    public function setOrderIdByOrderIncrementId($orders = [])
     {
         $existsOrders = [];
 
         if (count($orders)) {
-            $resource = ObjectManager::getInstance()->get(\Magento\Framework\App\ResourceConnection::class);
+            $resource = ObjectManager::getInstance()->get(ResourceConnection::class);
             $connection = $resource->getConnection();
             $template = 'increment_id IN (%s)';
             $orderKeys = array_keys($orders);
@@ -106,8 +111,12 @@ trait Filter
         return $existsOrders;
     }
 
-    public function addQuote(&$item)
+    /**
+     * @param string $item
+     * @return string
+     */
+    public function addQuote($item)
     {
-        $item = "'".$item."'";
+        return "'" . $item . "'";
     }
 }

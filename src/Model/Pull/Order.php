@@ -198,7 +198,7 @@ class Order
                 }
             }
         }
-        return $this->setOrderIdByIncrementId($orders_id);
+        return $this->setOrderIdByOrderIncrementId($orders_id);
     }
 
     protected function getCurrentPage($pageToken = null)

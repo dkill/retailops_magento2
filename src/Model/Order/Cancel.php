@@ -36,8 +36,7 @@ class Cancel
     public function cancelOrder($postData)
     {
         if ($postData['order']) {
-            $response = $this->cancelOrder->cancel($postData['order']);
-            return $response;
+            return $this->cancelOrder->cancel($postData['order']);
         }
         return [];
     }

@@ -2,59 +2,77 @@
 
 namespace Gudtech\RetailOps\Model\Shipment;
 
+use Exception;
+use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+use Gudtech\RetailOps\Api\Shipment\ShipmentInterface;
+use Gudtech\RetailOps\Model\Api\Traits\Filter;
+use Gudtech\RetailOps\Service\InvoiceHelper;
+use Gudtech\RetailOps\Service\ItemsManager;
+use Gudtech\RetailOps\Service\ItemsManagerFactory;
+use Gudtech\RetailOps\Service\OrderCheck;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderManagementInterface;
+use Magento\Sales\Model\Service\OrderService;
+
 /**
  * Shipment submit class.
  *
  */
 class ShipmentSubmit
 {
-    use \Gudtech\RetailOps\Model\Api\Traits\Filter;
+    use Filter;
 
     /**
-     * @var \Gudtech\RetailOps\Api\Shipment\ShipmentInterface
+     * @var ShipmentInterface
      */
     protected $shipment;
 
     /**
-     * @var \Gudtech\RetailOps\Service\OrderCheck
+     * @var OrderCheck
      */
     protected $orderCheck;
 
     /**
-     * @var \Gudtech\RetailOps\Service\ItemsManager
+     * @var ItemsManager
      */
     protected $itemsManager;
 
-    protected $events=[];
+    /**
+     * @var array
+     */
+    protected $events = [];
 
+    /**
+     * @var array
+     */
     protected $response;
 
     /**
-     * @var \Gudtech\RetailOps\Service\InvoiceHelper
+     * @var InvoiceHelper
      */
     protected $invoiceHelper;
 
     /**
-     * @var \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface
+     * @var CreditMemoHelperInterface
      */
     protected $creditMemoHelper;
 
     /**
-     * @var \Magento\Sales\Api\OrderManagementInterface
+     * @var OrderManagementInterface
      */
     protected $orderManager;
 
     /**
      * ShipmentSubmit constructor.
-     * @param \Gudtech\RetailOps\Api\Shipment\ShipmentInterface $shipment
-     * @param \Gudtech\RetailOps\Service\OrderCheck $orderCheck
+     * @param ShipmentInterface $shipment
+     * @param OrderCheck $orderCheck
      */
     public function __construct(
-        \Gudtech\RetailOps\Api\Shipment\ShipmentInterface $shipment,
-        \Gudtech\RetailOps\Service\OrderCheck $orderCheck,
-        \Gudtech\RetailOps\Service\ItemsManagerFactory $itemsManagerFactory,
-        \Magento\Sales\Model\Service\OrderService $orderManagement,
-        \Gudtech\RetailOps\Service\InvoiceHelper $invoiceHelper
+        ShipmentInterface $shipment,
+        OrderCheck $orderCheck,
+        ItemsManagerFactory $itemsManagerFactory,
+        OrderService $orderManagement,
+        InvoiceHelper $invoiceHelper
     ) {
         $this->shipment = $shipment;
         $this->orderCheck = $orderCheck;
@@ -66,7 +84,7 @@ class ShipmentSubmit
     public function updateOrder(array $postData)
     {
         try {
-            $orderId = $this->getOrderIdByIncrement($postData['channel_order_refnum']);
+            $orderId = $this->getOrderIdByOrderIncrementId($postData['channel_order_refnum']);
             $order = $this->getOrder($orderId);
 
             $this->shipment->setOrder($order);
@@ -80,7 +98,7 @@ class ShipmentSubmit
             }
 
             $this->shipment->registerShipment($postData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->setEventsInfo($e);
         } finally {
             $this->response['events'] = $this->events;
@@ -89,7 +107,7 @@ class ShipmentSubmit
     }
 
     /**
-     * @param  \Exception $e
+     * @param  Exception $e
      */
     protected function setEventsInfo($e)
     {
@@ -110,6 +128,7 @@ class ShipmentSubmit
 
     /**
      * @param int|string $orderId
+     * @return OrderInterface
      */
     protected function getOrder($orderId)
     {

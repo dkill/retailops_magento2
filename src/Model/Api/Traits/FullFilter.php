@@ -129,8 +129,12 @@ trait FullFilter
         return $existsOrders;
     }
 
+    /**
+     * @param string $item
+     * @return string
+     */
     public function addQuote($item)
     {
-        return '`'.$item.'`';
+        return "'" . $item . "'";
     }
 }

@@ -147,7 +147,7 @@ class Complete
             throw new \LogicException(__("Don't have any order refnum"));
         }
 
-        $orderId = $this->getOrderIdByIncrement($postData['channel_order_refnum']);
+        $orderId = $this->getOrderIdByOrderIncrementId($postData['channel_order_refnum']);
 
         $shipment = $this->shipment;
         $shipment->setOrder($this->getOrder($orderId));

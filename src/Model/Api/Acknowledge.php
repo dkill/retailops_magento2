@@ -2,7 +2,14 @@
 
 namespace Gudtech\RetailOps\Model\Api;
 
+use Exception;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use LogicException;
+use Magento\Framework\Api\FilterFactory;
+use Magento\Framework\Api\Search\FilterGroupFactory;
+use Magento\Framework\Api\SearchCriteria;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 /**
  * Acknowlegde class.
@@ -37,16 +44,18 @@ class Acknowledge
     /**
      * Acknowledge constructor.
      *
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
-     * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Monolog $logger
+     * @param SearchCriteria $searchCriteria
+     * @param FilterFactory $filter,
+     * @param FilterGroupFactory $filterGroup
      */
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger,
-        \Magento\Framework\Api\SearchCriteria $searchCriteria,
-        \Magento\Framework\Api\FilterFactory $filter,
-        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
+        OrderRepositoryInterface $orderRepository,
+        Monolog $logger,
+        SearchCriteria $searchCriteria,
+        FilterFactory $filter,
+        FilterGroupFactory $filterGroup
     ) {
         $this->orderRepository = $orderRepository;
         $this->logger = $logger;
@@ -58,7 +67,7 @@ class Acknowledge
     /**
      * @param array $orders
      * @return array
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function setOrderNumbers($orders)
     {
@@ -66,7 +75,7 @@ class Acknowledge
             $orderIds = $this->getOrderIds($orders);
 
             if (!count($orderIds)) {
-                throw new \LogicException(__("Don't have any numbers of orders"));
+                throw new LogicException(__("Don't have any numbers of orders"));
             }
 
             $filter = $this->createFilter('entity_id', 'in', array_keys($orderIds));
@@ -96,7 +105,7 @@ class Acknowledge
 
                 }
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $event = [];
             $event['event_type'] = 'error';
             $event['code'] = $exception->getCode();
@@ -147,7 +156,7 @@ class Acknowledge
     protected function getOrderIds($orders)
     {
         if (!is_array($orders) || !count($orders)) {
-            throw new \LogicException(__("Don't have any order ids in request"));
+            throw new LogicException(__("Don't have any order ids in request"));
         }
 
         $orderIds = [];
@@ -161,6 +170,6 @@ class Acknowledge
             }
         }
 
-        return $this->setOrderIdByIncrementId($orderIds);
+        return $this->setOrderIdByOrderIncrementId($orderIds);
     }
 }
