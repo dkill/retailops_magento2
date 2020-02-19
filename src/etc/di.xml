@@ -27,11 +27,6 @@
             <argument name="calculateItemPrice" xsi:type="object">Gudtech\RetailOps\Service\CalculateItemPrice</argument>
         </arguments>
     </type>
-    <type name="Gudtech\RetailOps\Model\Api\Map\UpcFinder">
-        <arguments>
-            <argument name="linkByUpcRepository" xsi:type="object">Gudtech\RetailOps\Model\RoRicsLinkUpcRepository</argument>
-        </arguments>
-    </type>
 
     <type name="Gudtech\RetailOps\Model\Api\Order\Cancel">
         <arguments>
