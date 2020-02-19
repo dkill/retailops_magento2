@@ -118,12 +118,12 @@ class ItemsManager implements \Gudtech\RetailOps\Api\ItemsManagerInterface
     public function canInvoiceItems(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
     {
         foreach ($order->getItems() as $orderItem) {
-            if (array_key_exists($orderItem->getSku(), $items)) {
-                $quantity = $items[$orderItem->getSku()];
+            if (array_key_exists($orderItem->getId(), $items)) {
+                $quantity = $items[$orderItem->getId()];
                 if ($orderItem->getQtyToInvoice() < $quantity) {
                     throw new \LogicException(__('Cannot create invoice for this item:'.$orderItem->getId()));
                 }
-                unset($items[$orderItem->getSku()]);
+                unset($items[$orderItem->getId()]);
             }
         }
         if (count($items)) {
