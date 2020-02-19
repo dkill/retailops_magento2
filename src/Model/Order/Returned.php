@@ -2,27 +2,27 @@
 
 namespace Gudtech\RetailOps\Model\Order;
 
-use Gudtech\RetailOps\Model\Api\Order\OrderReturn as OrderReturnApi;
+use Gudtech\RetailOps\Model\Api\Order\Returned as ReturnedApi;
 
 /**
  * Order return class.
  *
  */
-class OrderReturn
+class Returned
 {
     /**
-     * @var OrderReturnApi
+     * @var ReturnedApi
      */
-    protected $orderReturn;
+    protected $returnedApi;
 
     /**
      * OrderReturn constructor.
      *
-     * @param OrderReturnApi $orderReturn
+     * @param ReturnedApi $returnedApi
      */
-    public function __construct(OrderReturnApi $orderReturn)
+    public function __construct(ReturnedApi $returnedApi)
     {
-        $this->orderReturn = $orderReturn;
+        $this->returnedApi = $returnedApi;
     }
 
     /**
@@ -37,6 +37,6 @@ class OrderReturn
         }
 
         $orderId = $postData['order']['channel_order_refnum'];
-        $this->orderReturn->returnOrder($orderId, $postData['return']);
+        $this->returnedApi->returnOrder($orderId, $postData['return']);
     }
 }

@@ -2,17 +2,27 @@
 
 namespace Gudtech\RetailOps\Model\Order;
 
+use Gudtech\RetailOps\Model\Api\Order\Complete as CompleteApi;
+
 /**
  * Complete order class.
  *
  */
 class Complete
 {
-    protected $completeOrder;
+    /**
+     * @var CompleteApi
+     */
+    protected $completeApi;
 
-    public function __construct(\Gudtech\RetailOps\Model\Api\Order\Complete $completeOrder)
+    /**
+     * Complete constructor.
+     *
+     * @param CompleteApi $completeApi
+     */
+    public function __construct(CompleteApi $completeApi)
     {
-        $this->completeOrder = $completeOrder;
+        $this->completeApi = $completeApi;
     }
 
     public function updateOrder($postData)
@@ -20,6 +30,6 @@ class Complete
         if (!isset($postData['order']) || !isset($postData['order']['shipments'])) {
             throw new \LogicException(__("Don't have valid data"));
         }
-        $this->completeOrder->completeOrder($postData['order']);
+        $this->completeApi->completeOrder($postData['order']);
     }
 }

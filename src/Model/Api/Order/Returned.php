@@ -9,7 +9,7 @@ use Magento\Sales\Model\OrderFactory;
  * Return order class.
  *
  */
-class OrderReturn
+class Returned
 {
     /**
      * @var CreditMemoHelperInterface
@@ -42,7 +42,7 @@ class OrderReturn
         $order = $this->orderFactory->create()->loadByIncrementId($orderId);
         $items = [];
 
-        foreach ($postData[$items] as $returnItem) {
+        foreach ($postData['items'] as $returnItem) {
             foreach ($order->getItems() as $orderItem) {
                 if ($orderItem->getSku() == $returnItem['sku']) {
                     $items[$orderItem->getId()] = (float) $returnItem['quantity'];

@@ -71,7 +71,13 @@
                 </field>
                 <field id="order_update" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
                     <label>
-                        Enable order update
+                        Enable order update feed
+                    </label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="order_return" type="select" showInDefault="1" showInStore="0" sortOrder="30" translate="label" showInWebsite="0">
+                    <label>
+                        Enable order return feed
                     </label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

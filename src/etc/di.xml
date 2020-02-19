@@ -2,6 +2,7 @@
     <preference for="Gudtech\RetailOps\Api\Data\InventoryHistorySearchInterface" type="Magento\Framework\Api\SearchResults" />
     <preference for="Gudtech\RetailOps\Api\Data\InventoryHistoryInterface" type="Gudtech\RetailOps\Model\InventoryHistory" />
     <preference for="Gudtech\RetailOps\Api\InventoryHistoryInterface" type="Gudtech\RetailOps\Model\InventoryHistoryRepository" />
+    <preference for="Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface" type="Gudtech\RetailOps\Service\CreditMemo\CreditMemoHelper" />
     <type name="Gudtech\RetailOps\Model\Api\Order\Complete">
         <arguments>
             <argument shared="false" name="shipment" xsi:type="object">\Gudtech\RetailOps\Service\Shipment\Complete</argument>

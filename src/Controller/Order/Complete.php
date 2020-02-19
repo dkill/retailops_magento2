@@ -68,7 +68,6 @@ class Complete extends AbstractController
             $response = $orderFactory->updateOrder($postData);
             $this->responseEvents = $response;
         } catch (\Exception $exception) {
-            print $exception;
             $event = [
                 'event_type' => 'error',
                 'code' => $exception->getCode(),

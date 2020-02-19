@@ -78,7 +78,7 @@ class Authorized
                 $this->response->setContent($exception->getMessage());
                 $this->response->setStatusCode('401');
             } else {
-                $this->response->setContent(__('Error occur while do request'));
+                $this->response->setContent(__('Error occured while doing the request.'));
                 $this->response->setStatusCode('500');
             }
             $this->logger->addCritical(
