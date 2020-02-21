@@ -12,6 +12,11 @@ use Magento\Sales\Model\OrderFactory;
 class Returned
 {
     /**
+     * @var string
+     */
+    const REFUND_TYPE_STORE_CREDIT = 'storecredit';
+
+    /**
      * @var CreditMemoHelperInterface
      */
     private $creditMemoHelper;
@@ -44,14 +49,20 @@ class Returned
 
         foreach ($postData['items'] as $returnItem) {
             foreach ($order->getItems() as $orderItem) {
-                if ($orderItem->getSku() == $returnItem['sku']) {
+                if ($orderItem->getSku() == $returnItem['sku'] && !$orderItem->getParentItemId()) {
                     $items[$orderItem->getId()] = (float) $returnItem['quantity'];
                 }
             }
         }
 
         if (count($items)) {
-            return $this->creditMemoHelper->create($order, $items);
+            if ($postData['refund_action'] == self::REFUND_TYPE_STORE_CREDIT) {
+                $this->creditMemoHelper->setRefundCustomerbalanceReturnEnable(1);
+                $this->creditMemoHelper->setRefundCustomerbalanceReturnAmount(($postData['refund_amt'] + $postData['shipping_amt']));
+            }
+
+            $this->creditMemoHelper->setShippingAmount($postData['shipping_amt']);
+            $this->creditMemoHelper->create($order, $items);
         }
     }
 }

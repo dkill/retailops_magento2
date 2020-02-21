@@ -70,7 +70,7 @@ class Returned extends AbstractController
 
     public function execute()
     {
-        try {
+       try {
             if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
             }

@@ -4,16 +4,19 @@ namespace Gudtech\RetailOps\Service\CreditMemo;
 
 use Gudtech\RetailOps\Model\Api\Traits\FullFilter;
 use LogicException;
-use Magento\Framework\App\ObjectManager;
 use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Sales\Api\CreditmemoManagementInterface;
+use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Config as OrderConfig;
 use Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
-use Magento\Sales\Model\Order\InvoiceRepository;
+use Magento\Sales\Model\Order\OrderStateResolverInterface;
+use Magento\Sales\Model\Order\CreditmemoFactory;
+use Magento\Sales\Model\Order\RefundAdapterInterface;
 
 /**
  * Credit memo helper class.
@@ -36,6 +39,11 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     /**
      * @var float
      */
+    private $refundCustomerbalanceReturn = 0;
+
+    /**
+     * @var float
+     */
     protected $adjustmentNegative = 0;
 
     /**
@@ -44,9 +52,14 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     protected $shippingAmount = 0;
 
     /**
-     * @var CreditmemoLoader
+     * @var int
      */
-    protected $creditmemoLoader;
+    private $sendEmail = 1;
+
+    /**
+     * @var CreditmemoFactory
+     */
+    protected $creditmemoFactory;
 
     /**
      * @var CreditmemoSender
@@ -54,30 +67,48 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     protected $creditmemoSender;
 
     /**
-     * @var InvoiceRepository
+     * @var OrderRepository
      */
-    protected $invoiceRepository;
+    protected $orderRepository;
 
     /**
-     * @var ObjectManager
+     * @var RefundAdapterInterface
      */
-    protected $_objectManager;
+    private $refundAdapter;
+
+    /**
+     * @var OrderStateResolverInterface
+     */
+    private $orderStateResolver;
+
+    /**
+     * @var CreditmemoRepositoryInterface
+     */
+    private $creditmemoRepository;
 
     /**
      * CreditMemoHelper constructor.
-     * @param CreditmemoLoader $creditmemoLoader
+     *
+     * @param CreditmemoFactory $creditmemoFactory
      * @param CreditmemoSender $creditmemoSender
-     * @param InvoiceRepository $invoiceRepository
+     * @param OrderRepository $invoiceRepository
      */
     public function __construct(
-        CreditmemoLoader $creditmemoLoader,
+        CreditmemoFactory $creditmemoFactory,
         CreditmemoSender $creditmemoSender,
-        InvoiceRepository $invoiceRepository
+        OrderRepositoryInterface $orderRepository,
+        CreditmemoRepositoryInterface $creditmemoRepository,
+        OrderStateResolverInterface $orderStateResolver,
+        OrderConfig $config,
+        RefundAdapterInterface $refundAdapter
     ) {
-        $this->creditmemoLoader = $creditmemoLoader;
-        $this->_objectManager = ObjectManager::getInstance();
+        $this->creditmemoFactory = $creditmemoFactory;
         $this->creditmemoSender = $creditmemoSender;
-        $this->invoiceRepository = $invoiceRepository;
+        $this->orderRepository = $orderRepository;
+        $this->creditmemoRepository = $creditmemoRepository;
+        $this->orderStateResolver = $orderStateResolver;
+        $this->config = $config;
+        $this->refundAdapter = $refundAdapter;
     }
 
     /**
@@ -144,55 +175,51 @@ class CreditMemoHelper implements CreditMemoHelperInterface
     /**
      * @param OrderInterface $order
      * @param array $items
-     * @return boolean
+     * @return Order\Creditmemo
      */
     public function create(OrderInterface $order, array $items)
     {
-        $this->creditmemoLoader->setOrderId($order->getId());
-        $this->creditmemoLoader->setCreditmemo($this->getPrepareCreditmemoData($order, $items));
-        $invoice = $this->getInvoice($order, $items);
-        if ($invoice) {
-            $this->creditmemoLoader->setInvoiceId($invoice->getId());
-        }
+        $data = [
+            'qtys' => $items,
+        ];
 
-        $creditmemo = $this->creditmemoLoader->load();
+        $creditmemo = $this->creditmemoFactory->createByOrder($order, $data);
+
         if ($creditmemo) {
+
+            $creditmemo->setCustomerBalanceRefundFlag($this->getRefundCustomerbalanceReturnEnable($order, $items));
+            $creditmemo->setBsCustomerBalTotalRefunded($this->getRefundCustomerbalanceReturn($order, $items));
+            $creditmemo->setCustomerBalTotalRefunded($this->getRefundCustomerbalanceReturn($order, $items));
+            $creditmemo->setBaseCustomerBalanceRefunded($this->getRefundCustomerbalanceReturn($order, $items));
+            $creditmemo->setCustomerBalanceRefunded($this->getRefundCustomerbalanceReturn($order, $items));
+            $creditmemo->setBaseCustomerBalanceReturnMax($this->getRefundCustomerbalanceReturn($order, $items));
+
             if (!$creditmemo->isValidGrandTotal()) {
                 throw new LocalizedException(
                     __('The credit memo\'s total must be positive.')
                 );
             }
 
-            /**
-             * @var CreditmemoManagementInterface $creditmemoManagement
-             */
-            $creditmemoManagement = $this->_objectManager->create(
-                CreditmemoManagementInterface::class
-            );
-            /**
-             * $creditmemo, offline/online, send_email
-             */
-            $creditmemoManagement->refund($creditmemo, $this->isOfflineRefund($order), 0);
-        }
-    }
+            $creditmemo->setState(\Magento\Sales\Model\Order\Creditmemo::STATE_REFUNDED);
+            $order->setCustomerNoteNotify($this->getSendEmail($order));
+            $order = $this->refundAdapter->refund($creditmemo, $order);
+            $orderState = $this->orderStateResolver->getStateForOrder($order, []);
+            $order->setState($orderState);
+            $statuses = $this->config->getStateStatuses($orderState, false);
+            $status = in_array($order->getStatus(), $statuses, true)
+                ? $order->getStatus()
+                : $this->config->getStateDefaultStatus($orderState);
+            $order->setStatus($status);
 
-    /**
-     * @param OrderInterface $order
-     * @param array $items
-     * @return
-     */
-    public function getInvoice(OrderInterface $order, $items)
-    {
-        $filter = $this->createFilter('order_id', 'eq', $order->getId());
-        $this->addFilter('invoices', $filter);
-        $this->addFilterGroups();
-        $invoices = $this->invoiceRepository->getList($this->searchCriteria);
-        foreach ($invoices as $invoice) {
-            //return first invoice
-            return $invoice;
+            $creditmemo = $this->creditmemoRepository->save($creditmemo);
+            $order = $this->orderRepository->save($order);
+
+            if ($this->getSendEmail($order)) {
+                $this->creditmemoSender->send($creditmemo);
+            }
         }
 
-        return null;
+        return $creditmemo;
     }
 
     /**
@@ -210,10 +237,13 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         $prepare['items'] = $convertItems;
         $prepare['do_offline'] = $this->setDoOffline($order, $items);
         $prepare['comment_text'] = $this->getCommentText($order);
+        $prepare['send_email'] = $this->getSendEmail($order);
         $prepare['shipping_amount'] = $this->getShippingAmount($order, $items);
         $prepare['adjustment_positive'] = $this->getAdjustmentPositive($order, $items);
         $prepare['adjustment_negative'] = $this->getAdjustmentNegative($order, $items);
-        $prepare['refund_customerbalance_return_enable'] = $this->getRefundCustomerbalanceReturnEnable($order, $items);
+        $prepare['customer_balance_refund_flag'] = $this->getRefundCustomerbalanceReturnEnable($order, $items);
+        $prepare['customer_balance_amount'] = $this->getRefundCustomerbalanceReturn($order, $items);
+
         return $prepare;
     }
 
@@ -227,9 +257,24 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         return $this->adjustmentPositive;
     }
 
+    /**
+     * @param OrderInterface $order
+     * @param array $items
+     * @return int
+     */
     public function getRefundCustomerbalanceReturnEnable(OrderInterface $order, array $items)
     {
         return $this->refundCustomerbalanceReturnEnable;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param array $items
+     * @return float
+     */
+    public function getRefundCustomerbalanceReturn(OrderInterface $order, array $items)
+    {
+        return $this->refundCustomerbalanceReturn;
     }
 
     /**
@@ -252,9 +297,13 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         return $this->shippingAmount;
     }
 
+    /**
+     * @param OrderInterface $order
+     * @return \Magento\Framework\Phrase
+     */
     public function getCommentText(OrderInterface $order)
     {
-        return __('Create for RetailOps response');
+        return __('Credit memo created by RetailOps');
     }
 
     /**
@@ -280,23 +329,60 @@ class CreditMemoHelper implements CreditMemoHelperInterface
         return 1;
     }
 
+    /**
+     * @param float $amount
+     */
     public function setAdjustmentPositive($amount)
     {
         $this->adjustmentNegative = $amount;
     }
 
-    public function setRefundCustomerbalanceReturnEnable($amount)
+    /**
+     * @param boolean $isEnabled
+     */
+    public function setRefundCustomerbalanceReturnEnable($isEnabled)
     {
-        $this->refundCustomerbalanceReturnEnable = $amount;
+        $this->refundCustomerbalanceReturnEnable = $isEnabled;
     }
 
+    /**
+     * @param float $amount
+     */
+    public function setRefundCustomerbalanceReturnAmount($amount)
+    {
+        $this->refundCustomerbalanceReturn = $amount;
+    }
+
+    /**
+     * @param float $amount
+     */
     public function setAdjustmentNegative($amount)
     {
         $this->adjustmentNegative = $amount;
     }
 
+    /**
+     * @param float $amount
+     */
     public function setShippingAmount($amount)
     {
         $this->shippingAmount = $amount;
+    }
+
+    /**
+     * @param boolean $sendMail
+     */
+    public function setSendEmail($sendMail)
+    {
+        $this->sendMail = $sendMail;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return mixed
+     */
+    public function getSendEmail(OrderInterface $order)
+    {
+        return $this->sendEmail;
     }
 }
