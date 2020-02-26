@@ -2,6 +2,18 @@
 
 namespace Gudtech\RetailOps\Model\Api\Order;
 
+use Exception;
+use Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface;
+use Gudtech\RetailOps\Model\Api\Traits\Filter;
+use Gudtech\RetailOps\Model\Logger\Monolog;
+use Gudtech\RetailOps\Model\Order\Status\History;
+use LogicException;
+use Magento\Framework\Api\FilterFactory;
+use Magento\Framework\Api\Search\FilterGroupFactory;
+use Magento\Framework\Api\SearchCriteria;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
 
 /**
@@ -10,12 +22,12 @@ use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
  */
 class Cancel
 {
-    use \Gudtech\RetailOps\Model\Api\Traits\Filter;
+    use Filter;
 
     const EMAIL_COMMENT_CANCELLED = 'Custom message to the customer. Needs to be changed.';
 
     /**
-     * @var \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface
+     * @var CreditMemoHelperInterface
      */
     protected $creditMemoHelper;
     protected $response;
@@ -23,7 +35,7 @@ class Cancel
     protected $events = [];
 
     /**
-     * @var \Gudtech\RetailOps\Model\Order\Status\History
+     * @var History
      */
     protected $historyRetail;
 
@@ -35,20 +47,23 @@ class Cancel
     /**
      * Cancel constructor.
      *
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-     * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
-     * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
-     * @param \Magento\Framework\Api\FilterFactory $filter
-     * @param \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Monolog $logger
+     * @param SearchCriteria $searchCriteria
+     * @param FilterFactory $filter
+     * @param FilterGroupFactory $filterGroup
+     * @param History $historyRetail
+     * @param CreditMemoHelperInterface $creditMemoHelper
+     * @param OrderCommentSender $orderCommentSender
      */
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Gudtech\RetailOps\Model\Logger\Monolog $logger,
-        \Magento\Framework\Api\SearchCriteria $searchCriteria,
-        \Magento\Framework\Api\FilterFactory $filter,
-        \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
-        \Gudtech\RetailOps\Model\Order\Status\History $historyRetail,
-        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper,
+        OrderRepositoryInterface $orderRepository,
+        Monolog $logger,
+        SearchCriteria $searchCriteria,
+        FilterFactory $filter,
+        FilterGroupFactory $filterGroup,
+        History $historyRetail,
+        CreditMemoHelperInterface $creditMemoHelper,
         OrderCommentSender $orderCommentSender
     ) {
         $this->orderRepository = $orderRepository;
@@ -72,7 +87,7 @@ class Cancel
                 }
                 $this->cancelOrder($order);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->status = 'fail';
             $this->setEventsInfo($e);
 
@@ -102,7 +117,10 @@ class Cancel
     }
 
     /**
+     * Returns the order ID based on the order information.
+     *
      * @param $orderId
+     * @return string|null
      */
     protected function getOrderId($orderInfo)
     {
@@ -110,7 +128,7 @@ class Cancel
             return $this->getOrderIdByOrderIncrementId($orderInfo['channel_order_refnum']);
         } else {
             $this->logger->addError('Invalid map', (array)$orderInfo);
-            throw new \LogicException(__('invalid map'));
+            throw new LogicException(__('invalid map'));
 
         }
     }
@@ -118,11 +136,11 @@ class Cancel
     /**
      * Cancels an order
      *
-     * @param   \Magento\Sales\Api\Data\OrderInterface $order
-     * @returns \bool
-     * @throws  \Magento\Framework\Exception\LocalizedException
+     * @param   OrderInterface $order
+     * @returns bool
+     * @throws  LocalizedException
      */
-    private function cancelOrder(\Magento\Sales\Api\Data\OrderInterface $order)
+    private function cancelOrder(OrderInterface $order)
     {
         if ($order->canCancel()) {
             $order->cancel();
@@ -141,9 +159,9 @@ class Cancel
     /**
      * Refunds an order
      *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      */
-    private function allRefund(\Magento\Sales\Api\Data\OrderInterface $order)
+    private function allRefund(OrderInterface $order)
     {
         $shippingRefund = $order->getShippingAmount() - $order->getShippingDiscountAmount();
         $this->creditMemoHelper->setShippingAmount($shippingRefund);
