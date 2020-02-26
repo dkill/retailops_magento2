@@ -48,8 +48,8 @@ class Cancel extends AbstractController
                 throw new \LogicException('API endpoint has been disabled');
             }
             $postData = $this->getRequest()->getParams();
-            $orderFactrory = $this->orderFactory->create();
-            $response = $orderFactrory->cancelOrder($postData);
+            $orderFactory = $this->orderFactory->create();
+            $response = $orderFactory->cancelOrder($postData);
             $this->responseEvents = $response;
         } catch (\Exception $exception) {
             print $exception;

@@ -2,6 +2,8 @@
 
 namespace Gudtech\RetailOps\Model\Api\Order;
 
+use Magento\Sales\Model\Order\Email\Sender\OrderCommentSender;
+
 /**
  * Cancel order class.
  *
@@ -9,6 +11,8 @@ namespace Gudtech\RetailOps\Model\Api\Order;
 class Cancel
 {
     use \Gudtech\RetailOps\Model\Api\Traits\Filter;
+
+    const EMAIL_COMMENT_CANCELLED = 'Custom message to the customer. Needs to be changed.';
 
     /**
      * @var \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface
@@ -24,7 +28,13 @@ class Cancel
     protected $historyRetail;
 
     /**
+     * @var OrderCommentSender
+     */
+    private $orderCommentSender;
+
+    /**
      * Cancel constructor.
+     *
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
      * @param \Gudtech\RetailOps\Model\Logger\Monolog $logger
      * @param \Magento\Framework\Api\SearchCriteria $searchCriteria
@@ -38,7 +48,8 @@ class Cancel
         \Magento\Framework\Api\FilterFactory $filter,
         \Magento\Framework\Api\Search\FilterGroupFactory $filterGroup,
         \Gudtech\RetailOps\Model\Order\Status\History $historyRetail,
-        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper
+        \Gudtech\RetailOps\Api\Services\CreditMemo\CreditMemoHelperInterface $creditMemoHelper,
+        OrderCommentSender $orderCommentSender
     ) {
         $this->orderRepository = $orderRepository;
         $this->logger = $logger;
@@ -47,6 +58,7 @@ class Cancel
         $this->filterGroup = $filterGroup;
         $this->historyRetail = $historyRetail;
         $this->creditMemoHelper = $creditMemoHelper;
+        $this->orderCommentSender = $orderCommentSender;
     }
 
     public function cancel($orderInfo)
@@ -104,7 +116,7 @@ class Cancel
     }
 
     /**
-     * cancels an order
+     * Cancels an order
      *
      * @param   \Magento\Sales\Api\Data\OrderInterface $order
      * @returns \bool
@@ -112,24 +124,35 @@ class Cancel
      */
     private function cancelOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
-
-        if (!$order->canCancel()) {
-
-            $order->addStatusToHistory($order->getStatus(), "Cancelled by RetailOps");
-            $order->save();
-
-            return $this->allRefund($order);
+        if ($order->canCancel()) {
+            $order->cancel();
+        } else {
+            $this->allRefund($order);
         }
 
-        $order->cancel();
-        $order->addStatusToHistory($order->getStatus(), "Cancelled by RetailOps");
-        $order->save();
+        # Add order comment
+        $order->addStatusToHistory($order->getStatus(), "Cancelled by RetailOps", true);
+        $this->orderRepository->save($order);
+
+        # Send email to customer
+        $this->orderCommentSender->send($order, true, self::EMAIL_COMMENT_CANCELLED);
     }
 
+    /**
+     * Refunds an order
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     */
     private function allRefund(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         $shippingRefund = $order->getShippingAmount() - $order->getShippingDiscountAmount();
         $this->creditMemoHelper->setShippingAmount($shippingRefund);
+
+        if ($order->getCustomerBalanceAmount()) {
+            $this->creditMemoHelper->setRefundCustomerbalanceReturnEnable(1);
+            $this->creditMemoHelper->setRefundCustomerbalanceReturnAmount($order->getCustomerBalanceAmount());
+        }
+
         $this->creditMemoHelper->create($order, []);
     }
 }
