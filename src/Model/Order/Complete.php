@@ -30,6 +30,7 @@ class Complete
         if (!isset($postData['order']) || !isset($postData['order']['shipments'])) {
             throw new \LogicException(__("Don't have valid data"));
         }
+
         $this->completeApi->completeOrder($postData['order']);
     }
 }

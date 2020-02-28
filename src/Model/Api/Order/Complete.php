@@ -184,10 +184,16 @@ class Complete
     public function createCreditMemoIfNeed(OrderInterface $order, array $items, $refundAmount)
     {
         if (count($items) > 0) {
-            if ($refundAmount > ($order->getTotalPaid() - $order->getTotalRefunded())) {
+
+            if (($order->getCustomerBalanceAmount() - $order->getCustomerBalanceRefunded()) > 0) {
+                if ($refundAmount > ($order->getCustomerBalanceAmount() - $order->getCustomerBalanceRefunded())) {
+                    $refundAmount = $order->getCustomerBalanceAmount() - $order->getCustomerBalanceRefunded();
+                }
+
                 $this->creditMemoHelper->setRefundCustomerbalanceReturnEnable(1);
-                $this->creditMemoHelper->setRefundCustomerbalanceReturnAmount($refundAmount - ($order->getTotalPaid() - $order->getTotalRefunded()));
+                $this->creditMemoHelper->setRefundCustomerbalanceReturnAmount($refundAmount);
             }
+
             $this->creditMemoHelper->create($order, $items);
         }
     }

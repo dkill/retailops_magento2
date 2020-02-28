@@ -54,8 +54,6 @@ class Complete extends AbstractController
      */
     public function execute()
     {
-        $this->logger->addCritical(json_encode($this->_request->getParams()));
-
         try {
             if (!$this->config->getValue(self::ENABLE)) {
                 throw new \LogicException('API endpoint has been disabled');
