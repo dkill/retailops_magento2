@@ -149,35 +149,12 @@ class Complete
 
         $orderId = $this->getOrderIdByOrderIncrementId($postData['channel_order_refnum']);
 
-        $shipment = $this->shipment;
-        $shipment->setOrder($this->getOrder($orderId));
-        $shipment->setUnShippedItems($postData);
-        $shipment->setTrackingAndShipmentItems($postData);
-        $unShipmentItems = $shipment->getUnShippmentItems();
-
-        $needCreditMemoItems = $this->itemsManager->removeCancelItems($this->getOrder($orderId), $unShipmentItems);
-        $this->createCreditMemoIfNeed($this->getOrder($orderId), $needCreditMemoItems);
-
-        if (array_key_exists('items', $this->shipment->getShippmentItems()) &&
-            count($this->shipment->getShippmentItems()['items'])
-        ) {
-            //remove items, that already had invoice
-            $needInvoiceItems = $this->itemsManager->removeInvoicedAndShippedItems(
-                $this->getOrder($orderId),
-                $this->shipment->getShippmentItems()['items']
-            );
-
-            if (count($needInvoiceItems)) {
-                $this->itemsManager->canInvoiceItems($this->getOrder($orderId), $needInvoiceItems);
-                $this->invoiceHelper->createInvoice($this->getOrder($orderId), $needInvoiceItems);
-            }
-        }
-
-        //all available items cancel
+        // Try to cancel the order
         $this->cancel($this->getOrder($orderId));
-        $this->getOrder($orderId)->setStatus(self::COMPLETE);
-        $shipment->registerShipment($postData);
-        $this->removeAllUnshippedItems($this->getOrder($orderId, true));
+
+        // Refund unshipped items
+        $this->removeAllUnshippedItems($this->getOrder($orderId));
+
         return $this->response;
     }
 
@@ -197,33 +174,46 @@ class Complete
         return $this->order;
     }
 
-    public function createCreditMemoIfNeed(OrderInterface $order, array $items)
+    /**
+     * Creates the credit memo if needed.
+     *
+     * @param OrderInterface $order
+     * @param array $items
+     * @param float $refundAmount
+     */
+    public function createCreditMemoIfNeed(OrderInterface $order, array $items, $refundAmount)
     {
         if (count($items) > 0) {
+            if ($refundAmount > ($order->getTotalPaid() - $order->getTotalRefunded())) {
+                $this->creditMemoHelper->setRefundCustomerbalanceReturnEnable(1);
+                $this->creditMemoHelper->setRefundCustomerbalanceReturnAmount($refundAmount - ($order->getTotalPaid() - $order->getTotalRefunded()));
+            }
             $this->creditMemoHelper->create($order, $items);
         }
     }
 
+    /**
+     * Refund all unshipped items for the order.
+     *
+     * @param OrderInterface $order
+     */
     public function removeAllUnshippedItems(OrderInterface $order)
     {
-        /**
-         * @var OrderItemInterface[] $items
-         */
         $items = $order->getItems();
-        $refundedItems = [];
+        $refundAmount = 0;
+        $refundItems = [];
         foreach ($items as $item) {
-            /**
-             * @var OrderItemInterface $item
-             */
             if ($item->getParentItem()) {
                 continue;
             }
             $quantity = $this->getRefundQuantity($item);
             if ($quantity > 0) {
-                $refundedItems[$item->getId()] = $quantity;
+                $refundItems[$item->getId()] = $quantity;
+                $refundAmount = $refundAmount + $item->getRowTotalInclTax();
             }
         }
-        $this->createCreditMemoIfNeed($order, $refundedItems);
+
+        $this->createCreditMemoIfNeed($order, $refundItems, $refundAmount);
     }
 
     /**

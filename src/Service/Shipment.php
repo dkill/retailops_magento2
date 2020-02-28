@@ -58,7 +58,7 @@ abstract class Shipment implements \Gudtech\RetailOps\Api\Shipment\ShipmentInter
             return;
         }
         foreach ($unShipments as $item) {
-            $this->unShippmentItems[$item['channel_item_refnum']] = $item['unshipped_quantity'];
+            $this->unShippmentItems[$item['sku']] = $item['unshipped_quantity'];
         }
     }
 

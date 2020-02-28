@@ -41,27 +41,26 @@ class ItemsManager implements \Gudtech\RetailOps\Api\ItemsManagerInterface
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order
-     * @param array $items
+     * @param array $allItems
      * @return array
      */
-    public function removeCancelItems(\Magento\Sales\Api\Data\OrderInterface $order, array $items)
+    public function removeCancelItems(\Magento\Sales\Api\Data\OrderInterface $order, array $allItems)
     {
+        $creditMemoItems = [];
         foreach ($order->getItems() as $orderItem) {
-            if (array_key_exists($orderItem->getId(), $items)) {
-                $quantity = (float)$items[$orderItem->getId()];
+            if (!$orderItem->getParentItemId() && array_key_exists($orderItem->getSku(), $allItems)) {
+                $quantity = (float)$allItems[$orderItem->getSku()];
                 $delta = $quantity - (float)$orderItem->getQtyToCanceled();
                 if ($delta <= 0) {
                     $this->cancelItems[$orderItem->getId()] = $delta;
-                    unset($items[$orderItem->getId()]);
                 } else {
-                    if ($orderItem->getQtyToCanceled() > 0) {
-                        $this->cancelItems[$orderItem->getId()] = $orderItem->getQtyToCanceled();
-                        $items[$orderItem->getId()] = $delta;
-                    }
+                    $this->cancelItems[$orderItem->getId()] = $orderItem->getQtyToCanceled();
+                    $creditMemoItems[$orderItem->getId()] = $delta;
                 }
             }
         }
-        return $items;
+
+        return $creditMemoItems;
     }
 
     /**
